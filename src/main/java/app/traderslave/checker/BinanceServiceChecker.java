@@ -12,8 +12,13 @@ public class BinanceServiceChecker {
 
         if (startDateMillisecond != null && endDateMillisecond != null) {
             //todo creare le eccezioni personalizzate
-            if (endDateMillisecond > TimeUtils.convertToUTCMillisecond(LocalDateTime.now())) {
+            final Long nowMillisecond = TimeUtils.convertToUTCMillisecond(LocalDateTime.now());
+
+            if (endDateMillisecond > nowMillisecond) {
                 throw new RuntimeException("endDate > now");
+            }
+            if (startDateMillisecond > nowMillisecond) {
+                throw new RuntimeException("stardDate > now");
             }
             if (startDateMillisecond < endDateMillisecond) {
                 throw new RuntimeException("startDate cannot be less than endDate");
