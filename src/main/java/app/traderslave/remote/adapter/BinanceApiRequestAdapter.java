@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 @UtilityClass
 public class BinanceApiRequestAdapter {
 
-    public final int LIMIT_GET_KLINE = 1000;
+    public final int LIMIT_GET_KLINE = 2;
 
     public BinanceGetKlinesRequestDto adapt(CandlesRequestDto dto) {
         return BinanceGetKlinesRequestDto.builder()
