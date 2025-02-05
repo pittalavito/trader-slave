@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 public class CandlesRequestDto {
     @NotNull
     private CurrencyPair currencyPair = CurrencyPair.BTC_USDT;
-    @NotNull
+    @NotNull(message = "required")
     private LocalDateTime startDate;
-    @NotNull
+    @NotNull(message = "required")
     private LocalDateTime endDate;
-    @NotNull
+    @NotNull(message = "required")
     private TimeFrame timeFrame;
 }

@@ -5,7 +5,7 @@ import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.remote.dto.BinanceGetKlinesRequestDto;
 import app.traderslave.utility.TimeUtils;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 
 @UtilityClass
 public class BinanceApiRequestAdapter {

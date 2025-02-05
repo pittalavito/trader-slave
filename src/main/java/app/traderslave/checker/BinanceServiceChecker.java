@@ -1,5 +1,9 @@
 package app.traderslave.checker;
 
+import app.traderslave.exception.custom.EndDateIsAfterNowException;
+import app.traderslave.exception.custom.NumCandlesExceedsLimitException;
+import app.traderslave.exception.custom.StartDateIsAfterEndDateException;
+import app.traderslave.exception.custom.StartDateIsAfterNowException;
 import app.traderslave.model.enums.TimeFrame;
 import app.traderslave.utility.TimeUtils;
 import lombok.experimental.UtilityClass;
@@ -11,20 +15,20 @@ public class BinanceServiceChecker {
     public void validateDatesGetKline(TimeFrame timeFrame, Long startDateMillisecond, Long endDateMillisecond, Long limitNumCandles) {
 
         if (startDateMillisecond != null && endDateMillisecond != null) {
-            //todo creare le eccezioni personalizzate
+
             final Long nowMillisecond = TimeUtils.convertToUTCMillisecond(LocalDateTime.now());
 
             if (endDateMillisecond > nowMillisecond) {
-                throw new RuntimeException("endDate > now");
+                throw new EndDateIsAfterNowException();
             }
             if (startDateMillisecond > nowMillisecond) {
-                throw new RuntimeException("stardDate > now");
+                throw new StartDateIsAfterNowException();
             }
-            if (startDateMillisecond < endDateMillisecond) {
-                throw new RuntimeException("startDate cannot be less than endDate");
+            if (startDateMillisecond > endDateMillisecond) {
+                throw new StartDateIsAfterEndDateException();
             }
             if (limitNumCandles < ((startDateMillisecond - endDateMillisecond) / timeFrame.getMillisecond())) {
-                throw new RuntimeException("The number of candles exceeds the allowed limit");
+                throw new NumCandlesExceedsLimitException();
             }
         }
     }

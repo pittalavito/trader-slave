@@ -1,11 +1,13 @@
 package app.traderslave.remote.api;
 
+import app.traderslave.exception.custom.BinanceRemoteException;
 import app.traderslave.remote.dto.BinanceGetKlinesRequestDto;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import java.rmi.RemoteException;
 import java.util.List;
 
 @Component
@@ -21,7 +23,6 @@ public class BinanceApi {
     }
 
     public Mono<List<Object[]>> getKlines(BinanceGetKlinesRequestDto requestDto) {
-        //todo creare le eccezioni customizzate
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(KLINES_URL)
                         .queryParam("symbol", requestDto.getSymbol())
@@ -34,10 +35,10 @@ public class BinanceApi {
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, res -> res
                         .bodyToMono(String.class)
-                        .flatMap(body -> Mono.error(new RuntimeException(body)))
+                        .flatMap(body -> Mono.error(new RemoteException(body)))
                 )
                 .bodyToMono(new ParameterizedTypeReference<List<Object[]>>() {})
-                .onErrorMap(e -> new RuntimeException(KLINES_URL + " error: " + e.getMessage()));
+                .onErrorMap(e -> new BinanceRemoteException(e.getMessage(), KLINES_URL));
 
     }
 }
