@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 @UtilityClass
 public class BinanceApiRequestAdapter {
 
-    public final int LIMIT_GET_KLINE = 2;
+    public final int LIMIT_GET_KLINE = 1000;
 
     public BinanceGetKlinesRequestDto adapt(CandlesRequestDto dto) {
         return BinanceGetKlinesRequestDto.builder()

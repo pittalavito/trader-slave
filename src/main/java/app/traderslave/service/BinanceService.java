@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BinanceService extends BaseService implements BaseRemoteSeachDataInterface {
 
-    private static final Long LIMIT_NUM_CANDLES = 100000L;
+    private static final Long LIMIT_NUM_CANDLES = 50000L;
     private final BinanceApi binanceApi;
 
     @Override
@@ -46,17 +46,14 @@ public class BinanceService extends BaseService implements BaseRemoteSeachDataIn
         return binanceApi
                 .getKlines(BinanceApiRequestAdapter.adapt(currencyPair, startDateMillisecond, endDateMillisecond, timeFrame.getCode()))
                 .flatMapMany(binanceResponseList -> {
-                    if (CollectionUtils.isEmpty(binanceResponseList)) {
-                        return Flux.empty();
+                    if (!CollectionUtils.isEmpty(binanceResponseList)) {
+                        List<CandleResponseDto> partialCandlesList = BinanceApiResponseAdapter.adapt(binanceResponseList);
+                        CandleResponseDto lastCandle = partialCandlesList.get(partialCandlesList.size() - 1);
+                        Long newStartDateMillisecond = TimeUtils.convertToUTCMillisecond(lastCandle.getCloseTime()) + 1;
+                        accumulatedCandlesList.addAll(partialCandlesList);
+                        return fetchCandlesRecursive(accumulatedCandlesList, newStartDateMillisecond, endDateMillisecond, timeFrame, currencyPair);
                     }
-                    List<CandleResponseDto> partialCandlesList = BinanceApiResponseAdapter.adapt(binanceResponseList);
-                    CandleResponseDto lastCandle = partialCandlesList.get(partialCandlesList.size() - 1);
-                    Long newStartDateMillisecond = TimeUtils.convertToUTCMillisecond(lastCandle.getCloseTime()) + 1;
-                    accumulatedCandlesList.addAll(partialCandlesList);
-
-                    return partialCandlesList.size() >= BinanceApiRequestAdapter.LIMIT_GET_KLINE ?
-                            fetchCandlesRecursive(accumulatedCandlesList, newStartDateMillisecond, endDateMillisecond, timeFrame, currencyPair) :
-                            Flux.fromIterable(accumulatedCandlesList);
+                    return Flux.fromIterable(accumulatedCandlesList);
                 });
     }
 }
