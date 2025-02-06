@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class CandleResponseDto {
+public class CandleResDto {
     private LocalDateTime openTime;
     private LocalDateTime closeTime;
     private BigDecimal open;

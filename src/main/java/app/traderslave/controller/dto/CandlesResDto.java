@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class CandlesResponseDto {
-    private List<CandleResponseDto> list;
+public class CandlesResDto {
+    private List<CandleResDto> list;
     private Integer size;
 }

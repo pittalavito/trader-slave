@@ -7,9 +7,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class CandlesRequestDto {
-    @NotNull
-    private CurrencyPair currencyPair = CurrencyPair.BTC_USDT;
+public class CandlesReqDto {
+    @NotNull(message = "required")
+    private CurrencyPair currencyPair;
     @NotNull(message = "required")
     private LocalDateTime startDate;
     @NotNull(message = "required")

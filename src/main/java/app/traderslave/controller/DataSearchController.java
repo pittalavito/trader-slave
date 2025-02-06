@@ -19,7 +19,7 @@ public class DataSearchController {
     private final BinanceService binanceService;
 
     @PostMapping(path = URL_CANDLES)
-    public Mono<ResponseEntity<CandlesResponseDto>> getCandles(@RequestBody @Validated CandlesRequestDto requestDto) {
+    public Mono<ResponseEntity<CandlesResDto>> getCandles(@RequestBody @Validated CandlesReqDto requestDto) {
         return binanceService.getCandleSticks(requestDto)
                 .map(ResponseEntity::ok);
     }
