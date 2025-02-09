@@ -5,13 +5,11 @@ import app.traderslave.checker.BinanceServiceChecker;
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CandlesReqDto;
 import app.traderslave.controller.dto.CandlesResDto;
-import app.traderslave.model.enums.CurrencyPair;
-import app.traderslave.model.enums.TimeFrame;
 import app.traderslave.remote.BaseRemoteSearchDataInterface;
 import app.traderslave.remote.adapter.BinanceApiRequestAdapter;
 import app.traderslave.remote.adapter.BinanceApiResponseAdapter;
 import app.traderslave.remote.api.BinanceApi;
-import app.traderslave.utility.TimeUtils;
+import app.traderslave.remote.dto.BinanceGetKlinesRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,30 +29,27 @@ public class BinanceService extends BaseService implements BaseRemoteSearchDataI
     @Override
     public Mono<CandlesResDto> getCandleSticks(CandlesReqDto dto) {
         List<CandleResDto> accumulationCandlesList = new ArrayList<>();
+        BinanceServiceChecker.validateDatesGetKline(dto.getTimeFrame(), dto.getStartDate(), dto.getEndDate(), LIMIT_NUM_CANDLES);
 
-        Long startDateMillisecond = TimeUtils.convertToUTCMillisecondOrDefault(dto.getStartDate() , null);
-        Long endDateMillisecond = TimeUtils.convertToUTCMillisecondOrDefault(dto.getEndDate(), null);
-
-        BinanceServiceChecker.validateDatesGetKline(dto.getTimeFrame(), startDateMillisecond, endDateMillisecond, LIMIT_NUM_CANDLES);
-
-        return fetchCandlesRecursive(accumulationCandlesList, startDateMillisecond, endDateMillisecond, dto.getTimeFrame(), dto.getCurrencyPair())
+        return fetchCandleSticks(accumulationCandlesList, BinanceApiRequestAdapter.adapt(dto))
                 .collectList()
                 .flatMap(BinanceServiceAssembler::toModel);
     }
 
-    private Flux<CandleResDto> fetchCandlesRecursive(List<CandleResDto> accumulatedCandlesList, Long startDateMillisecond, Long endDateMillisecond, TimeFrame timeFrame, CurrencyPair currencyPair) {
-        return binanceApi
-                .getKlines(BinanceApiRequestAdapter.adapt(currencyPair, startDateMillisecond, endDateMillisecond, timeFrame.getCode()))
-                .flatMapMany(binanceResponseList -> {
-                    if (!CollectionUtils.isEmpty(binanceResponseList)) {
-                        List<CandleResDto> partialCandlesList = BinanceApiResponseAdapter.adapt(binanceResponseList);
-                        CandleResDto lastCandle = partialCandlesList.get(partialCandlesList.size() - 1);
-                        Long newStartDateMillisecond = TimeUtils.convertToUTCMillisecond(lastCandle.getCloseTime()) + 1;
-                        accumulatedCandlesList.addAll(partialCandlesList);
-                        return fetchCandlesRecursive(accumulatedCandlesList, newStartDateMillisecond, endDateMillisecond, timeFrame, currencyPair);
-                    }
-                    return Flux.fromIterable(accumulatedCandlesList);
-                });
+    private Flux<CandleResDto> fetchCandleSticks(List<CandleResDto> accumulatedCandlesList, BinanceGetKlinesRequestDto dto) {
+        return binanceApi.getKlines(dto)
+                .flatMapMany(response -> recallFetchCandleSticksOrResponse(accumulatedCandlesList, response, dto));
+    }
+
+    private Flux<CandleResDto> recallFetchCandleSticksOrResponse(List<CandleResDto> accumulatedCandlesList, List<Object[]> binanceResponse, BinanceGetKlinesRequestDto dto) {
+        if (!CollectionUtils.isEmpty(binanceResponse)) {
+            accumulatedCandlesList.addAll(BinanceApiResponseAdapter.adapt(binanceResponse));
+            // close time last candle response in millisecond + 1
+            dto.setStartTime(((Long) binanceResponse.get(binanceResponse.size() - 1)[6]) + 1);
+
+            return fetchCandleSticks(accumulatedCandlesList, dto);
+        }
+        return Flux.fromIterable(accumulatedCandlesList);
     }
 }
 

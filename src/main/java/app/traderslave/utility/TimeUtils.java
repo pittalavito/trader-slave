@@ -24,4 +24,11 @@ public class TimeUtils {
                 .toLocalDateTime();
     }
 
+    public LocalDateTime nowUTC() {
+        return LocalDateTime
+                .now()
+                .atOffset(ZoneOffset.UTC)
+                .toLocalDateTime();
+    }
+
 }

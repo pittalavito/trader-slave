@@ -12,24 +12,23 @@ import java.time.LocalDateTime;
 @UtilityClass
 public class BinanceServiceChecker {
 
-    public void validateDatesGetKline(TimeFrame timeFrame, Long startDateMillisecond, Long endDateMillisecond, Long limitNumCandles) {
-
-        if (startDateMillisecond != null && endDateMillisecond != null) {
-
-            final Long nowMillisecond = TimeUtils.convertToUTCMillisecond(LocalDateTime.now());
-
-            if (endDateMillisecond > nowMillisecond) {
+    public void validateDatesGetKline(TimeFrame timeFrame, LocalDateTime startDate, LocalDateTime endDate, Long limitNumCandles) {
+        if (startDate == null && endDate == null) {
+            return;
+        }
+        final LocalDateTime now = TimeUtils.nowUTC();
+        if (startDate == null) {
+            if (endDate.isAfter(now)) {
                 throw new EndDateIsAfterNowException();
             }
-            if (startDateMillisecond > nowMillisecond) {
+        } else if (endDate == null) {
+            if(startDate.isAfter(now)) {
                 throw new StartDateIsAfterNowException();
             }
-            if (startDateMillisecond > endDateMillisecond) {
-                throw new StartDateIsAfterEndDateException();
-            }
-            if (limitNumCandles < ((startDateMillisecond - endDateMillisecond) / timeFrame.getMillisecond())) {
-                throw new NumCandlesExceedsLimitException();
-            }
+        } else if (startDate.isAfter(endDate)) {
+            throw new StartDateIsAfterEndDateException();
+        } else if (limitNumCandles < ((TimeUtils.convertToUTCMillisecond(startDate) - TimeUtils.convertToUTCMillisecond(endDate)) / timeFrame.getMillisecond())) {
+            throw new NumCandlesExceedsLimitException();
         }
     }
 
