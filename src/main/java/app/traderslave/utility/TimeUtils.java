@@ -31,4 +31,8 @@ public class TimeUtils {
                 .toLocalDateTime();
     }
 
+    public boolean areDatesNull(LocalDateTime startDate, LocalDateTime endDate) {
+        return startDate == null && endDate == null;
+    }
+
 }
