@@ -1,12 +1,10 @@
-package app.traderslave.model.persistence;
+package app.traderslave.model.domain;
 
 import app.traderslave.utility.SqlColumnDefinition;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -16,21 +14,15 @@ public abstract class BasePersistentModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, unique = true, columnDefinition = SqlColumnDefinition.VARCHAR_UID)
     private String uid;
 
-    @NotNull
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
-    private LocalDate creationDate;
+    private LocalDateTime creationDate;
 
-    @NotNull
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
-    private LocalDate lastModificationDate;
+    private LocalDateTime lastModificationDate;
 
-    @NotNull
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.INTEGER_DEFAULT_0)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer version;
 }
