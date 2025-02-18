@@ -4,12 +4,15 @@ import app.traderslave.utility.SqlColumnDefinition;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@SuperBuilder
 @MappedSuperclass
 public abstract class BasePersistentModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

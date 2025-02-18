@@ -1,30 +1,42 @@
 package app.traderslave.controller;
 
-import org.springframework.beans.factory.BeanFactory;
+import app.traderslave.controller.dto.PostSimulationReqDto;
+import app.traderslave.controller.dto.PostSimulationResDto;
+import app.traderslave.service.SimulationService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/back-testing")
-public class BackTestingController extends BaseController {
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+public class BackTestingController {
 
     private static final String URI_SIMULATION = "/simulation";
 
-    public BackTestingController(BeanFactory beanFactory) {
-        super(beanFactory);
-    }
+    private final SimulationService simulationService;
 
     /**
      * Create a simulation
      * Request:
-     *  - currency pair,
-     *  - start date
-     *  - end date
+     *  - currencyPair
+     *  - startDate
+     *  - endDate
+     *  - timeFrame
      * Response:
-     *  - balance account
-     *  - id simulation
+     *  - balance
+     *  - simulationId
+     *  - currency
+     *  - timeFrame
+     *  - candles
      */
     @PostMapping(path = URI_SIMULATION)
-    public void postSimulation() {
+    public Mono<ResponseEntity<PostSimulationResDto>> postSimulation(@RequestBody @Validated PostSimulationReqDto reqDto) {
+        return simulationService.create(reqDto)
+                .map(ResponseEntity::ok);
     }
 
     /**
@@ -38,6 +50,19 @@ public class BackTestingController extends BaseController {
      */
     @GetMapping(path = URI_SIMULATION)
     public void getSimulation(@RequestParam Long simulationId) {
+        //todo implement
+    }
+
+    /**
+     * Close simulation
+     * Request:
+     *  - simulation-id
+     * Response:
+     *  - report
+     */
+    @DeleteMapping(path = URI_SIMULATION)
+    public void deleteSimulation(@RequestParam Long simulationId) {
+        //todo implement
     }
 
     /**
@@ -52,18 +77,7 @@ public class BackTestingController extends BaseController {
      */
     @PutMapping(path = URI_SIMULATION)
     public void putSimulation(@RequestParam Long simulationId) {
+        //todo al posto di questo considera una open order e close anche le operazioni spot etichettiamole come chiudi apri.
     }
-
-    /**
-     * Close simulation
-     * Request:
-     *  - simulation-id
-     * Response:
-     *  - report
-     */
-    @DeleteMapping(path = URI_SIMULATION)
-    public void deleteSimulation(@RequestParam Long simulationId) {
-    }
-
 
 }

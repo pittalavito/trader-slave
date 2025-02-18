@@ -5,7 +5,6 @@ import app.traderslave.checker.BinanceServiceChecker;
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CandlesReqDto;
 import app.traderslave.controller.dto.CandlesResDto;
-import app.traderslave.remote.BaseRemoteSearchDataInterface;
 import app.traderslave.remote.adapter.BinanceApiRequestAdapter;
 import app.traderslave.remote.adapter.BinanceApiResponseAdapter;
 import app.traderslave.remote.api.BinanceApi;
@@ -16,26 +15,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class BinanceService extends BaseService implements BaseRemoteSearchDataInterface {
+public class BinanceService {
 
     private static final Long LIMIT_NUM_CANDLES = 50000L;
+
     private final BinanceApi binanceApi;
 
-    @Override
     public Mono<CandlesResDto> getCandleSticks(CandlesReqDto dto) {
         BinanceServiceChecker.validateDatesGetKline(dto.getTimeFrame(), dto.getStartDate(), dto.getEndDate(), LIMIT_NUM_CANDLES);
-        BinanceGetKlinesRequestDto clientReqDto = BinanceApiRequestAdapter.adapt(dto);
-        return fetchCandleSticks(new ArrayList<>(), clientReqDto)
+
+        return fetchCandleSticks(new HashSet<>(), BinanceApiRequestAdapter.adapt(dto))
                 .collectList()
                 .flatMap(BinanceServiceAssembler::toModel);
     }
 
-    private Flux<CandleResDto> fetchCandleSticks(List<CandleResDto> accumulatedCandlesList, BinanceGetKlinesRequestDto clientReqDto) {
+    private Flux<CandleResDto> fetchCandleSticks(Set<CandleResDto> accumulatedCandlesList, BinanceGetKlinesRequestDto clientReqDto) {
         return binanceApi.getKlines(clientReqDto)
                 .flatMapMany(clientRes -> {
                     if (!CollectionUtils.isEmpty(clientRes)) {
