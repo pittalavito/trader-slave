@@ -11,7 +11,7 @@ public abstract class BaseCustomException extends RuntimeException {
     private final transient ExceptionResponseDto body;
 
     protected BaseCustomException(ExceptionEnum exceptionEnum) {
-        super("BASE COSTUM EXCEPTION");
+        super(exceptionEnum.getMessage());
         this.body = buildDtoResponse(exceptionEnum);
     }
 
