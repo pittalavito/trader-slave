@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 @UtilityClass
 public class BinanceServiceChecker {
 
-    public void validateDatesGetKline(TimeFrame timeFrame, LocalDateTime startDate, LocalDateTime endDate, Long limitNumCandles) {
+    public void checkDatesGetKline(TimeFrame timeFrame, LocalDateTime startDate, LocalDateTime endDate, Long limitNumCandles) {
         if (TimeUtils.areDatesNull(startDate, endDate)) {
             return;
         }
-        TimeChecker.validateEndDate(endDate);
-        TimeChecker.validateStartDate(startDate);
-        TimeChecker.validateDateOrder(startDate, endDate);
-        TimeChecker.validateCandleLimit(timeFrame, startDate, endDate, limitNumCandles);
+        TimeChecker.checkEndDate(endDate);
+        TimeChecker.checkStartDate(startDate);
+        TimeChecker.checkDateOrder(startDate, endDate);
+        TimeChecker.checkCandleLimit(timeFrame, startDate, endDate, limitNumCandles);
     }
 }
 

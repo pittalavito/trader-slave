@@ -7,6 +7,7 @@ import java.util.Arrays;
 @Getter
 @AllArgsConstructor
 public enum TimeFrame {
+    ONE_SECOND("1s", 1000L),
     ONE_MINUTE("1m", 60000L),
     THREE_MINUTES("3m", 3 * ONE_MINUTE.millisecond),
     FIVE_MINUTES("5m", 5 * ONE_MINUTE.millisecond),
