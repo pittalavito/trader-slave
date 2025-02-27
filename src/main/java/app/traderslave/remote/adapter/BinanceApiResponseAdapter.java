@@ -18,13 +18,13 @@ public class BinanceApiResponseAdapter {
 
     private CandleResDto adapt(Object[] candles) {
         return CandleResDto.builder()
-                .openTime(TimeUtils.convertToUTCLocalDate((Long) candles[0]))
+                .openTime(TimeUtils.convertToLocalDateTime((Long) candles[0]))
                 .open(new BigDecimal(candles[1].toString()))
                 .high(new BigDecimal(candles[2].toString()))
                 .low(new BigDecimal(candles[3].toString()))
                 .close(new BigDecimal(candles[4].toString()))
                 .volume(new BigDecimal(candles[5].toString()))
-                .closeTime(TimeUtils.convertToUTCLocalDate((Long) candles[6]))
+                .closeTime(TimeUtils.convertToLocalDateTime((Long) candles[6]))
                 .quoteAssetVolume(new BigDecimal(candles[7].toString()))
                 .numberOfTrades((Integer) candles[8])
                 .takerBuyBaseAssetVolume(new BigDecimal(candles[9].toString()))

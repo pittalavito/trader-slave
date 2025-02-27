@@ -2,9 +2,11 @@ package app.traderslave.service;
 
 import app.traderslave.assembler.BinanceServiceAssembler;
 import app.traderslave.checker.BinanceServiceChecker;
+import app.traderslave.checker.TimeChecker;
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CandlesReqDto;
 import app.traderslave.controller.dto.CandlesResDto;
+import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.remote.adapter.BinanceApiRequestAdapter;
 import app.traderslave.remote.adapter.BinanceApiResponseAdapter;
 import app.traderslave.remote.api.BinanceApi;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,8 +29,15 @@ public class BinanceService {
 
     private final BinanceApi binanceApi;
 
-    public Mono<CandlesResDto> getCandleSticks(CandlesReqDto dto) {
-        BinanceServiceChecker.validateDatesGetKline(dto.getTimeFrame(), dto.getStartDate(), dto.getEndDate(), LIMIT_NUM_CANDLES);
+    public Mono<CandleResDto> findCandle(CurrencyPair currencyPair, LocalDateTime time) {
+        TimeChecker.checkStartDate(time);
+
+        return binanceApi.getKlines(BinanceApiRequestAdapter.adapt(currencyPair, time))
+                .flatMap(clientRes -> Mono.just(BinanceApiResponseAdapter.adapt(clientRes).get(0)));
+    }
+
+    public Mono<CandlesResDto> findCandles(CandlesReqDto dto) {
+        BinanceServiceChecker.checkDatesGetKline(dto.getTimeFrame(), dto.getStartDate(), dto.getEndDate(), LIMIT_NUM_CANDLES);
 
         return fetchCandleSticks(new HashSet<>(), BinanceApiRequestAdapter.adapt(dto))
                 .collectList()
