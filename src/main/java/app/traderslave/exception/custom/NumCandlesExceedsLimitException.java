@@ -1,7 +1,7 @@
 package app.traderslave.exception.custom;
 
 import app.traderslave.exception.model.ExceptionEnum;
-import app.traderslave.exception.model.ExceptionResponseDto;
+import app.traderslave.exception.model.ExceptionResDto;
 
 public class NumCandlesExceedsLimitException extends BaseCustomException {
 
@@ -10,7 +10,7 @@ public class NumCandlesExceedsLimitException extends BaseCustomException {
     }
 
     @Override
-    protected ExceptionResponseDto buildCustomResponseDto() {
+    protected ExceptionResDto buildCustomResponseDto() {
         return null;
     }
 

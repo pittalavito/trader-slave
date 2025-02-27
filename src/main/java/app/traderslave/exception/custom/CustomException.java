@@ -3,15 +3,14 @@ package app.traderslave.exception.custom;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.exception.model.ExceptionResDto;
 
-public class StartDateIsAfterNowException extends BaseCustomException {
+public class CustomException extends BaseCustomException {
 
-    public StartDateIsAfterNowException() {
-        super(ExceptionEnum.START_DATE_IS_AFTER_NOW);
+    public CustomException(ExceptionEnum exceptionEnum) {
+        super(exceptionEnum);
     }
 
     @Override
     protected ExceptionResDto buildCustomResponseDto() {
         return null;
     }
-
 }

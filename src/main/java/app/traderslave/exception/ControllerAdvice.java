@@ -1,7 +1,7 @@
 package app.traderslave.exception;
 
 import app.traderslave.exception.custom.BaseCustomException;
-import app.traderslave.exception.model.ExceptionResponseDto;
+import app.traderslave.exception.model.ExceptionResDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -32,7 +32,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(BaseCustomException.class)
-    public ResponseEntity<ExceptionResponseDto> handleCustomException(BaseCustomException e, WebRequest request) {
+    public ResponseEntity<ExceptionResDto> handleCustomException(BaseCustomException e, WebRequest request) {
         return new ResponseEntity<>(e.getBody(), e.getBody().getHttpStatus());
     }
 

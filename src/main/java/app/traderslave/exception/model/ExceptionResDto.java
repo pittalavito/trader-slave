@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Data
 @NoArgsConstructor
-public class ExceptionResponseDto {
+public class ExceptionResDto {
     private HttpStatus httpStatus;
     private String message;
 }

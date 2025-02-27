@@ -1,7 +1,7 @@
 package app.traderslave.exception.custom;
 
 import app.traderslave.exception.model.ExceptionEnum;
-import app.traderslave.exception.model.ExceptionResponseDto;
+import app.traderslave.exception.model.ExceptionResDto;
 
 public class BinanceRemoteException extends BaseCustomException {
 
@@ -15,8 +15,8 @@ public class BinanceRemoteException extends BaseCustomException {
     }
 
     @Override
-    protected ExceptionResponseDto buildCustomResponseDto() {
-        ExceptionResponseDto exResponseDto = new ExceptionResponseDto();
+    protected ExceptionResDto buildCustomResponseDto() {
+        ExceptionResDto exResponseDto = new ExceptionResDto();
         exResponseDto.setHttpStatus(ExceptionEnum.BINANCE_REMOTE.getHttpStatus());
         exResponseDto.setMessage(url + " " + message);
         return exResponseDto;
