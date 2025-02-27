@@ -1,8 +1,8 @@
 package app.traderslave.factory;
 
-import app.traderslave.controller.dto.PostSimulationReqDto;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.enums.Currency;
+import app.traderslave.model.enums.CurrencyPair;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -13,13 +13,10 @@ public class SimulationEntityFactory {
     private final BigDecimal DEFAULT_BALANCE = BigDecimal.valueOf(100);
     private final Currency DEFAULT_CURRENCY = Currency.USDT;
 
-    public Simulation create(PostSimulationReqDto reqDto) {
+    public Simulation create(CurrencyPair currencyPair) {
         return Simulation.builder()
-                .currencyPair(reqDto.getCurrencyPair())
-                .startDate(reqDto.getStartDate())
-                .endDate(reqDto.getEndDate())
+                .currencyPair(currencyPair)
                 .currency(DEFAULT_CURRENCY)
-                .timeFrame(reqDto.getTimeFrame())
                 .balance(DEFAULT_BALANCE)
                 .uid(UUID.randomUUID().toString())
                 .version(0)
