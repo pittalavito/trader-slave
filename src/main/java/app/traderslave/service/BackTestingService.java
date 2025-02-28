@@ -37,12 +37,13 @@ public class BackTestingService {
         BackTestingServiceChecker.checkBalance(simulation, reqDto);
 
         return binanceService.findCandle(BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), reqDto.getTime()))
-                .map(candle -> createOrder(candle, reqDto));
-    }
-
-    private Void createOrder(CandleResDto candle, CreateSimulationOrderReqDto reqDto) {
-        SimulationOrder order = simulationOrderService.create(reqDto.getSimulationId(), reqDto.getOrderType(), reqDto.getAmountOfTrade(), candle.getClose(), candle.getCloseTime());
-        return Void.TYPE.cast(order);
+                .map(candle -> simulationOrderService.create(
+                        reqDto.getSimulationId(),
+                        reqDto.getOrderType(),
+                        reqDto.getAmountOfTrade(),
+                        candle.getClose(),
+                        candle.getCloseTime())
+                ).then();
     }
 
     public Mono<Object> closeOrder() {
