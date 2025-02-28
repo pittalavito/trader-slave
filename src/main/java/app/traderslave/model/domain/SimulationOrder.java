@@ -22,6 +22,7 @@ public class SimulationOrder extends BasePersistentModel {
     @Column(nullable = false)
     private Long simulationId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.VARCHAR_20)
     private OrderType type;
 
