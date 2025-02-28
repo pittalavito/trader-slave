@@ -1,8 +1,8 @@
 package app.traderslave.controller;
 
+import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
 import app.traderslave.controller.dto.PostSimulationResDto;
 import app.traderslave.model.enums.CurrencyPair;
-import app.traderslave.model.enums.OrderType;
 import app.traderslave.service.BackTestingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class BackTestingController {
 
     private static final String URI_SIMULATION = "/simulation";
     private static final String URI_SIMULATION_ID = "/simulation/{id}";
-    private static final String URI_ORDER = "/order/{type}";
+    private static final String URI_ORDER = "/order";
     private static final String URI_ORDER_ID = "/order/{id}";
 
     private final BackTestingService service;
@@ -33,22 +33,23 @@ public class BackTestingController {
 
     @GetMapping(path = URI_SIMULATION_ID)
     public void getSimulation(@PathVariable Long id) {
-        //todo implement
+        //todo implemen
     }
 
     @PostMapping(path = URI_SIMULATION_ID)
-    public Object closeSimulation(@PathVariable Long id, @RequestParam(defaultValue = "true") boolean delete)    {
+    public Object closeSimulation(@PathVariable Long id, @RequestParam(defaultValue = "true") boolean delete) {
         //todo implement
         return null;
     }
 
     @PostMapping(path = URI_ORDER)
-    public void createOrder(@PathVariable OrderType type) {
-        //todo implement
+    public Mono<ResponseEntity<Void>> createOrder(@RequestBody CreateSimulationOrderReqDto reqDto) {
+        return service.createOrder(reqDto)
+                .map(ResponseEntity::ok);
     }
 
     @PostMapping(path = URI_ORDER_ID)
-    public void closeOrder(@PathVariable Long id) {
+    public void closeOrder(@PathVariable Long id, @RequestBody Object order) {
         //todo implement
     }
 

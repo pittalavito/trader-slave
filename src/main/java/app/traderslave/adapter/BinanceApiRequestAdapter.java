@@ -1,4 +1,4 @@
-package app.traderslave.remote.adapter;
+package app.traderslave.adapter;
 
 import app.traderslave.controller.dto.CandleReqDto;
 import app.traderslave.controller.dto.CandlesReqDto;

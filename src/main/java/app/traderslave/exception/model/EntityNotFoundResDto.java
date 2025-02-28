@@ -1,12 +1,10 @@
 package app.traderslave.exception.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class EntityNotFoundResDto extends ExceptionResDto {
     private String className;
 }

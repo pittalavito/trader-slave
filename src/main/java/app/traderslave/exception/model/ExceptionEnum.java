@@ -13,7 +13,8 @@ public enum ExceptionEnum {
     START_DATE_IS_AFTER_END_DATE(HttpStatus.BAD_REQUEST, "The start date is after end date"),
     START_DATE_IS_AFTER_NOW(HttpStatus.BAD_REQUEST, "The start date is after now"),
     BINANCE_REMOTE(HttpStatus.INTERNAL_SERVER_ERROR, null),
-    ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Entity not found");
+    ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Entity not found"),
+    INSUFFICIENT_BALANCE(HttpStatus.BAD_REQUEST, "Insufficient balance");
 
     private final HttpStatus httpStatus;
     private final String message;

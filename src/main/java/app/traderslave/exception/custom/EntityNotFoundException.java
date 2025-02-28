@@ -11,6 +11,7 @@ public class EntityNotFoundException extends BaseCustomException {
     public EntityNotFoundException(String className) {
         super(ExceptionEnum.ENTITY_NOT_FOUND);
         this.className = className;
+        //todo className non viene settato correttamente è un bug piccolo che dovrà essere risolto
     }
 
     @Override

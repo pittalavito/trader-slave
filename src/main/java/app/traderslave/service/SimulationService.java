@@ -23,7 +23,7 @@ public class SimulationService {
 
     public Simulation findByIdOrError(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Simulation.class.getSimpleName()));
+                .orElseThrow(() -> new EntityNotFoundException("Simulation"));
     }
 
 }

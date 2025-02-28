@@ -9,11 +9,12 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+@Data
 @SuperBuilder
 @Entity
+@NoArgsConstructor
 @Table(name = "SIMULATION")
+@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Simulation extends BasePersistentModel {
 

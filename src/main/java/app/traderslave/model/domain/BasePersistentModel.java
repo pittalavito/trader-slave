@@ -2,14 +2,14 @@ package app.traderslave.model.domain;
 
 import app.traderslave.utility.SqlColumnDefinition;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
-@Setter
-@Getter
+@Data
 @SuperBuilder
+@NoArgsConstructor
 @MappedSuperclass
 public abstract class BasePersistentModel {
 
