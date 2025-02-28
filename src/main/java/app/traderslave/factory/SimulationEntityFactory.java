@@ -5,6 +5,7 @@ import app.traderslave.model.enums.Currency;
 import app.traderslave.model.enums.CurrencyPair;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @UtilityClass
@@ -21,5 +22,12 @@ public class SimulationEntityFactory {
                 .uid(UUID.randomUUID().toString())
                 .version(0)
                 .build();
+    }
+
+    public Simulation updateBalance(Simulation simulation, BigDecimal amountOfTrade) {
+        simulation.setBalance(simulation.getBalance().subtract(amountOfTrade));
+        simulation.setVersion(simulation.getVersion() + 1);
+        simulation.setLastModificationDate(LocalDateTime.now());
+        return simulation;
     }
 }

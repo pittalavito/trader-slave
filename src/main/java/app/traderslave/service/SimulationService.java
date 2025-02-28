@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 
 @Slf4j
 @Service
@@ -19,6 +20,11 @@ public class SimulationService {
 
     public Simulation create(CurrencyPair currencyPair) {
         return repository.save(SimulationEntityFactory.create(currencyPair));
+    }
+
+    public BigDecimal updateBalance(Simulation simulation, BigDecimal amountOfTrade) {
+        repository.save(SimulationEntityFactory.updateBalance(simulation, amountOfTrade));
+        return simulation.getBalance();
     }
 
     public Simulation findByIdOrError(Long id) {
