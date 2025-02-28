@@ -20,5 +20,7 @@ public class CreateSimulationOrderReqDto {
     @Size(min = 10)
     private BigDecimal amountOfTrade;
 
+    private boolean maxAmountOfTrade = amountOfTrade == null;
+
     private LocalDateTime time = TimeUtils.now();
 }

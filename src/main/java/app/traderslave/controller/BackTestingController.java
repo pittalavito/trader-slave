@@ -1,6 +1,7 @@
 package app.traderslave.controller;
 
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
+import app.traderslave.controller.dto.CreateSimulationOrderResDto;
 import app.traderslave.controller.dto.PostSimulationResDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.service.BackTestingService;
@@ -43,7 +44,7 @@ public class BackTestingController {
     }
 
     @PostMapping(path = URI_ORDER)
-    public Mono<ResponseEntity<Void>> createOrder(@RequestBody CreateSimulationOrderReqDto reqDto) {
+    public Mono<ResponseEntity<CreateSimulationOrderResDto>> createOrder(@RequestBody CreateSimulationOrderReqDto reqDto) {
         return service.createOrder(reqDto)
                 .map(ResponseEntity::ok);
     }

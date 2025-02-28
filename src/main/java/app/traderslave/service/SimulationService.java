@@ -2,6 +2,7 @@ package app.traderslave.service;
 
 import app.traderslave.exception.custom.EntityNotFoundException;
 import app.traderslave.factory.SimulationEntityFactory;
+import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.repository.SimulationRepository;
 import app.traderslave.model.domain.Simulation;
@@ -22,8 +23,8 @@ public class SimulationService {
         return repository.save(SimulationEntityFactory.create(currencyPair));
     }
 
-    public BigDecimal updateBalance(Simulation simulation, BigDecimal amountOfTrade) {
-        repository.save(SimulationEntityFactory.updateBalance(simulation, amountOfTrade));
+    public BigDecimal updateBalance(Simulation simulation, SimulationOrder order) {
+        repository.save(SimulationEntityFactory.updateBalance(simulation, order));
         return simulation.getBalance();
     }
 

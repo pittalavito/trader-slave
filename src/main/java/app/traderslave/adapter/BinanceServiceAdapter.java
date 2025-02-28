@@ -11,9 +11,7 @@ public class BinanceServiceAdapter {
     public CandleReqDto adapt(CurrencyPair currencyPair, LocalDateTime time) {
         CandleReqDto reqDto = new CandleReqDto();
         reqDto.setCurrencyPair(currencyPair);
-        if (time != null) {
-            reqDto.setTime(time);
-        }
+        reqDto.setTime(time);
         return reqDto;
     }
 

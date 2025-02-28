@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import java.math.BigDecimal;
 
 @Slf4j
 @Service
@@ -31,15 +32,17 @@ public class BackTestingService {
     }
 
     @Transactional
-    public Mono<Void> createOrder(CreateSimulationOrderReqDto reqDto) {
+    public Mono<CreateSimulationOrderResDto> createOrder(CreateSimulationOrderReqDto reqDto) {
         TimeChecker.checkStartDate(reqDto.getTime());
         Simulation simulation = simulationService.findByIdOrError(reqDto.getSimulationId());
         BackTestingServiceChecker.checkBalance(simulation, reqDto);
 
         return binanceService.findCandle(BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), reqDto.getTime()))
-                .map(candle -> simulationOrderService.create(reqDto.getSimulationId(), reqDto.getOrderType(), reqDto.getAmountOfTrade(), candle.getClose(), candle.getCloseTime()))
-                .map(order -> simulationService.updateBalance(simulation, reqDto.getAmountOfTrade()))
-                .then();
+                .flatMap(candle -> {
+                    SimulationOrder order = simulationOrderService.create(simulation, reqDto, candle);
+                    BigDecimal balance = simulationService.updateBalance(simulation, order);
+                    return BackTestingServiceAssembler.toModel(order, balance);
+                });
     }
 
     public Mono<Object> closeOrder() {

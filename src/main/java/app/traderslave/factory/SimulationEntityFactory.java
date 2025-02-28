@@ -1,6 +1,7 @@
 package app.traderslave.factory;
 
 import app.traderslave.model.domain.Simulation;
+import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.Currency;
 import app.traderslave.model.enums.CurrencyPair;
 import lombok.experimental.UtilityClass;
@@ -24,8 +25,8 @@ public class SimulationEntityFactory {
                 .build();
     }
 
-    public Simulation updateBalance(Simulation simulation, BigDecimal amountOfTrade) {
-        simulation.setBalance(simulation.getBalance().subtract(amountOfTrade));
+    public Simulation updateBalance(Simulation simulation, SimulationOrder order) {
+        simulation.setBalance(simulation.getBalance().subtract(order.getAmountOfTrade()));
         simulation.setVersion(simulation.getVersion() + 1);
         simulation.setLastModificationDate(LocalDateTime.now());
         return simulation;
