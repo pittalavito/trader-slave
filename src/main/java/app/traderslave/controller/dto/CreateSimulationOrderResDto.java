@@ -16,4 +16,6 @@ public class CreateSimulationOrderResDto {
     private BigDecimal openPrice;
     private LocalDateTime openTime;
     private BigDecimal balance;
+    private BigDecimal liquidationPrice;
+    private Integer leverage;
 }

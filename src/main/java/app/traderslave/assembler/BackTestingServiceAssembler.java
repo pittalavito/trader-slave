@@ -6,7 +6,6 @@ import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import lombok.experimental.UtilityClass;
 import reactor.core.publisher.Mono;
-
 import java.math.BigDecimal;
 
 @UtilityClass
@@ -32,6 +31,8 @@ public class BackTestingServiceAssembler {
                         .openPrice(simulationOrder.getOpenPrice())
                         .openTime(simulationOrder.getOpenTime())
                         .balance(balance)
+                        .liquidationPrice(simulationOrder.getLiquidationPrice())
+                        .leverage(simulationOrder.getLeverage())
                         .build()
         );
     }

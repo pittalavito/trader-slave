@@ -51,6 +51,9 @@ public class SimulationOrder extends BasePersistentModel {
     @Column(columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
     private LocalDateTime closeTime;
 
-    //todo è un json per informaioni aggiuntive
-    private String extraInfo;
+    @Column(nullable = false, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
+    private BigDecimal liquidationPrice;
+
+    @Column(nullable = false)
+    private Integer leverage;
 }

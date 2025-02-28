@@ -4,8 +4,10 @@ import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
+import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.enums.SOrderStatus;
 import lombok.experimental.UtilityClass;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @UtilityClass
@@ -14,14 +16,25 @@ public class SimulationOrderEntityFactory {
     public SimulationOrder create(Simulation simulation, CreateSimulationOrderReqDto dto, CandleResDto candle) {
         return SimulationOrder.builder()
                 .simulationId(dto.getSimulationId())
-                .amountOfTrade(dto.isMaxAmountOfTrade() ? simulation.getBalance() : dto.getAmountOfTrade())
+                .amountOfTrade(dto.getAmountOfTrade() == null ? simulation.getBalance() : dto.getAmountOfTrade())
                 .openPrice(candle.getClose())
                 .openTime(candle.getCloseTime())
                 .status(SOrderStatus.OPEN)
                 .type(dto.getOrderType())
                 .uid(UUID.randomUUID().toString())
                 .version(0)
-                .extraInfo(null)
+                .liquidationPrice(calculateLiquidationPrice(candle.getClose(), dto.getOrderType(), dto.getLeverage()))
+                .leverage(dto.getLeverage())
                 .build();
+    }
+
+    private BigDecimal calculateLiquidationPrice(BigDecimal currentPrice, OrderType type, int leverage) {
+        BigDecimal percentage;
+        if (OrderType.BUY.equals(type)) {
+            percentage = BigDecimal.valueOf(1 - 0.95/leverage);
+        } else {
+            percentage = BigDecimal.valueOf(1 + 0.95/leverage);
+        }
+        return currentPrice.multiply(percentage);
     }
 }
