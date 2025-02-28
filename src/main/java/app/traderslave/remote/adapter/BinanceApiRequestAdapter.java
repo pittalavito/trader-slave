@@ -1,5 +1,6 @@
 package app.traderslave.remote.adapter;
 
+import app.traderslave.controller.dto.CandleReqDto;
 import app.traderslave.controller.dto.CandlesReqDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
@@ -24,11 +25,11 @@ public class BinanceApiRequestAdapter {
         );
     }
 
-    public BinanceGetKlinesRequestDto adapt(CurrencyPair currencyPair, LocalDateTime time) {
+    public BinanceGetKlinesRequestDto adapt(CandleReqDto dto) {
         return adapt(
-                currencyPair,
-                TimeUtils.getOrDefaultValueMinusSecs(time, TimeUtils.now(), 1),
-                TimeUtils.getOrDefaultValue(time, TimeUtils.now()),
+                dto.getCurrencyPair(),
+                dto.getTime().minusSeconds(1),
+                dto.getTime(),
                 TimeFrame.ONE_SECOND,
                 1
         );

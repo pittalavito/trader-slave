@@ -3,10 +3,10 @@ package app.traderslave.service;
 import app.traderslave.assembler.BinanceServiceAssembler;
 import app.traderslave.checker.BinanceServiceChecker;
 import app.traderslave.checker.TimeChecker;
+import app.traderslave.controller.dto.CandleReqDto;
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CandlesReqDto;
 import app.traderslave.controller.dto.CandlesResDto;
-import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.remote.adapter.BinanceApiRequestAdapter;
 import app.traderslave.remote.adapter.BinanceApiResponseAdapter;
 import app.traderslave.remote.api.BinanceApi;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,10 +28,10 @@ public class BinanceService {
 
     private final BinanceApi binanceApi;
 
-    public Mono<CandleResDto> findCandle(CurrencyPair currencyPair, LocalDateTime time) {
-        TimeChecker.checkStartDate(time);
+    public Mono<CandleResDto> findCandle(CandleReqDto dto) {
+        TimeChecker.checkStartDate(dto.getTime());
 
-        return binanceApi.getKlines(BinanceApiRequestAdapter.adapt(currencyPair, time))
+        return binanceApi.getKlines(BinanceApiRequestAdapter.adapt(dto))
                 .flatMap(clientRes -> Mono.just(BinanceApiResponseAdapter.adapt(clientRes).get(0)));
     }
 
