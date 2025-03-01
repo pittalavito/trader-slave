@@ -6,6 +6,8 @@ import app.traderslave.checker.TimeChecker;
 import app.traderslave.controller.dto.*;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
+import app.traderslave.factory.ReportOrderFactory;
+import app.traderslave.model.domain.ReportOrder;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.SOrderStatus;
@@ -46,7 +48,8 @@ public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulation
     }
 
     private CloseSimulationOrderResDto closeOrderAndUpdateBalance(SimulationOrder order, CandlesResDto candles, Simulation simulation) {
-        SimulationOrder updateOrder = simulationOrderService.close(order, candles);
+        ReportOrder report = ReportOrderFactory.create(order, candles);
+        SimulationOrder updateOrder = simulationOrderService.close(order, report);
         Simulation updatedSimulation = simulationService.addBalance(simulation, updateOrder);
         return BackTestingServiceAssembler.toModel(updateOrder, updatedSimulation);
     }

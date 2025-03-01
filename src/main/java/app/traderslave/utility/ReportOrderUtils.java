@@ -9,6 +9,16 @@ import java.math.BigDecimal;
 @UtilityClass
 public class ReportOrderUtils {
 
+    public BigDecimal calculateLiquidationPrice(BigDecimal currentPrice, OrderType type, int leverage) {
+        BigDecimal percentage;
+        if (OrderType.BUY.equals(type)) {
+            percentage = BigDecimal.valueOf(1 - 0.95/leverage);
+        } else {
+            percentage = BigDecimal.valueOf(1 + 0.95/leverage);
+        }
+        return currentPrice.multiply(percentage);
+    }
+
     public boolean isLiquidated(SimulationOrder order, CandleResDto candle) {
         if (OrderType.BUY == order.getType()) {
             return order.getLiquidationPrice().compareTo(candle.getLow()) >= 0;

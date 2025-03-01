@@ -1,11 +1,11 @@
 package app.traderslave.service;
 
 import app.traderslave.controller.dto.CandleResDto;
-import app.traderslave.controller.dto.CandlesResDto;
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.factory.SimulationOrderEntityFactory;
+import app.traderslave.model.domain.ReportOrder;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.SOrderStatus;
@@ -41,8 +41,8 @@ public class SimulationOrderService {
                 .orElseThrow(() -> new CustomException(ExceptionEnum.SIMULATION_ORDER_NOT_FOUND));
     }
 
-    public SimulationOrder close(SimulationOrder order, CandlesResDto candles) {
-        SimulationOrder updateOrder = SimulationOrderEntityFactory.close(order, candles);
-        return repository.save(updateOrder);
+    public SimulationOrder close(SimulationOrder order, ReportOrder report) {
+        return repository.save(SimulationOrderEntityFactory.close(order, report));
     }
+
 }

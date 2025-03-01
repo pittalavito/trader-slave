@@ -1,15 +1,13 @@
 package app.traderslave.factory;
 
 import app.traderslave.controller.dto.CandleResDto;
-import app.traderslave.controller.dto.CandlesResDto;
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
 import app.traderslave.model.domain.ReportOrder;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
-import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.enums.SOrderStatus;
+import app.traderslave.utility.ReportOrderUtils;
 import lombok.experimental.UtilityClass;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,24 +24,12 @@ public class SimulationOrderEntityFactory {
                 .type(dto.getOrderType())
                 .uid(UUID.randomUUID().toString())
                 .version(0)
-                .liquidationPrice(calculateLiquidationPrice(candle.getClose(), dto.getOrderType(), dto.getLeverage()))
+                .liquidationPrice(ReportOrderUtils.calculateLiquidationPrice(candle.getClose(), dto.getOrderType(), dto.getLeverage()))
                 .leverage(dto.getLeverage())
                 .build();
     }
 
-    private BigDecimal calculateLiquidationPrice(BigDecimal currentPrice, OrderType type, int leverage) {
-        BigDecimal percentage;
-        if (OrderType.BUY.equals(type)) {
-            percentage = BigDecimal.valueOf(1 - 0.95/leverage);
-        } else {
-            percentage = BigDecimal.valueOf(1 + 0.95/leverage);
-        }
-        return currentPrice.multiply(percentage);
-    }
-
-    public SimulationOrder close(SimulationOrder order, CandlesResDto candles) {
-        ReportOrder report = ReportOrderFactory.create(order, candles);
-
+    public SimulationOrder close(SimulationOrder order, ReportOrder report) {
         order.setStatus(report.isLiquidated() ? SOrderStatus.LIQUIDATED : SOrderStatus.CLOSE);
         order.setReport(report);
         order.setLastModificationDate(LocalDateTime.now());
