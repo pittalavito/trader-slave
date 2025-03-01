@@ -37,13 +37,26 @@ public class BackTestingController {
                 .map(ResponseEntity::ok);
     }
 
+    //@GetMapping(path = URI_SIMULATION_ID)
+    //public Mono<ResponseEntity<GetSimulationResDto>> getSimulation(@PathVariable Long id, @RequestParam(required = false) LocalDateTime time) {
+    //    return service.getSimulation(id, time)
+    //            .map(ResponseEntity::ok);
+    //
+    //}
+    //
+    //@PostMapping(path = URI_SIMULATION_ID)
+    //public Mono<ResponseEntity<GetSimulationResDto>> closeSimulation(@PathVariable Long id, @RequestParam(required = false) LocalDateTime time, @RequestParam(defaultValue = "true") boolean delete) {
+    //    return service.closeSimulation(id, time, delete)
+    //            .map(ResponseEntity::ok);
+    //}
+
     /**
      * Creates a new order for the specified simulation.
      *
      * @param reqDto the request DTO containing the details of the order to be created
      *               - `simulationId`: The ID of the simulation for which the order is created. This field is mandatory.
      *               - `orderType`: The type of the order (e.g., BUY, SELL). This field is mandatory.
-     *               - `amountOfTrade`: The amount of trade for the order. This field must have a minimum size of 10.
+     *               - `amountOfTrade`: The amount of trade for the order. This field must be positive. If not provided, it defaults total available balance.
      *               - `time`: The time at which the order is created. Defaults to the current time if not provided.
      *               - `leverage`: The leverage for the order. This field must be between 1 and 100.
      * @return a Mono emitting a ResponseEntity containing the SimulationOrderResDto with the order details
@@ -65,10 +78,7 @@ public class BackTestingController {
      * @param id the ID of the order to be closed
      * @param reqDto the request DTO containing the details of the order to be closed
      *               - `simulationId`: The ID of the simulation for which the order is closed. This field is mandatory.
-     *               - `orderType`: The type of the order (e.g., BUY, SELL). This field is mandatory.
-     *               - `amountOfTrade`: The amount of trade for the order. This field must have a minimum size of 10. If not provided, it defaults total available balance.
      *               - `time`: The time at which the order is closed. Defaults to the current time if not provided.
-     *               - `leverage`: The leverage for the order. This field must be between 1 and 100. Defaults 1
      * @return a Mono emitting a ResponseEntity containing the CloseSimulationOrderResDto with the closed order details
      * @throws IllegalArgumentException if the `simulationId or OrderType` is null or invalid
      * @throws StartDateIsAfterNowException if time date is after now
@@ -78,23 +88,8 @@ public class BackTestingController {
      * @throws BinanceRemoteException if remote service throw error
      */
     @PostMapping(path = URI_ORDER_ID)
-    public Mono<ResponseEntity<CloseSimulationOrderResDto>> closeOrder(@PathVariable Long id, @RequestBody CloseSimulationOrderReqDto reqDto) {
+    public Mono<ResponseEntity<SimulationOrderResDto>> closeOrder(@PathVariable Long id, @RequestBody CloseSimulationOrderReqDto reqDto) {
         return service.closeOrder(id, reqDto)
                 .map(ResponseEntity::ok);
     }
-
-    @PostMapping(path = URI_SIMULATION_ID)
-    public Object closeSimulation(@PathVariable Long id, @RequestParam(defaultValue = "true") boolean delete) {
-        //todo implement
-        return null;
-    }
-
-    //todo capire se implementare
-    //@GetMapping(path = URI_SIMULATION_ID)
-    //public Mono<ResponseEntity<GetSimulationResDto>> getSimulation(@PathVariable Long id, @RequestParam(required = false) LocalDateTime time) {
-    //    time = time == null ? TimeUtils.now() : time;
-    //    return service.getSimulationStatus(id, time)
-    //            .map(ResponseEntity::ok);
-    //    return null;
-    //}
 }
