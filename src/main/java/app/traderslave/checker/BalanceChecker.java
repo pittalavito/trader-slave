@@ -8,7 +8,7 @@ import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
 
 @UtilityClass
-public class BackTestingServiceChecker {
+public class BalanceChecker {
 
     public void checkBalance(Simulation simulation, CreateSimulationOrderReqDto reqDto) {
         if (isBalanceZero(simulation) || isExcessiveAmount(simulation, reqDto)) {

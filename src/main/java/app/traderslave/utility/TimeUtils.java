@@ -35,4 +35,7 @@ public class TimeUtils {
         return time == null ? defaultValue.minusSeconds(1) : time.minusSeconds(seconds);
     }
 
+    public long calculateDiffInSecond(@NotNull LocalDateTime startDate, @NotNull LocalDateTime endDate) {
+        return (convertToMillisecond(endDate) - convertToMillisecond(startDate)) / 1000;
+    }
 }

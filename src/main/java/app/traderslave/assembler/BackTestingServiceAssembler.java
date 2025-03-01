@@ -1,29 +1,27 @@
 package app.traderslave.assembler;
 
-import app.traderslave.controller.dto.CreateSimulationOrderResDto;
+import app.traderslave.controller.dto.CloseSimulationOrderResDto;
+import app.traderslave.controller.dto.SimulationOrderResDto;
 import app.traderslave.controller.dto.PostSimulationResDto;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import lombok.experimental.UtilityClass;
-import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @UtilityClass
 public class BackTestingServiceAssembler {
 
-    public Mono<PostSimulationResDto> toModel(Simulation simulation) {
-        return Mono.just(
-                PostSimulationResDto.builder()
+    public PostSimulationResDto toModel(Simulation simulation) {
+        return PostSimulationResDto.builder()
                         .simulationId(simulation.getId())
                         .balance(simulation.getBalance())
                         .currency(simulation.getCurrency())
-                        .build()
-        );
+                        .build();
     }
 
-    public Mono<CreateSimulationOrderResDto> toModel(SimulationOrder simulationOrder, BigDecimal balance) {
-        return Mono.just(
-                CreateSimulationOrderResDto.builder()
+    public SimulationOrderResDto toModel(SimulationOrder simulationOrder, BigDecimal balance) {
+        return SimulationOrderResDto.builder()
                         .id(simulationOrder.getId())
                         .simulationId(simulationOrder.getSimulationId())
                         .orderType(simulationOrder.getType())
@@ -33,7 +31,28 @@ public class BackTestingServiceAssembler {
                         .balance(balance)
                         .liquidationPrice(simulationOrder.getLiquidationPrice())
                         .leverage(simulationOrder.getLeverage())
-                        .build()
-        );
+                        .status(simulationOrder.getStatus())
+                        .build();
+    }
+
+    public CloseSimulationOrderResDto toModel(SimulationOrder simulationOrder, Simulation simulation) {
+        return CloseSimulationOrderResDto.builder()
+                .amountOfTrade(simulationOrder.getAmountOfTrade())
+                .simulationId(simulation.getId())
+                .orderId(simulationOrder.getId())
+                .balance(simulation.getBalance())
+                .status(simulationOrder.getStatus())
+                .openPrice(simulationOrder.getOpenPrice())
+                .closePrice(simulationOrder.getReport().getClosePrice())
+                .openTime(simulationOrder.getOpenTime())
+                .closeTime(LocalDateTime.parse(simulationOrder.getReport().getCloseTime()))
+                .leverage(simulationOrder.getLeverage())
+                .profitLoss(simulationOrder.getReport().getProfitLoss())
+                .profitLossMinusFees(simulationOrder.getReport().getProfitLossMinusFees())
+                .percentageChange(simulationOrder.getReport().getPercentageChange())
+                .maxUnrealizedProfitDuringTrade(simulationOrder.getReport().getMaxUnrealizedProfitDuringTrade())
+                .maxUnrealizedLossDuringTrade(simulationOrder.getReport().getMaxUnrealizedLossDuringTrade())
+                .durationOfTradeInSeconds(simulationOrder.getReport().getDurationOfTradeInSeconds())
+                .build();
     }
 }

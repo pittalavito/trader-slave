@@ -1,8 +1,6 @@
 package app.traderslave.controller;
 
-import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
-import app.traderslave.controller.dto.CreateSimulationOrderResDto;
-import app.traderslave.controller.dto.PostSimulationResDto;
+import app.traderslave.controller.dto.*;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.service.BackTestingService;
 import lombok.RequiredArgsConstructor;
@@ -23,18 +21,22 @@ public class BackTestingController {
 
     private final BackTestingService service;
 
-    /**
-     * Create a simulation
-     */
     @PostMapping(path = URI_SIMULATION)
-    public Mono<ResponseEntity<PostSimulationResDto>> postSimulation(@RequestParam CurrencyPair currencyPair) {
+    public Mono<ResponseEntity<PostSimulationResDto>> createSimulation(@RequestParam CurrencyPair currencyPair) {
         return service.createSimulation(currencyPair)
                 .map(ResponseEntity::ok);
     }
 
-    @GetMapping(path = URI_SIMULATION_ID)
-    public void getSimulation(@PathVariable Long id) {
-        //todo implemen
+    @PostMapping(path = URI_ORDER)
+    public Mono<ResponseEntity<SimulationOrderResDto>> createOrder(@RequestBody CreateSimulationOrderReqDto reqDto) {
+        return service.createOrder(reqDto)
+                .map(ResponseEntity::ok);
+    }
+
+    @PostMapping(path = URI_ORDER_ID)
+    public Mono<ResponseEntity<CloseSimulationOrderResDto>> closeOrder(@PathVariable Long id, @RequestBody CloseSimulationOrderReqDto reqDto) {
+        return service.closeOrder(id, reqDto)
+                .map(ResponseEntity::ok);
     }
 
     @PostMapping(path = URI_SIMULATION_ID)
@@ -43,15 +45,12 @@ public class BackTestingController {
         return null;
     }
 
-    @PostMapping(path = URI_ORDER)
-    public Mono<ResponseEntity<CreateSimulationOrderResDto>> createOrder(@RequestBody CreateSimulationOrderReqDto reqDto) {
-        return service.createOrder(reqDto)
-                .map(ResponseEntity::ok);
-    }
-
-    @PostMapping(path = URI_ORDER_ID)
-    public void closeOrder(@PathVariable Long id, @RequestBody Object order) {
-        //todo implement
-    }
-
+    //todo capire se implementare
+    //@GetMapping(path = URI_SIMULATION_ID)
+    //public Mono<ResponseEntity<GetSimulationResDto>> getSimulation(@PathVariable Long id, @RequestParam(required = false) LocalDateTime time) {
+    //    time = time == null ? TimeUtils.now() : time;
+    //    return service.getSimulationStatus(id, time)
+    //            .map(ResponseEntity::ok);
+    //    return null;
+    //}
 }

@@ -1,5 +1,6 @@
 package app.traderslave.model.domain;
 
+import app.traderslave.converter.ReportOrderConverter;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.enums.SOrderStatus;
 import app.traderslave.utility.SqlColumnDefinition;
@@ -39,21 +40,16 @@ public class SimulationOrder extends BasePersistentModel {
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
     private BigDecimal openPrice;
 
-    /**
-     * Price vs currency simulation
-     */
-    @Column(columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
-    private BigDecimal closePrice;
-
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
     private LocalDateTime openTime;
-
-    @Column(columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
-    private LocalDateTime closeTime;
 
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
     private BigDecimal liquidationPrice;
 
     @Column(nullable = false)
     private Integer leverage;
+
+    @Lob
+    @Convert(converter = ReportOrderConverter.class)
+    private ReportOrder report;
 }

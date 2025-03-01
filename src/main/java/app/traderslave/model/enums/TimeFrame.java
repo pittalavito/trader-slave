@@ -2,7 +2,6 @@ package app.traderslave.model.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
@@ -24,11 +23,4 @@ public enum TimeFrame {
     @Getter
     private final String code;
     private final Long millisecond;
-
-    public static TimeFrame fromCode(String code) {
-        return Arrays.stream(TimeFrame.values())
-                .filter(timeFrame -> timeFrame.code.equals(code))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid TimeFrame code: " + code));
-    }
 }

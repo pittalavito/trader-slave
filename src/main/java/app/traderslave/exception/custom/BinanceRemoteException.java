@@ -16,6 +16,7 @@ public class BinanceRemoteException extends BaseCustomException {
 
     @Override
     protected ExceptionResDto buildCustomResponseDto() {
+        //todo da rivedere
         ExceptionResDto exResponseDto = new ExceptionResDto();
         exResponseDto.setHttpStatus(ExceptionEnum.BINANCE_REMOTE.getHttpStatus());
         exResponseDto.setMessage(url + " " + message);

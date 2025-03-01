@@ -5,6 +5,7 @@ import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.utility.SqlColumnDefinition;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
@@ -26,6 +27,7 @@ public class Simulation extends BasePersistentModel {
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.VARCHAR_20)
     private Currency currency;
 
+    @Positive
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
     private BigDecimal balance;
 }
