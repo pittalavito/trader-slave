@@ -12,14 +12,11 @@ import java.util.UUID;
 @UtilityClass
 public class SimulationEntityFactory {
 
-    private final BigDecimal DEFAULT_BALANCE = BigDecimal.valueOf(100);
-    private final Currency DEFAULT_CURRENCY = Currency.USDT;
-
     public Simulation create(CurrencyPair currencyPair) {
         return Simulation.builder()
                 .currencyPair(currencyPair)
-                .currency(DEFAULT_CURRENCY)
-                .balance(DEFAULT_BALANCE)
+                .currency(currencyPair.getDenCurrency())
+                .balance(currencyPair.getDenCurrency().getDefaultCapital())
                 .uid(UUID.randomUUID().toString())
                 .version(0)
                 .build();

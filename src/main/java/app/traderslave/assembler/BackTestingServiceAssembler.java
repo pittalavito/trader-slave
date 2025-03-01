@@ -1,6 +1,5 @@
 package app.traderslave.assembler;
 
-import app.traderslave.controller.dto.CloseSimulationOrderResDto;
 import app.traderslave.controller.dto.SimulationOrderResDto;
 import app.traderslave.controller.dto.PostSimulationResDto;
 import app.traderslave.model.domain.Simulation;
@@ -22,7 +21,7 @@ public class BackTestingServiceAssembler {
 
     public SimulationOrderResDto toModel(SimulationOrder simulationOrder, BigDecimal balance) {
         return SimulationOrderResDto.builder()
-                        .id(simulationOrder.getId())
+                        .simulationId(simulationOrder.getId())
                         .simulationId(simulationOrder.getSimulationId())
                         .orderType(simulationOrder.getType())
                         .amountOfTrade(simulationOrder.getAmountOfTrade())
@@ -35,8 +34,9 @@ public class BackTestingServiceAssembler {
                         .build();
     }
 
-    public CloseSimulationOrderResDto toModel(SimulationOrder simulationOrder, Simulation simulation) {
-        return CloseSimulationOrderResDto.builder()
+    public SimulationOrderResDto toModel(SimulationOrder simulationOrder, Simulation simulation) {
+        return SimulationOrderResDto.builder()
+                .orderType(simulationOrder.getType())
                 .amountOfTrade(simulationOrder.getAmountOfTrade())
                 .simulationId(simulation.getId())
                 .orderId(simulationOrder.getId())
@@ -53,6 +53,7 @@ public class BackTestingServiceAssembler {
                 .maxUnrealizedProfitDuringTrade(simulationOrder.getReport().getMaxUnrealizedProfitDuringTrade())
                 .maxUnrealizedLossDuringTrade(simulationOrder.getReport().getMaxUnrealizedLossDuringTrade())
                 .durationOfTradeInSeconds(simulationOrder.getReport().getDurationOfTradeInSeconds())
+                .liquidationPrice(simulationOrder.getLiquidationPrice())
                 .build();
     }
 }

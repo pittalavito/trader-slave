@@ -16,7 +16,7 @@ import app.traderslave.service.SimulationOrderService;
 import app.traderslave.service.SimulationService;
 import reactor.core.publisher.Mono;
 
-public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulationOrderReqDto, CloseSimulationOrderResDto> {
+public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulationOrderReqDto, SimulationOrderResDto> {
 
     private final Long orderId;
     private final BinanceService binanceService;
@@ -32,7 +32,7 @@ public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulation
     }
 
     @Override
-    public Mono<CloseSimulationOrderResDto> execute() {
+    public Mono<SimulationOrderResDto> execute() {
         TimeChecker.checkStartDate(requestDto.getTime());
         Simulation simulation = simulationService.findByIdOrError(requestDto.getSimulationId());
         SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(orderId, requestDto.getSimulationId());
@@ -47,7 +47,7 @@ public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulation
                 .map(candles -> closeOrderAndUpdateBalance(order, candles, simulation));
     }
 
-    private CloseSimulationOrderResDto closeOrderAndUpdateBalance(SimulationOrder order, CandlesResDto candles, Simulation simulation) {
+    private SimulationOrderResDto closeOrderAndUpdateBalance(SimulationOrder order, CandlesResDto candles, Simulation simulation) {
         ReportOrder report = ReportOrderFactory.create(order, candles);
         SimulationOrder updateOrder = simulationOrderService.close(order, report);
         Simulation updatedSimulation = simulationService.addBalance(simulation, updateOrder);

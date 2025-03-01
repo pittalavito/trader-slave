@@ -32,7 +32,7 @@ public class DataSearchController {
      * @throws BinanceRemoteException if remote service throw error
      */
     @GetMapping(path = URL_CANDLE)
-    public Mono<ResponseEntity<CandleResDto>> getCandle(@ModelAttribute CandleReqDto requestDto) {
+    public Mono<ResponseEntity<CandleResDto>> getCandle(@ModelAttribute @Validated CandleReqDto requestDto) {
         return binanceService.findCandle(requestDto)
                 .map(ResponseEntity::ok);
     }
