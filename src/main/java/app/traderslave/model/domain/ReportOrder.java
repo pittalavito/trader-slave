@@ -1,6 +1,6 @@
 package app.traderslave.model.domain;
 
-import jakarta.persistence.Transient;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +23,6 @@ public class ReportOrder {
     private BigDecimal maxUnrealizedProfitDuringTrade;
     private BigDecimal maxUnrealizedLossDuringTrade;
     private Long durationOfTradeInSeconds;
-    @Transient
+    @JsonIgnore
     private boolean liquidated;
 }
