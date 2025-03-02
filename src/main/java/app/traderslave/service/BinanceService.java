@@ -29,7 +29,7 @@ public class BinanceService {
     private final BinanceApi binanceApi;
 
     public Mono<CandleResDto> findCandle(CandleReqDto dto) {
-        if (!dto.isRealTimeCandle()) {
+        if (!dto.isRealTimeRequest()) {
             TimeChecker.checkStartDate(dto.getTime());
         }
 
@@ -40,7 +40,7 @@ public class BinanceService {
     }
 
     public Mono<CandlesResDto> findCandles(CandlesReqDto dto) {
-        if (!dto.isRealTimeCandles()) {
+        if (!dto.isRealTimeRequest()) {
             BinanceServiceChecker.checkDatesGetKline(dto.getTimeFrame(), dto.getStartDate(), dto.getEndDate(), LIMIT_NUM_CANDLES);
         }
 

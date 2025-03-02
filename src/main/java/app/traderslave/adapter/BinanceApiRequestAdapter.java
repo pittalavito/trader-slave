@@ -19,8 +19,8 @@ public class BinanceApiRequestAdapter {
      * Find candles
      */
     public BinanceGetKlinesRequestDto adapt(CandlesReqDto dto) {
-        LocalDateTime endTime = dto.isRealTimeCandles() ? TimeUtils.now().minusSeconds(2) : dto.getStartDate();
-        LocalDateTime startTime = dto.isRealTimeCandles() ? TimeUtils.calculateStartDate(endTime, dto.getTimeFrame(), dto.getLastNumCandle()) : dto.getStartDate();
+        LocalDateTime endTime = dto.isRealTimeRequest() ? TimeUtils.now().minusSeconds(2) : dto.getStartDate();
+        LocalDateTime startTime = dto.isRealTimeRequest() ? TimeUtils.calculateStartDate(endTime, dto.getTimeFrame(), dto.getLastNumCandle()) : dto.getStartDate();
 
         return adapt(
                 dto.getCurrencyPair(),
@@ -35,7 +35,7 @@ public class BinanceApiRequestAdapter {
      * Find candle
      */
     public BinanceGetKlinesRequestDto adapt(CandleReqDto dto) {
-        LocalDateTime time = dto.isRealTimeCandle() ? TimeUtils.now().minusSeconds(1) : dto.getTime();
+        LocalDateTime time = dto.isRealTimeRequest() ? TimeUtils.now().minusSeconds(1) : dto.getTime();
 
         return adapt(
                 dto.getCurrencyPair(),

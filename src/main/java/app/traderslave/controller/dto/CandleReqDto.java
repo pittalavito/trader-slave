@@ -11,7 +11,7 @@ public class CandleReqDto {
     @NotNull(message = "required")
     private CurrencyPair currencyPair;
 
-    private boolean realTimeCandle = false;
+    private boolean realTimeRequest = false;
 
     private LocalDateTime time;
 }

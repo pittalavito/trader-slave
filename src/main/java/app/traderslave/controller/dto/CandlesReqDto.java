@@ -17,7 +17,7 @@ public class CandlesReqDto {
     @NotNull(message = "required")
     private TimeFrame timeFrame;
 
-    private boolean realTimeCandles = false;
+    private boolean realTimeRequest = false;
 
     @Size(min = 1 , max = BinanceService.LIMIT_NUM_CANDLES, message = "the value must be between 1 and " + BinanceService.LIMIT_NUM_CANDLES)
     private int lastNumCandle = 1000;
