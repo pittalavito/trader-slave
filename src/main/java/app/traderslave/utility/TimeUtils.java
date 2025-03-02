@@ -1,5 +1,6 @@
 package app.traderslave.utility;
 
+import app.traderslave.model.enums.TimeFrame;
 import jakarta.validation.constraints.NotNull;
 import lombok.experimental.UtilityClass;
 import java.time.Instant;
@@ -37,5 +38,11 @@ public class TimeUtils {
 
     public long calculateDiffInSecond(@NotNull LocalDateTime startDate, @NotNull LocalDateTime endDate) {
         return (convertToMillisecond(endDate) - convertToMillisecond(startDate)) / 1000;
+    }
+
+    public LocalDateTime calculateStartDate(@NotNull LocalDateTime endDate, @NotNull TimeFrame timeFrame, long numCandle) {
+        return convertToLocalDateTime(
+                convertToMillisecond(endDate) - (numCandle * timeFrame.getMillisecond())
+        );
     }
 }

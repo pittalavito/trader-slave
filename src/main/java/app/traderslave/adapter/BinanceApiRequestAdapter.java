@@ -13,23 +13,34 @@ import java.time.LocalDateTime;
 @UtilityClass
 public class BinanceApiRequestAdapter {
 
-    public final int LIMIT_GET_KLINE = 1000;
+    private final int LIMIT_GET_KLINE = 1000;
 
+    /**
+     * Find candles
+     */
     public BinanceGetKlinesRequestDto adapt(CandlesReqDto dto) {
+        LocalDateTime endTime = dto.isRealTimeCandles() ? TimeUtils.now().minusSeconds(2) : dto.getStartDate();
+        LocalDateTime startTime = dto.isRealTimeCandles() ? TimeUtils.calculateStartDate(endTime, dto.getTimeFrame(), dto.getLastNumCandle()) : dto.getStartDate();
+
         return adapt(
                 dto.getCurrencyPair(),
-                dto.getStartDate(),
-                dto.getEndDate(),
+                startTime,
+                endTime,
                 dto.getTimeFrame(),
                 LIMIT_GET_KLINE
         );
     }
 
+    /**
+     * Find candle
+     */
     public BinanceGetKlinesRequestDto adapt(CandleReqDto dto) {
+        LocalDateTime time = dto.isRealTimeCandle() ? TimeUtils.now().minusSeconds(1) : dto.getTime();
+
         return adapt(
                 dto.getCurrencyPair(),
-                dto.getTime().minusSeconds(1),
-                dto.getTime(),
+                time.minusSeconds(2),
+                time,
                 TimeFrame.ONE_SECOND,
                 1
         );
