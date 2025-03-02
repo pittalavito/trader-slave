@@ -9,5 +9,5 @@ import lombok.Data;
 public class CreateSimulationReqDto {
     @NotNull(message = "required")
     private CurrencyPair currencyPair;
-    private Currency currency;
+    private Currency currency = Currency.USD;
 }
