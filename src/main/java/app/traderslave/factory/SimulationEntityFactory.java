@@ -1,9 +1,9 @@
 package app.traderslave.factory;
 
+import app.traderslave.controller.dto.CreateSimulationReqDto;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.Currency;
-import app.traderslave.model.enums.CurrencyPair;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,11 +12,13 @@ import java.util.UUID;
 @UtilityClass
 public class SimulationEntityFactory {
 
-    public Simulation create(CurrencyPair currencyPair) {
+    public Simulation create(CreateSimulationReqDto dto) {
+        Currency currency = dto.getCurrency() == null ? Currency.USD : dto.getCurrency();
+
         return Simulation.builder()
-                .currencyPair(currencyPair)
-                .currency(currencyPair.getDenCurrency())
-                .balance(currencyPair.getDenCurrency().getDefaultCapital())
+                .currencyPair(dto.getCurrencyPair())
+                .currency(currency)
+                .balance(currency.getDefaultCapital())
                 .uid(UUID.randomUUID().toString())
                 .version(0)
                 .build();

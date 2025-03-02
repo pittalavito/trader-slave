@@ -21,8 +21,8 @@ public class BackTestingService {
     private final SimulationOrderService simulationOrderService;
 
     @Transactional
-    public Mono<PostSimulationResDto> createSimulation(CurrencyPair currencyPair) {
-        CreateSimulationCommand command = new CreateSimulationCommand(currencyPair, simulationService);
+    public Mono<PostSimulationResDto> createSimulation(CreateSimulationReqDto dto) {
+        CreateSimulationCommand command = new CreateSimulationCommand(dto, simulationService);
         return command.execute();
     }
 

@@ -1,10 +1,10 @@
 package app.traderslave.service;
 
+import app.traderslave.controller.dto.CreateSimulationReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.factory.SimulationEntityFactory;
 import app.traderslave.model.domain.SimulationOrder;
-import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.repository.SimulationRepository;
 import app.traderslave.model.domain.Simulation;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,8 @@ public class SimulationService {
 
     private final SimulationRepository repository;
 
-    public Simulation create(CurrencyPair currencyPair) {
-        return repository.save(SimulationEntityFactory.create(currencyPair));
+    public Simulation create(CreateSimulationReqDto dto) {
+        return repository.save(SimulationEntityFactory.create(dto));
     }
 
     public Simulation subtractBalance(Simulation simulation, SimulationOrder order) {

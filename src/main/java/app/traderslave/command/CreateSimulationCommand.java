@@ -1,17 +1,17 @@
 package app.traderslave.command;
 
 import app.traderslave.assembler.BackTestingServiceAssembler;
+import app.traderslave.controller.dto.CreateSimulationReqDto;
 import app.traderslave.controller.dto.PostSimulationResDto;
 import app.traderslave.model.domain.Simulation;
-import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.service.SimulationService;
 import reactor.core.publisher.Mono;
 
-public class CreateSimulationCommand extends BaseMonoCommand<CurrencyPair, PostSimulationResDto> {
+public class CreateSimulationCommand extends BaseMonoCommand<CreateSimulationReqDto, PostSimulationResDto> {
 
     private final SimulationService simulationService;
 
-    public CreateSimulationCommand(CurrencyPair requestDto, SimulationService simulationService) {
+    public CreateSimulationCommand(CreateSimulationReqDto requestDto, SimulationService simulationService) {
         super(requestDto);
         this.simulationService = simulationService;
     }
