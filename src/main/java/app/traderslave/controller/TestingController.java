@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/back-testing")
+@RequestMapping("/testing")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class BackTestingController {
+public class TestingController {
 
     private static final String URI_SIMULATION = "/simulation";
     private static final String URI_SIMULATION_ID = "/simulation/{id}";

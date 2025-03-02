@@ -10,7 +10,7 @@ import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
 
 @UtilityClass
-public class BackTestingChecker {
+public class TestingChecker {
 
     public void checkOrderStatusOpen(SimulationOrder order) {
         if (SOrderStatus.OPEN != order.getStatus()) {

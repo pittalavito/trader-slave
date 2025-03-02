@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @UtilityClass
-public class BackTestingServiceAssembler {
+public class TestingServiceAssembler {
 
     public PostSimulationResDto toModel(Simulation simulation) {
         return PostSimulationResDto.builder()
@@ -21,7 +21,7 @@ public class BackTestingServiceAssembler {
 
     public SimulationOrderResDto toModel(SimulationOrder simulationOrder, BigDecimal balance) {
         return SimulationOrderResDto.builder()
-                        .simulationId(simulationOrder.getId())
+                        .orderId(simulationOrder.getId())
                         .simulationId(simulationOrder.getSimulationId())
                         .orderType(simulationOrder.getType())
                         .amountOfTrade(simulationOrder.getAmountOfTrade())

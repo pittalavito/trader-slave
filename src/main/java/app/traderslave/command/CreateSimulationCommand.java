@@ -1,6 +1,6 @@
 package app.traderslave.command;
 
-import app.traderslave.assembler.BackTestingServiceAssembler;
+import app.traderslave.assembler.TestingServiceAssembler;
 import app.traderslave.controller.dto.CreateSimulationReqDto;
 import app.traderslave.controller.dto.PostSimulationResDto;
 import app.traderslave.model.domain.Simulation;
@@ -23,6 +23,6 @@ public class CreateSimulationCommand extends BaseMonoCommand<CreateSimulationReq
     @Override
     public Mono<PostSimulationResDto> execute() {
         Simulation simulation = simulationService.create(requestDto);
-        return Mono.just(BackTestingServiceAssembler.toModel(simulation));
+        return Mono.just(TestingServiceAssembler.toModel(simulation));
     }
 }

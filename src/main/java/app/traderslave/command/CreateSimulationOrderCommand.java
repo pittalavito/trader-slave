@@ -1,8 +1,8 @@
 package app.traderslave.command;
 
 import app.traderslave.adapter.BinanceServiceAdapter;
-import app.traderslave.assembler.BackTestingServiceAssembler;
-import app.traderslave.checker.BackTestingChecker;
+import app.traderslave.assembler.TestingServiceAssembler;
+import app.traderslave.checker.TestingChecker;
 import app.traderslave.controller.dto.CandleReqDto;
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
@@ -33,9 +33,9 @@ public class CreateSimulationOrderCommand extends BaseMonoCommand<CreateSimulati
 
     @Override
     public Mono<SimulationOrderResDto> execute() {
-        BackTestingChecker.checkAmountOfTrade(requestDto);
+        TestingChecker.checkAmountOfTrade(requestDto);
         Simulation simulation = simulationService.findByIdOrError(requestDto.getSimulationId());
-        BackTestingChecker.checkBalance(simulation, requestDto);
+        TestingChecker.checkBalance(simulation, requestDto);
 
         CandleReqDto candleReqDto = BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), requestDto);
 
@@ -46,6 +46,6 @@ public class CreateSimulationOrderCommand extends BaseMonoCommand<CreateSimulati
     private SimulationOrderResDto createOrderAndUpdateBalance(CandleResDto candle, Simulation simulation) {
         SimulationOrder order = simulationOrderService.create(simulation, requestDto, candle);
         Simulation updatedSimulation = simulationService.subtractBalance(simulation, order);
-        return BackTestingServiceAssembler.toModel(order, updatedSimulation.getBalance());
+        return TestingServiceAssembler.toModel(order, updatedSimulation.getBalance());
     }
 }
