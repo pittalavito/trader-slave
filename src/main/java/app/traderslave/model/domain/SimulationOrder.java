@@ -1,6 +1,5 @@
 package app.traderslave.model.domain;
 
-import app.traderslave.converter.ReportOrderConverter;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.enums.SOrderStatus;
 import app.traderslave.utility.SqlColumnDefinition;
@@ -34,9 +33,6 @@ public class SimulationOrder extends BasePersistentModel {
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.VARCHAR_20)
     private SOrderStatus status;
 
-    /**
-     * Price vs currency simulation
-     */
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
     private BigDecimal openPrice;
 
@@ -49,7 +45,27 @@ public class SimulationOrder extends BasePersistentModel {
     @Column(nullable = false)
     private Integer leverage;
 
-    @Lob
-    @Convert(converter = ReportOrderConverter.class)
-    private ReportOrder report;
+    @Column(columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal closePrice;
+
+    @Column(columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
+    private LocalDateTime closeTime;
+
+    @Column(columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal profitLoss;
+
+    @Column(columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal profitLossMinusFees;
+
+    @Column(columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal percentageChange;
+
+    @Column(name = "MU_PROFIT_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal maxUnrealizedProfitDuringTrade;
+
+    @Column(name = "MU_LOSS_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal maxUnrealizedLossDuringTrade;
+
+    @Column(name = "DU_TRADE_MILL", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private Long durationOfTradeInSeconds;
 }

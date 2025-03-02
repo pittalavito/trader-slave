@@ -5,7 +5,7 @@ import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.factory.SimulationOrderEntityFactory;
-import app.traderslave.model.domain.ReportOrder;
+import app.traderslave.model.report.ReportOrder;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.SOrderStatus;

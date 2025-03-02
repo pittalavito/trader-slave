@@ -29,7 +29,7 @@ public class SimulationEntityFactory {
     }
 
     public Simulation addBalance(Simulation simulation, SimulationOrder order) {
-        BigDecimal amountOfTradePlusProfit = order.getAmountOfTrade().add(order.getReport().getProfitLossMinusFees());
+        BigDecimal amountOfTradePlusProfit = order.getAmountOfTrade().add(order.getProfitLossMinusFees());
 
         simulation.setBalance(simulation.getBalance().add(amountOfTradePlusProfit));
         simulation.setVersion(simulation.getVersion() + 1);

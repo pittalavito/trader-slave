@@ -5,7 +5,7 @@ import app.traderslave.assembler.TestingServiceAssembler;
 import app.traderslave.checker.TestingChecker;
 import app.traderslave.controller.dto.*;
 import app.traderslave.factory.ReportOrderFactory;
-import app.traderslave.model.domain.ReportOrder;
+import app.traderslave.model.report.ReportOrder;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.service.BinanceService;
@@ -46,9 +46,9 @@ public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulation
 
     private SimulationOrderResDto closeOrderAndUpdateBalance(SimulationOrder order, CandlesResDto candles, Simulation simulation) {
         ReportOrder report = ReportOrderFactory.create(order, candles);
-        SimulationOrder updateOrder = simulationOrderService.close(order, report);
-        Simulation updatedSimulation = simulationService.addBalance(simulation, updateOrder);
-        return TestingServiceAssembler.toModel(updateOrder, updatedSimulation);
+        SimulationOrder updatedOrder = simulationOrderService.close(order, report);
+        Simulation updatedSimulation = simulationService.addBalance(simulation, updatedOrder);
+        return TestingServiceAssembler.toModel(updatedOrder, updatedSimulation, report);
     }
 
 }

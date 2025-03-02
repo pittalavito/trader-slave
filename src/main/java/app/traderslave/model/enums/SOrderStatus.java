@@ -5,7 +5,6 @@ package app.traderslave.model.enums;
  */
 public enum SOrderStatus {
     OPEN,
-    CLOSE,
-    LIQUIDATED,
-    ERROR;
+    CLOSED,
+    LIQUIDATED;
 }

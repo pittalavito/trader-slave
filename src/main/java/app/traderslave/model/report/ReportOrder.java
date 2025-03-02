@@ -1,4 +1,4 @@
-package app.traderslave.model.domain;
+package app.traderslave.model.report;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -6,17 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportOrder {
-    /**
-     * Price vs currency simulation
-     */
     private BigDecimal closePrice;
-    private String closeTime;
+    private LocalDateTime closeTime;
     private BigDecimal profitLoss;
     private BigDecimal profitLossMinusFees;
     private BigDecimal percentageChange;

@@ -21,7 +21,8 @@ public enum ExceptionEnum {
     AMOUNT_OF_TRADE_INVALID(HttpStatus.BAD_REQUEST, "Amount of trade must be positive"),
     ORDER_STATUS_IS_NOT_OPEN(HttpStatus.BAD_REQUEST, "Order status is not open"),
     SIMULATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Simulation not fount"),
-    SIMULATION_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Simulation order not fount");
+    SIMULATION_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Simulation order not fount"),
+    AI_REPORT_ORDER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Ai report order error");
 
     private final HttpStatus httpStatus;
     private final String message;

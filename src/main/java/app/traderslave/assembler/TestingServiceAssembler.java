@@ -4,13 +4,18 @@ import app.traderslave.controller.dto.SimulationOrderResDto;
 import app.traderslave.controller.dto.PostSimulationResDto;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
+import app.traderslave.model.report.AiReportOrder;
+import app.traderslave.model.report.ReportOrder;
+import app.traderslave.utility.ReportUtils;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @UtilityClass
 public class TestingServiceAssembler {
 
+    /**
+     * CREATE SIMULATION
+     */
     public PostSimulationResDto toModel(Simulation simulation) {
         return PostSimulationResDto.builder()
                         .simulationId(simulation.getId())
@@ -19,6 +24,9 @@ public class TestingServiceAssembler {
                         .build();
     }
 
+    /**
+     * CREATE SIMULATION ORDER
+     */
     public SimulationOrderResDto toModel(SimulationOrder simulationOrder, BigDecimal balance) {
         return SimulationOrderResDto.builder()
                         .orderId(simulationOrder.getId())
@@ -34,7 +42,10 @@ public class TestingServiceAssembler {
                         .build();
     }
 
-    public SimulationOrderResDto toModel(SimulationOrder simulationOrder, Simulation simulation) {
+    /**
+     * CLOSE SIMULATION ORDER
+     */
+    public SimulationOrderResDto toModel(SimulationOrder simulationOrder, Simulation simulation, ReportOrder report) {
         return SimulationOrderResDto.builder()
                 .orderType(simulationOrder.getType())
                 .amountOfTrade(simulationOrder.getAmountOfTrade())
@@ -43,17 +54,21 @@ public class TestingServiceAssembler {
                 .balance(simulation.getBalance())
                 .status(simulationOrder.getStatus())
                 .openPrice(simulationOrder.getOpenPrice())
-                .closePrice(simulationOrder.getReport().getClosePrice())
+                .closePrice(simulationOrder.getClosePrice())
                 .openTime(simulationOrder.getOpenTime())
-                .closeTime(LocalDateTime.parse(simulationOrder.getReport().getCloseTime()))
+                .closeTime(simulationOrder.getCloseTime())
                 .leverage(simulationOrder.getLeverage())
-                .profitLoss(simulationOrder.getReport().getProfitLoss())
-                .profitLossMinusFees(simulationOrder.getReport().getProfitLossMinusFees())
-                .percentageChange(simulationOrder.getReport().getPercentageChange())
-                .maxUnrealizedProfitDuringTrade(simulationOrder.getReport().getMaxUnrealizedProfitDuringTrade())
-                .maxUnrealizedLossDuringTrade(simulationOrder.getReport().getMaxUnrealizedLossDuringTrade())
-                .durationOfTradeInSeconds(simulationOrder.getReport().getDurationOfTradeInSeconds())
                 .liquidationPrice(simulationOrder.getLiquidationPrice())
+                .report(AiReportOrder.builder()
+                        .status(ReportUtils.calculateAiStatusOrder(simulationOrder, report))
+                        .profitLoss(report.getProfitLoss())
+                        .profitLossMinusFees(report.getProfitLossMinusFees())
+                        .percentageChange(report.getPercentageChange())
+                        .maxUnrealizedLossDuringTrade(report.getMaxUnrealizedLossDuringTrade())
+                        .maxUnrealizedProfitDuringTrade(report.getMaxUnrealizedProfitDuringTrade())
+                        .durationOfTradeInSeconds(report.getDurationOfTradeInSeconds())
+                        .percentageChange(report.getPercentageChange())
+                        .build())
                 .build();
     }
 }
