@@ -3,20 +3,20 @@ package app.traderslave.command;
 import app.traderslave.adapter.BinanceServiceAdapter;
 import app.traderslave.assembler.BackTestingServiceAssembler;
 import app.traderslave.checker.BackTestingChecker;
-import app.traderslave.checker.TimeChecker;
 import app.traderslave.controller.dto.*;
-import app.traderslave.exception.custom.CustomException;
-import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.factory.ReportOrderFactory;
 import app.traderslave.model.domain.ReportOrder;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
-import app.traderslave.model.enums.SOrderStatus;
 import app.traderslave.service.BinanceService;
 import app.traderslave.service.SimulationOrderService;
 import app.traderslave.service.SimulationService;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+@Component
+@Scope("prototype")
 public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulationOrderReqDto, SimulationOrderResDto> {
 
     private final Long orderId;
@@ -24,8 +24,8 @@ public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulation
     private final SimulationService simulationService;
     private final SimulationOrderService simulationOrderService;
 
-    public CloseOrderSimulationCommand(CloseSimulationOrderReqDto requestDto, Long orderId, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
-        super(requestDto);
+    protected CloseOrderSimulationCommand(CloseSimulationOrderReqDto requestDto, Long orderId, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
+        this.requestDto = requestDto;
         this.orderId = orderId;
         this.binanceService = binanceService;
         this.simulationService = simulationService;

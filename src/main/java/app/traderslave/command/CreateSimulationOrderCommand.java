@@ -12,16 +12,20 @@ import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.service.BinanceService;
 import app.traderslave.service.SimulationOrderService;
 import app.traderslave.service.SimulationService;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+@Component
+@Scope("prototype")
 public class CreateSimulationOrderCommand extends BaseMonoCommand<CreateSimulationOrderReqDto, SimulationOrderResDto> {
 
     private final BinanceService binanceService;
     private final SimulationService simulationService;
     private final SimulationOrderService simulationOrderService;
 
-    public CreateSimulationOrderCommand(CreateSimulationOrderReqDto requestDto, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
-        super(requestDto);
+    protected CreateSimulationOrderCommand(CreateSimulationOrderReqDto requestDto, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
+        this.requestDto = requestDto;
         this.binanceService = binanceService;
         this.simulationService = simulationService;
         this.simulationOrderService = simulationOrderService;
