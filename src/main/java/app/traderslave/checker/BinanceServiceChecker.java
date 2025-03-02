@@ -1,17 +1,29 @@
 package app.traderslave.checker;
 
-import app.traderslave.model.enums.TimeFrame;
+import app.traderslave.controller.dto.CandleReqDto;
+import app.traderslave.controller.dto.CandlesReqDto;
 import lombok.experimental.UtilityClass;
-import java.time.LocalDateTime;
 
 @UtilityClass
 public class BinanceServiceChecker {
 
-    public void checkDatesGetKline(TimeFrame timeFrame, LocalDateTime startDate, LocalDateTime endDate, int limitNumCandles) {
-        TimeChecker.checkEndDate(endDate);
-        TimeChecker.checkStartDate(startDate);
-        TimeChecker.checkDateOrder(startDate, endDate);
-        TimeChecker.checkCandleLimit(timeFrame, startDate, endDate, limitNumCandles);
+    public static final int LIMIT_NUM_CANDLES = 50000;
+
+    public void checkDatesGetKline(CandlesReqDto dto) {
+        if (dto.isRealTimeRequest()) {
+            return;
+        }
+        TimeChecker.checkEndDate(dto.getEndDate());
+        TimeChecker.checkStartDate(dto.getStartDate());
+        TimeChecker.checkDateOrder(dto.getStartDate(), dto.getEndDate());
+        TimeChecker.checkCandleLimit(dto.getTimeFrame(), dto.getStartDate(), dto.getEndDate(), LIMIT_NUM_CANDLES);
+    }
+
+    public void checkDatesGetKline(CandleReqDto dto) {
+        if (dto.isRealTimeRequest()) {
+            return;
+        }
+        TimeChecker.checkStartDate(dto.getTime());
     }
 }
 

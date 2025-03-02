@@ -2,8 +2,7 @@ package app.traderslave.command;
 
 import app.traderslave.adapter.BinanceServiceAdapter;
 import app.traderslave.assembler.BackTestingServiceAssembler;
-import app.traderslave.checker.BalanceChecker;
-import app.traderslave.checker.TimeChecker;
+import app.traderslave.checker.BackTestingChecker;
 import app.traderslave.controller.dto.CandleReqDto;
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
@@ -30,10 +29,11 @@ public class CreateSimulationOrderCommand extends BaseMonoCommand<CreateSimulati
 
     @Override
     public Mono<SimulationOrderResDto> execute() {
-        TimeChecker.checkStartDate(requestDto.getTime());
+        BackTestingChecker.checkAmountOfTrade(requestDto);
         Simulation simulation = simulationService.findByIdOrError(requestDto.getSimulationId());
-        BalanceChecker.checkBalance(simulation, requestDto);
-        CandleReqDto candleReqDto = BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), requestDto.getTime());
+        BackTestingChecker.checkBalance(simulation, requestDto);
+
+        CandleReqDto candleReqDto = BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), requestDto);
 
         return binanceService.findCandle(candleReqDto)
                 .map(candle -> createOrderAndUpdateBalance(candle, simulation));

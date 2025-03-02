@@ -16,6 +16,7 @@ public enum ExceptionEnum {
     END_DATE_IS_REQUIRED(HttpStatus.BAD_REQUEST, "The end date is required"),
     BINANCE_REMOTE(HttpStatus.INTERNAL_SERVER_ERROR, null),
     INSUFFICIENT_BALANCE(HttpStatus.BAD_REQUEST, "Insufficient balance"),
+    AMOUNT_OF_TRADE_INVALID(HttpStatus.BAD_REQUEST, "Amount of trade must be positive"),
     ORDER_STATUS_IS_NOT_OPEN(HttpStatus.BAD_REQUEST, "Order status is not open"),
     SIMULATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Simulation not fount"),
     SIMULATION_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Simulation order not fount");

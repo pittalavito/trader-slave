@@ -24,14 +24,10 @@ import java.util.Set;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BinanceService {
 
-    public static final int LIMIT_NUM_CANDLES = 50000;
-
     private final BinanceApi binanceApi;
 
     public Mono<CandleResDto> findCandle(CandleReqDto dto) {
-        if (!dto.isRealTimeRequest()) {
-            TimeChecker.checkStartDate(dto.getTime());
-        }
+        BinanceServiceChecker.checkDatesGetKline(dto);
 
         return binanceApi.getKlines(BinanceApiRequestAdapter.adapt(dto))
                 .map(BinanceApiResponseAdapter::adapt)
@@ -40,9 +36,7 @@ public class BinanceService {
     }
 
     public Mono<CandlesResDto> findCandles(CandlesReqDto dto) {
-        if (!dto.isRealTimeRequest()) {
-            BinanceServiceChecker.checkDatesGetKline(dto.getTimeFrame(), dto.getStartDate(), dto.getEndDate(), LIMIT_NUM_CANDLES);
-        }
+        BinanceServiceChecker.checkDatesGetKline(dto);
 
         return fetchCandleSticks(new HashSet<>(), BinanceApiRequestAdapter.adapt(dto))
                 .collectList()

@@ -2,6 +2,7 @@ package app.traderslave.command;
 
 import app.traderslave.adapter.BinanceServiceAdapter;
 import app.traderslave.assembler.BackTestingServiceAssembler;
+import app.traderslave.checker.BackTestingChecker;
 import app.traderslave.checker.TimeChecker;
 import app.traderslave.controller.dto.*;
 import app.traderslave.exception.custom.CustomException;
@@ -33,15 +34,11 @@ public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulation
 
     @Override
     public Mono<SimulationOrderResDto> execute() {
-        TimeChecker.checkStartDate(requestDto.getTime());
         Simulation simulation = simulationService.findByIdOrError(requestDto.getSimulationId());
         SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(orderId, requestDto.getSimulationId());
+        BackTestingChecker.checkOrderStatusOpen(order);
 
-        if (SOrderStatus.OPEN != order.getStatus()) {
-            throw new CustomException(ExceptionEnum.ORDER_STATUS_IS_NOT_OPEN);
-        }
-
-        CandlesReqDto candleReqDto = BinanceServiceAdapter.adapt(order, simulation, requestDto.getTime());
+        CandlesReqDto candleReqDto = BinanceServiceAdapter.adapt(order, simulation, requestDto);
 
         return binanceService.findCandles(candleReqDto)
                 .map(candles -> closeOrderAndUpdateBalance(order, candles, simulation));
