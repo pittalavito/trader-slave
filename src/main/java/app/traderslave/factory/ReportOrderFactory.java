@@ -14,6 +14,9 @@ import java.util.Comparator;
 @UtilityClass
 public class ReportOrderFactory {
 
+    /**
+     * For order with status open
+     */
     public ReportOrder create(SimulationOrder order, CandlesResDto candles) {
         boolean isLiquidated = false;
         CandleResDto lastUtilCandle = new CandleResDto();
@@ -46,5 +49,20 @@ public class ReportOrderFactory {
                 .build();
     }
 
+    /**
+     * For order with status not open
+     */
+    public ReportOrder create(SimulationOrder order) {
+        return ReportOrder.builder()
+                .closePrice(order.getClosePrice())
+                .closeTime(order.getCloseTime())
+                .profitLoss(order.getProfitLoss())
+                .profitLossMinusFees(order.getProfitLossMinusFees())
+                .maxUnrealizedLossDuringTrade(order.getMaxUnrealizedLossDuringTrade())
+                .maxUnrealizedProfitDuringTrade(order.getMaxUnrealizedProfitDuringTrade())
+                .durationOfTradeInSeconds(order.getDurationOfTradeInSeconds())
+                .percentageChange(order.getPercentageChange())
+                .build();
+    }
 
 }

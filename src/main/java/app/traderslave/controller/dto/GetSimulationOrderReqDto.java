@@ -5,6 +5,5 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CloseSimulationOrderReqDto extends SimulationOrderReqDto {
-
+public class GetSimulationOrderReqDto extends SimulationOrderReqDto {
 }

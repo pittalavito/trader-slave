@@ -46,6 +46,6 @@ public class CreateSimulationOrderCommand extends BaseMonoCommand<CreateSimulati
     private SimulationOrderResDto createOrderAndUpdateBalance(CandleResDto candle, Simulation simulation) {
         SimulationOrder order = simulationOrderService.create(simulation, requestDto, candle);
         Simulation updatedSimulation = simulationService.subtractBalance(simulation, order);
-        return TestingServiceAssembler.toModel(order, updatedSimulation.getBalance());
+        return TestingServiceAssembler.toModel(order, updatedSimulation.getBalance(), requestDto);
     }
 }

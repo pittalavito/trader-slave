@@ -1,9 +1,6 @@
 package app.traderslave.adapter;
 
-import app.traderslave.controller.dto.CandleReqDto;
-import app.traderslave.controller.dto.CandlesReqDto;
-import app.traderslave.controller.dto.CloseSimulationOrderReqDto;
-import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
+import app.traderslave.controller.dto.*;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.CurrencyPair;
@@ -21,7 +18,7 @@ public class BinanceServiceAdapter {
         return reqDto;
     }
 
-    public CandlesReqDto adapt(SimulationOrder order, Simulation simulation, CloseSimulationOrderReqDto dto) {
+    public CandlesReqDto adapt(SimulationOrder order, Simulation simulation, SimulationOrderReqDto dto) {
         CandlesReqDto reqDto = new CandlesReqDto();
         reqDto.setCurrencyPair(simulation.getCurrencyPair());
         reqDto.setStartDate(order.getOpenTime());

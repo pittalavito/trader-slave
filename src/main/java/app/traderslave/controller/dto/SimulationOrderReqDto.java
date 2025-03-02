@@ -1,15 +1,14 @@
 package app.traderslave.controller.dto;
 
-import app.traderslave.model.enums.CurrencyPair;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CandleReqDto extends TimeReqDto {
-
+public class SimulationOrderReqDto extends TimeReqDto {
     @NotNull(message = "required")
-    private CurrencyPair currencyPair;
-
+    private Long simulationId;
+    @NotNull(message = "required")
+    private Long orderId;
 }

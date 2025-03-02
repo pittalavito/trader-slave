@@ -2,12 +2,12 @@ package app.traderslave.command;
 
 import app.traderslave.adapter.BinanceServiceAdapter;
 import app.traderslave.assembler.TestingServiceAssembler;
-import app.traderslave.checker.TestingChecker;
 import app.traderslave.controller.dto.*;
 import app.traderslave.factory.ReportOrderFactory;
-import app.traderslave.model.report.ReportOrder;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
+import app.traderslave.model.enums.SOrderStatus;
+import app.traderslave.model.report.ReportOrder;
 import app.traderslave.service.BinanceService;
 import app.traderslave.service.SimulationOrderService;
 import app.traderslave.service.SimulationService;
@@ -17,13 +17,13 @@ import reactor.core.publisher.Mono;
 
 @Component
 @Scope("prototype")
-public class CloseSimulationOrderCommand extends BaseMonoCommand<CloseSimulationOrderReqDto, SimulationOrderResDto> {
+public class GetSimulationOrderCommand extends BaseMonoCommand<GetSimulationOrderReqDto, SimulationOrderResDto> {
 
     private final BinanceService binanceService;
     private final SimulationService simulationService;
     private final SimulationOrderService simulationOrderService;
 
-    protected CloseSimulationOrderCommand(CloseSimulationOrderReqDto requestDto, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
+    protected GetSimulationOrderCommand(GetSimulationOrderReqDto requestDto, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
         this.requestDto = requestDto;
         this.binanceService = binanceService;
         this.simulationService = simulationService;
@@ -34,19 +34,23 @@ public class CloseSimulationOrderCommand extends BaseMonoCommand<CloseSimulation
     public Mono<SimulationOrderResDto> execute() {
         Simulation simulation = simulationService.findByIdOrError(requestDto.getSimulationId());
         SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(requestDto.getOrderId(), requestDto.getSimulationId());
-        TestingChecker.checkOrderStatusOpen(order);
 
-        CandlesReqDto candleReqDto = BinanceServiceAdapter.adapt(order, simulation, requestDto);
+        if (SOrderStatus.OPEN == order.getStatus()) {
+            CandlesReqDto candleReqDto = BinanceServiceAdapter.adapt(order, simulation, requestDto);
+            return binanceService.findCandles(candleReqDto)
+                    .map(candles -> responseOpenOrder(order, candles, simulation));
+        }
 
-        return binanceService.findCandles(candleReqDto)
-                .map(candles -> closeOrderAndUpdateBalance(order, candles, simulation));
+        return Mono.just(responseNotOpenOrder(order, simulation));
     }
 
-    private SimulationOrderResDto closeOrderAndUpdateBalance(SimulationOrder order, CandlesResDto candles, Simulation simulation) {
+    private SimulationOrderResDto responseOpenOrder(SimulationOrder order, CandlesResDto candles, Simulation simulation) {
         ReportOrder report = ReportOrderFactory.create(order, candles);
-        SimulationOrder updatedOrder = simulationOrderService.close(order, report);
-        Simulation updatedSimulation = simulationService.addBalance(simulation, updatedOrder);
-        return TestingServiceAssembler.toModel(updatedOrder, updatedSimulation, report, requestDto);
+        return TestingServiceAssembler.toModel(order, simulation, report, requestDto);
     }
 
+    private SimulationOrderResDto responseNotOpenOrder(SimulationOrder order, Simulation simulation) {
+        ReportOrder report = ReportOrderFactory.create(order);
+        return TestingServiceAssembler.toModel(order, simulation, report, requestDto);
+    }
 }

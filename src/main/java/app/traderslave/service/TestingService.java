@@ -9,12 +9,11 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import java.time.LocalDateTime;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class BackTestingService {
+public class TestingService {
 
     private final BeanFactory beanFactory;
     private final BinanceService binanceService;
@@ -33,22 +32,27 @@ public class BackTestingService {
         return command.execute();
     }
 
-    @Transactional
-    public Mono<SimulationOrderResDto> closeOrder(Long orderId, CloseSimulationOrderReqDto dto) {
-        CloseSimulationOrderCommand command = beanFactory.getBean(CloseSimulationOrderCommand.class, dto, orderId, binanceService, simulationService, simulationOrderService);
+    public Mono<SimulationOrderResDto> getOrder(GetSimulationOrderReqDto dto) {
+        GetSimulationOrderCommand command = beanFactory.getBean(GetSimulationOrderCommand.class, dto, binanceService, simulationService, simulationOrderService);
         return command.execute();
     }
 
     @Transactional
-    public Mono<GetSimulationResDto> getSimulation(Long id, LocalDateTime time) {
-        GetSimulationStatusCommand command = beanFactory.getBean(GetSimulationStatusCommand.class, id, time, binanceService, simulationService, simulationOrderService);
+    public Mono<SimulationOrderResDto> closeOrder(CloseSimulationOrderReqDto dto) {
+        CloseSimulationOrderCommand command = beanFactory.getBean(CloseSimulationOrderCommand.class, dto, binanceService, simulationService, simulationOrderService);
         return command.execute();
     }
 
-    @Transactional
-    public Mono<GetSimulationResDto> closeSimulation(Long id, LocalDateTime time, boolean physicallyDelete) {
-        CloseSimulationCommand command = beanFactory.getBean(CloseSimulationCommand.class, id, time, physicallyDelete, binanceService, simulationService, simulationOrderService);
-        return command.execute();
-    }
+    //@Transactional
+    //public Mono<GetSimulationResDto> getSimulation(Long id, LocalDateTime time) {
+    //    GetSimulationStatusCommand command = beanFactory.getBean(GetSimulationStatusCommand.class, id, time, binanceService, simulationService, simulationOrderService);
+    //    return command.execute();
+    //}
+    //
+    //@Transactional
+    //public Mono<GetSimulationResDto> closeSimulation(Long id, LocalDateTime time, boolean physicallyDelete) {
+    //    CloseSimulationCommand command = beanFactory.getBean(CloseSimulationCommand.class, id, time, physicallyDelete, binanceService, simulationService, simulationOrderService);
+    //    return command.execute();
+    //}
 
 }

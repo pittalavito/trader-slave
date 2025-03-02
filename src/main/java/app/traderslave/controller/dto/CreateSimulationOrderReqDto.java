@@ -4,11 +4,12 @@ import app.traderslave.model.enums.OrderType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
-public class CreateSimulationOrderReqDto {
+@EqualsAndHashCode(callSuper = true)
+public class CreateSimulationOrderReqDto extends TimeReqDto {
 
     @NotNull(message = "required")
     private Long simulationId;
@@ -17,7 +18,5 @@ public class CreateSimulationOrderReqDto {
     @Size(min = 1, max = 100)
     private int leverage = 1;
     private boolean maxAmountOfTrade = false;
-    private boolean realTimeRequest = false;
     private BigDecimal amountOfTrade;
-    private LocalDateTime time;
 }

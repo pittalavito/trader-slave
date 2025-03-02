@@ -1,7 +1,7 @@
 package app.traderslave.controller;
 
 import app.traderslave.controller.dto.*;
-import app.traderslave.service.BackTestingService;
+import app.traderslave.service.TestingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +15,9 @@ import reactor.core.publisher.Mono;
 public class TestingController {
 
     private static final String URI_SIMULATION = "/simulation";
-    private static final String URI_SIMULATION_ID = "/simulation/{id}";
     private static final String URI_ORDER = "/order";
-    private static final String URI_ORDER_ID = "/order/{id}";
 
-    private final BackTestingService service;
+    private final TestingService service;
 
     @PostMapping(path = URI_SIMULATION)
     public Mono<ResponseEntity<PostSimulationResDto>> createSimulation(@RequestBody @Validated CreateSimulationReqDto dto) {
@@ -41,14 +39,20 @@ public class TestingController {
     //}
 
     @PostMapping(path = URI_ORDER)
-    public Mono<ResponseEntity<SimulationOrderResDto>> createOrder(@RequestBody CreateSimulationOrderReqDto reqDto) {
-        return service.createOrder(reqDto)
+    public Mono<ResponseEntity<SimulationOrderResDto>> createOrder(@RequestBody CreateSimulationOrderReqDto dto) {
+        return service.createOrder(dto)
                 .map(ResponseEntity::ok);
     }
 
-    @PostMapping(path = URI_ORDER_ID)
-    public Mono<ResponseEntity<SimulationOrderResDto>> closeOrder(@PathVariable Long id, @RequestBody CloseSimulationOrderReqDto reqDto) {
-        return service.closeOrder(id, reqDto)
+    @GetMapping(path = URI_ORDER)
+    public Mono<ResponseEntity<SimulationOrderResDto>> getOrder(@ModelAttribute @Validated GetSimulationOrderReqDto dto) {
+        return service.getOrder(dto)
+                .map(ResponseEntity::ok);
+    }
+
+    @PutMapping(path = URI_ORDER)
+    public Mono<ResponseEntity<SimulationOrderResDto>> closeOrder(@RequestBody @Validated CloseSimulationOrderReqDto dto) {
+        return service.closeOrder(dto)
                 .map(ResponseEntity::ok);
     }
 }

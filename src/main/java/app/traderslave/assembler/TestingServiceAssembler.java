@@ -2,6 +2,7 @@ package app.traderslave.assembler;
 
 import app.traderslave.controller.dto.SimulationOrderResDto;
 import app.traderslave.controller.dto.PostSimulationResDto;
+import app.traderslave.controller.dto.TimeReqDto;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.report.AiReportOrder;
@@ -18,35 +19,37 @@ public class TestingServiceAssembler {
      */
     public PostSimulationResDto toModel(Simulation simulation) {
         return PostSimulationResDto.builder()
-                        .simulationId(simulation.getId())
-                        .balance(simulation.getBalance())
-                        .currency(simulation.getCurrency())
-                        .build();
+                .simulationId(simulation.getId())
+                .balance(simulation.getBalance())
+                .currency(simulation.getCurrency())
+                .build();
     }
 
     /**
      * CREATE SIMULATION ORDER
      */
-    public SimulationOrderResDto toModel(SimulationOrder simulationOrder, BigDecimal balance) {
+    public SimulationOrderResDto toModel(SimulationOrder simulationOrder, BigDecimal balance, TimeReqDto dto) {
         return SimulationOrderResDto.builder()
-                        .orderId(simulationOrder.getId())
-                        .simulationId(simulationOrder.getSimulationId())
-                        .orderType(simulationOrder.getType())
-                        .amountOfTrade(simulationOrder.getAmountOfTrade())
-                        .openPrice(simulationOrder.getOpenPrice())
-                        .openTime(simulationOrder.getOpenTime())
-                        .balance(balance)
-                        .liquidationPrice(simulationOrder.getLiquidationPrice())
-                        .leverage(simulationOrder.getLeverage())
-                        .status(simulationOrder.getStatus())
-                        .build();
+                .requestInfo(buildRequestInfo(dto))
+                .orderId(simulationOrder.getId())
+                .simulationId(simulationOrder.getSimulationId())
+                .orderType(simulationOrder.getType())
+                .amountOfTrade(simulationOrder.getAmountOfTrade())
+                .openPrice(simulationOrder.getOpenPrice())
+                .openTime(simulationOrder.getOpenTime())
+                .balance(balance)
+                .liquidationPrice(simulationOrder.getLiquidationPrice())
+                .leverage(simulationOrder.getLeverage())
+                .status(simulationOrder.getStatus())
+                .build();
     }
 
     /**
-     * CLOSE SIMULATION ORDER
+     * CLOSE SIMULATION ORDER AND GET SIMULATION ORDER
      */
-    public SimulationOrderResDto toModel(SimulationOrder simulationOrder, Simulation simulation, ReportOrder report) {
+    public SimulationOrderResDto toModel(SimulationOrder simulationOrder, Simulation simulation, ReportOrder report, TimeReqDto dto) {
         return SimulationOrderResDto.builder()
+                .requestInfo(buildRequestInfo(dto))
                 .orderType(simulationOrder.getType())
                 .amountOfTrade(simulationOrder.getAmountOfTrade())
                 .simulationId(simulation.getId())
@@ -70,5 +73,11 @@ public class TestingServiceAssembler {
                         .percentageChange(report.getPercentageChange())
                         .build())
                 .build();
+    }
+
+    private String buildRequestInfo(TimeReqDto dto) {
+        return dto.isRealTimeRequest() ?
+                "REAL-TIME-REQUEST" :
+                "BACK-TIME-REQUEST " + dto.getTime();
     }
 }

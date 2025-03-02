@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SimulationOrderResDto {
+    private String requestInfo;
     private Long simulationId;
     private Long orderId;
     private OrderType orderType;
