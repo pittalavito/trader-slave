@@ -12,6 +12,8 @@ public enum ExceptionEnum {
     NUM_CANDLES_EXCEEDS_LIMIT(HttpStatus.BAD_REQUEST, "The number of candles exceeds the allowed limit"),
     START_DATE_IS_AFTER_END_DATE(HttpStatus.BAD_REQUEST, "The start date is after end date"),
     START_DATE_IS_AFTER_NOW(HttpStatus.BAD_REQUEST, "The start date is after now"),
+    START_DATE_IS_REQUIRED(HttpStatus.BAD_REQUEST, "The start date is required"),
+    END_DATE_IS_REQUIRED(HttpStatus.BAD_REQUEST, "The end date is required"),
     BINANCE_REMOTE(HttpStatus.INTERNAL_SERVER_ERROR, null),
     INSUFFICIENT_BALANCE(HttpStatus.BAD_REQUEST, "Insufficient balance"),
     ORDER_STATUS_IS_NOT_OPEN(HttpStatus.BAD_REQUEST, "Order status is not open"),
