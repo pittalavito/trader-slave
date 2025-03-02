@@ -17,14 +17,14 @@ import reactor.core.publisher.Mono;
 
 @Component
 @Scope("prototype")
-public class CloseOrderSimulationCommand extends BaseMonoCommand<CloseSimulationOrderReqDto, SimulationOrderResDto> {
+public class CloseSimulationOrderCommand extends BaseMonoCommand<CloseSimulationOrderReqDto, SimulationOrderResDto> {
 
     private final Long orderId;
     private final BinanceService binanceService;
     private final SimulationService simulationService;
     private final SimulationOrderService simulationOrderService;
 
-    protected CloseOrderSimulationCommand(CloseSimulationOrderReqDto requestDto, Long orderId, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
+    protected CloseSimulationOrderCommand(CloseSimulationOrderReqDto requestDto, Long orderId, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
         this.requestDto = requestDto;
         this.orderId = orderId;
         this.binanceService = binanceService;

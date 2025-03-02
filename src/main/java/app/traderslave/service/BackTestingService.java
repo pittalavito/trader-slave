@@ -35,7 +35,7 @@ public class BackTestingService {
 
     @Transactional
     public Mono<SimulationOrderResDto> closeOrder(Long orderId, CloseSimulationOrderReqDto dto) {
-        CloseOrderSimulationCommand command = beanFactory.getBean(CloseOrderSimulationCommand.class, dto, orderId, binanceService, simulationService, simulationOrderService);
+        CloseSimulationOrderCommand command = beanFactory.getBean(CloseSimulationOrderCommand.class, dto, orderId, binanceService, simulationService, simulationOrderService);
         return command.execute();
     }
 
