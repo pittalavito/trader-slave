@@ -10,6 +10,8 @@ import java.util.Optional;
 @Repository
 public interface SimulationOrderRepository extends JpaRepository<SimulationOrder, Long> {
 
+    List<SimulationOrder> findBySimulationId(Long simulationId);
+
     List<SimulationOrder> findBySimulationIdAndStatus(Long simulationId, SOrderStatus status);
 
     Optional<SimulationOrder> findByIdAndSimulationId(Long id, Long simulationId);

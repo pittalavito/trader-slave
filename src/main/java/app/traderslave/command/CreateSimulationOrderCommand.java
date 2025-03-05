@@ -9,6 +9,7 @@ import app.traderslave.controller.dto.SimulationOrderResDto;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.service.BinanceService;
+import app.traderslave.service.SimulationEventService;
 import app.traderslave.service.SimulationOrderService;
 import app.traderslave.service.SimulationService;
 import org.springframework.context.annotation.Scope;
@@ -22,16 +23,19 @@ public class CreateSimulationOrderCommand extends BaseMonoCommand<CreateSimulati
     private final BinanceService binanceService;
     private final SimulationService simulationService;
     private final SimulationOrderService simulationOrderService;
+    private final SimulationEventService simulationEventService;
 
-    protected CreateSimulationOrderCommand(CreateSimulationOrderReqDto requestDto, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
+    protected CreateSimulationOrderCommand(CreateSimulationOrderReqDto requestDto, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService, SimulationEventService simulationEventService) {
         this.requestDto = requestDto;
         this.binanceService = binanceService;
         this.simulationService = simulationService;
         this.simulationOrderService = simulationOrderService;
+        this.simulationEventService = simulationEventService;
     }
 
     @Override
     public Mono<SimulationOrderResDto> execute() {
+        //aggiungere controllo a leverage
         TestingChecker.checkAmountOfTrade(requestDto);
         Simulation simulation = simulationService.findByIdOrError(requestDto.getSimulationId());
         TestingChecker.checkBalance(simulation, requestDto);
@@ -43,6 +47,7 @@ public class CreateSimulationOrderCommand extends BaseMonoCommand<CreateSimulati
     private SimulationOrderResDto createOrderAndUpdateBalance(CandleResDto candle, Simulation simulation) {
         SimulationOrder order = simulationOrderService.create(simulation, requestDto, candle);
         Simulation updatedSimulation = simulationService.subtractBalance(simulation, order);
+        simulationEventService.create(order);
         return TestingServiceAssembler.toModel(order, updatedSimulation.getBalance(), requestDto);
     }
 }

@@ -25,21 +25,14 @@ public class TestingController {
                 .map(ResponseEntity::ok);
     }
 
-    //@GetMapping(path = URI_SIMULATION_ID)
-    //public Mono<ResponseEntity<GetSimulationResDto>> getSimulation(@PathVariable Long id, @RequestParam(required = false) LocalDateTime time) {
-    //    return service.getSimulation(id, time)
-    //            .map(ResponseEntity::ok);
-    //
-    //}
-    //
-    //@PostMapping(path = URI_SIMULATION_ID)
-    //public Mono<ResponseEntity<GetSimulationResDto>> closeSimulation(@PathVariable Long id, @RequestParam(required = false) LocalDateTime time, @RequestParam(defaultValue = "true") boolean delete) {
-    //    return service.closeSimulation(id, time, delete)
-    //            .map(ResponseEntity::ok);
-    //}
+    @PutMapping(path = URI_SIMULATION)
+    public Mono<ResponseEntity<CloseSimulationResDto>> closeSimulation(@RequestBody @Validated CloseSimulationReqDto dto) {
+        return service.closeSimulation(dto)
+                .map(ResponseEntity::ok);
+    }
 
     @PostMapping(path = URI_ORDER)
-    public Mono<ResponseEntity<SimulationOrderResDto>> createOrder(@RequestBody CreateSimulationOrderReqDto dto) {
+    public Mono<ResponseEntity<SimulationOrderResDto>> createOrder(@RequestBody @Validated CreateSimulationOrderReqDto dto) {
         return service.createOrder(dto)
                 .map(ResponseEntity::ok);
     }

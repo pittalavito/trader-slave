@@ -27,6 +27,10 @@ public class SimulationOrderService {
         return repository.save(SimulationOrderEntityFactory.create(simulation, dto, candle));
     }
 
+    public List<SimulationOrder> findBySimulationId(Long simulationId) {
+        return repository.findBySimulationId(simulationId);
+    }
+
     public SimulationOrder findByIdOrError(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new CustomException(ExceptionEnum.SIMULATION_ORDER_NOT_FOUND));

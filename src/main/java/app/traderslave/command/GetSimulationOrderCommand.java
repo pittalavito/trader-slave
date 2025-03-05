@@ -8,6 +8,7 @@ import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.SOrderStatus;
 import app.traderslave.model.report.ReportOrder;
 import app.traderslave.service.BinanceService;
+import app.traderslave.service.SimulationEventService;
 import app.traderslave.service.SimulationOrderService;
 import app.traderslave.service.SimulationService;
 import org.springframework.context.annotation.Scope;
@@ -21,12 +22,14 @@ public class GetSimulationOrderCommand extends BaseMonoCommand<GetSimulationOrde
     private final BinanceService binanceService;
     private final SimulationService simulationService;
     private final SimulationOrderService simulationOrderService;
+    private final SimulationEventService simulationEventService;
 
-    protected GetSimulationOrderCommand(GetSimulationOrderReqDto requestDto, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService) {
+    protected GetSimulationOrderCommand(GetSimulationOrderReqDto requestDto, BinanceService binanceService, SimulationService simulationService, SimulationOrderService simulationOrderService, SimulationEventService simulationEventService) {
         this.requestDto = requestDto;
         this.binanceService = binanceService;
         this.simulationService = simulationService;
         this.simulationOrderService = simulationOrderService;
+        this.simulationEventService = simulationEventService;
     }
 
     @Override
@@ -56,6 +59,7 @@ public class GetSimulationOrderCommand extends BaseMonoCommand<GetSimulationOrde
     private SimulationOrderResDto liquidateOrderAndUpdateBalance(Simulation simulation, SimulationOrder order, ReportOrder report) {
         SimulationOrder updatedOrder = simulationOrderService.close(order, report);
         Simulation updatedSimulation = simulationService.addBalance(simulation, updatedOrder);
+        simulationEventService.create(order);
         return TestingServiceAssembler.toModel(updatedOrder, updatedSimulation, report, requestDto);
     }
 

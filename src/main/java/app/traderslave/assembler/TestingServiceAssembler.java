@@ -1,15 +1,19 @@
 package app.traderslave.assembler;
 
+import app.traderslave.controller.dto.CloseSimulationResDto;
 import app.traderslave.controller.dto.SimulationOrderResDto;
 import app.traderslave.controller.dto.PostSimulationResDto;
 import app.traderslave.controller.dto.TimeReqDto;
 import app.traderslave.model.domain.Simulation;
+import app.traderslave.model.domain.SimulationEvent;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.report.AiReportOrder;
 import app.traderslave.model.report.ReportOrder;
 import app.traderslave.utility.ReportUtils;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @UtilityClass
 public class TestingServiceAssembler {
@@ -74,6 +78,18 @@ public class TestingServiceAssembler {
                         .maxPriceDuringTrade(report.getMaxPriceDuringTrade())
                         .minPriceDuringTrade(report.getMinPriceDuringTrade())
                         .build())
+                .build();
+    }
+
+    public CloseSimulationResDto toModel(Simulation simulation, List<SimulationEvent> events, List<SimulationOrderResDto> openOrders, List<SimulationOrderResDto> closedOrders, List<SimulationOrderResDto> liquidatedOrders, TimeReqDto dto) {
+        //todo create report
+        return CloseSimulationResDto.builder()
+                .openOrders(openOrders)
+                .closeOrders(closedOrders)
+                .liquidateOrders(liquidatedOrders)
+                .requestInfo(buildRequestInfo(dto))
+                .simulationId(simulation.getId())
+                .report(null)
                 .build();
     }
 
