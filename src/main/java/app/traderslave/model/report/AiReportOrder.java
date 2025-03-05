@@ -15,6 +15,8 @@ public class AiReportOrder {
     private BigDecimal maxUnrealizedProfitDuringTrade;
     private BigDecimal maxUnrealizedLossDuringTrade;
     private Long durationOfTradeInSeconds;
+    private BigDecimal maxPriceDuringTrade;
+    private BigDecimal minPriceDuringTrade;
 
     public enum StatusOrder {
         OPEN_WITH_PROFIT,

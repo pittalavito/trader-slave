@@ -41,6 +41,8 @@ public class SimulationOrderEntityFactory {
         order.setDurationOfTradeInSeconds(report.getDurationOfTradeInSeconds());
         order.setLastModificationDate(LocalDateTime.now());
         order.setVersion(order.getVersion() + 1);
+        order.setMaxPriceDuringTrade(report.getMaxPriceDuringTrade());
+        order.setMinPriceDuringTrade(report.getMinPriceDuringTrade());
         return order;
     }
 

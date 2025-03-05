@@ -68,4 +68,10 @@ public class SimulationOrder extends BasePersistentModel {
 
     @Column(name = "DU_TRADE_MILL", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
     private Long durationOfTradeInSeconds;
+
+    @Column(name = "MAX_PRICE_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal maxPriceDuringTrade;
+
+    @Column(name = "MIN_PRICE_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal minPriceDuringTrade;
 }

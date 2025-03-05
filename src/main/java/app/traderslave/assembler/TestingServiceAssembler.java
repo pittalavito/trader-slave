@@ -71,6 +71,8 @@ public class TestingServiceAssembler {
                         .maxUnrealizedProfitDuringTrade(report.getMaxUnrealizedProfitDuringTrade())
                         .durationOfTradeInSeconds(report.getDurationOfTradeInSeconds())
                         .percentageChange(report.getPercentageChange())
+                        .maxPriceDuringTrade(report.getMaxPriceDuringTrade())
+                        .minPriceDuringTrade(report.getMinPriceDuringTrade())
                         .build())
                 .build();
     }

@@ -21,6 +21,8 @@ public class ReportOrder {
     private BigDecimal maxUnrealizedProfitDuringTrade;
     private BigDecimal maxUnrealizedLossDuringTrade;
     private Long durationOfTradeInSeconds;
+    private BigDecimal maxPriceDuringTrade;
+    private BigDecimal minPriceDuringTrade;
     @JsonIgnore
     private boolean liquidated;
 }

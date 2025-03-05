@@ -45,6 +45,9 @@ public class ReportOrderFactory {
     private ReportOrder create(SimulationOrder order, ReportOrder rep1, ReportOrder lastReport) {
         BigDecimal maxUnrealizedProfitDuringTrade = rep1.getMaxUnrealizedProfitDuringTrade().max(lastReport.getMaxUnrealizedProfitDuringTrade());
         BigDecimal maxUnrealizedLossDuringTrade = rep1.getMaxUnrealizedLossDuringTrade().min(lastReport.getMaxUnrealizedLossDuringTrade());
+        BigDecimal maxPriceDuringTrade = rep1.getMaxPriceDuringTrade().max(lastReport.getMaxPriceDuringTrade());
+        BigDecimal minPriceDuringTrade = rep1.getMinPriceDuringTrade().min(lastReport.getMinPriceDuringTrade());
+
         return ReportOrder.builder()
                 .liquidated(lastReport.isLiquidated())
                 .closePrice(lastReport.getClosePrice())
@@ -55,6 +58,8 @@ public class ReportOrderFactory {
                 .maxUnrealizedProfitDuringTrade(maxUnrealizedProfitDuringTrade)
                 .durationOfTradeInSeconds(TimeUtils.calculateDiffInSecond(order.getOpenTime(), lastReport.getCloseTime()))
                 .percentageChange(lastReport.getPercentageChange())
+                .maxPriceDuringTrade(maxPriceDuringTrade)
+                .minPriceDuringTrade(minPriceDuringTrade)
                 .build();
     }
 
@@ -72,6 +77,8 @@ public class ReportOrderFactory {
                 .maxUnrealizedProfitDuringTrade(order.getMaxUnrealizedProfitDuringTrade())
                 .durationOfTradeInSeconds(order.getDurationOfTradeInSeconds())
                 .percentageChange(order.getPercentageChange())
+                .minPriceDuringTrade(order.getMinPriceDuringTrade())
+                .maxPriceDuringTrade(order.getMaxPriceDuringTrade())
                 .build();
     }
 
@@ -86,6 +93,8 @@ public class ReportOrderFactory {
                 .maxUnrealizedProfitDuringTrade(ReportUtils.calculateProfitLoss(order, OrderType.BUY == order.getType() ? maxPriceDuringTrade : minPriceDuringTrade))
                 .durationOfTradeInSeconds(TimeUtils.calculateDiffInSecond(order.getOpenTime(), lastUtilCandle.getCloseTime()))
                 .percentageChange(ReportUtils.calculateProfitLossPercentage(order, profitLoss))
+                .maxPriceDuringTrade(maxPriceDuringTrade)
+                .minPriceDuringTrade(minPriceDuringTrade)
                 .build();
     }
 }
