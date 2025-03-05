@@ -3,7 +3,6 @@ package app.traderslave.command;
 import app.traderslave.adapter.BinanceServiceAdapter;
 import app.traderslave.assembler.TestingServiceAssembler;
 import app.traderslave.checker.TestingChecker;
-import app.traderslave.controller.dto.CandleReqDto;
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
 import app.traderslave.controller.dto.SimulationOrderResDto;
@@ -37,9 +36,7 @@ public class CreateSimulationOrderCommand extends BaseMonoCommand<CreateSimulati
         Simulation simulation = simulationService.findByIdOrError(requestDto.getSimulationId());
         TestingChecker.checkBalance(simulation, requestDto);
 
-        CandleReqDto candleReqDto = BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), requestDto);
-
-        return binanceService.findCandle(candleReqDto)
+        return binanceService.findCandle(BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), requestDto))
                 .map(candle -> createOrderAndUpdateBalance(candle, simulation));
     }
 

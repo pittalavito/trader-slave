@@ -78,6 +78,6 @@ public class TestingServiceAssembler {
     private String buildRequestInfo(TimeReqDto dto) {
         return dto.isRealTimeRequest() ?
                 "REAL-TIME-REQUEST" :
-                "BACK-TIME-REQUEST " + dto.getTime();
+                "BACK-TIME-REQUEST " + dto.getStartTime();
     }
 }

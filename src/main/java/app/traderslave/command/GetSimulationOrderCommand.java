@@ -1,6 +1,5 @@
 package app.traderslave.command;
 
-import app.traderslave.adapter.BinanceServiceAdapter;
 import app.traderslave.assembler.TestingServiceAssembler;
 import app.traderslave.controller.dto.*;
 import app.traderslave.factory.ReportOrderFactory;
@@ -35,22 +34,29 @@ public class GetSimulationOrderCommand extends BaseMonoCommand<GetSimulationOrde
         Simulation simulation = simulationService.findByIdOrError(requestDto.getSimulationId());
         SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(requestDto.getOrderId(), requestDto.getSimulationId());
 
-        if (SOrderStatus.OPEN == order.getStatus()) {
-            CandlesReqDto candleReqDto = BinanceServiceAdapter.adapt(order, simulation, requestDto);
-            return binanceService.findCandles(candleReqDto)
-                    .map(candles -> responseOpenOrder(order, candles, simulation));
+        if (SOrderStatus.OPEN != order.getStatus()) {
+            return responseNotOpenOrder(simulation, order);
         }
 
-        return Mono.just(responseNotOpenOrder(order, simulation));
+        return binanceService.createReportOrder(simulation, order, requestDto)
+                .map(reportOrder -> responseOpenOrder(simulation, order, reportOrder));
     }
 
-    private SimulationOrderResDto responseOpenOrder(SimulationOrder order, CandlesResDto candles, Simulation simulation) {
-        ReportOrder report = ReportOrderFactory.create(order, candles);
-        return TestingServiceAssembler.toModel(order, simulation, report, requestDto);
-    }
-
-    private SimulationOrderResDto responseNotOpenOrder(SimulationOrder order, Simulation simulation) {
+    private Mono<SimulationOrderResDto> responseNotOpenOrder(Simulation simulation, SimulationOrder order) {
         ReportOrder report = ReportOrderFactory.create(order);
-        return TestingServiceAssembler.toModel(order, simulation, report, requestDto);
+        return Mono.just(TestingServiceAssembler.toModel(order, simulation, report, requestDto));
     }
+
+    private SimulationOrderResDto responseOpenOrder(Simulation simulation, SimulationOrder order, ReportOrder report) {
+        return report.isLiquidated() ?
+                liquidateOrderAndUpdateBalance(simulation, order, report) :
+                TestingServiceAssembler.toModel(order, simulation, report, requestDto);
+    }
+
+    private SimulationOrderResDto liquidateOrderAndUpdateBalance(Simulation simulation, SimulationOrder order, ReportOrder report) {
+        SimulationOrder updatedOrder = simulationOrderService.close(order, report);
+        Simulation updatedSimulation = simulationService.addBalance(simulation, updatedOrder);
+        return TestingServiceAssembler.toModel(updatedOrder, updatedSimulation, report, requestDto);
+    }
+
 }

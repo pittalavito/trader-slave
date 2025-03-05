@@ -13,10 +13,10 @@ public class BinanceServiceChecker {
 
     public void checkDatesGetKline(CandlesReqDto dto) {
         if (!dto.isRealTimeRequest()) {
-            TimeChecker.checkEndDate(dto.getEndDate());
-            TimeChecker.checkStartDate(dto.getStartDate());
-            TimeChecker.checkDateOrder(dto.getStartDate(), dto.getEndDate());
-            TimeChecker.checkCandleLimit(dto.getTimeFrame(), dto.getStartDate(), dto.getEndDate(), LIMIT_NUM_CANDLES);
+            TimeChecker.checkEndDate(dto.getEndTime());
+            TimeChecker.checkStartDate(dto.getStartTime());
+            TimeChecker.checkDateOrder(dto.getStartTime(), dto.getEndTime());
+            TimeChecker.checkCandleLimit(dto.getTimeFrame(), dto.getStartTime(), dto.getEndTime(), LIMIT_NUM_CANDLES);
             return;
         }
         if (dto.getLastNumCandle() <= 0 || dto.getLastNumCandle() > LIMIT_NUM_CANDLES) {
@@ -28,7 +28,7 @@ public class BinanceServiceChecker {
         if (dto.isRealTimeRequest()) {
             return;
         }
-        TimeChecker.checkStartDate(dto.getTime());
+        TimeChecker.checkStartDate(dto.getStartTime());
     }
 }
 

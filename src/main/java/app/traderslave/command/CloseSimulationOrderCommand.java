@@ -1,10 +1,8 @@
 package app.traderslave.command;
 
-import app.traderslave.adapter.BinanceServiceAdapter;
 import app.traderslave.assembler.TestingServiceAssembler;
 import app.traderslave.checker.TestingChecker;
 import app.traderslave.controller.dto.*;
-import app.traderslave.factory.ReportOrderFactory;
 import app.traderslave.model.report.ReportOrder;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
@@ -36,14 +34,11 @@ public class CloseSimulationOrderCommand extends BaseMonoCommand<CloseSimulation
         SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(requestDto.getOrderId(), requestDto.getSimulationId());
         TestingChecker.checkOrderStatusOpen(order);
 
-        CandlesReqDto candleReqDto = BinanceServiceAdapter.adapt(order, simulation, requestDto);
-
-        return binanceService.findCandles(candleReqDto)
-                .map(candles -> closeOrderAndUpdateBalance(order, candles, simulation));
+        return binanceService.createReportOrder(simulation, order, requestDto)
+                .map(reportOrder -> closeOrderAndUpdateBalance(simulation, order, reportOrder));
     }
 
-    private SimulationOrderResDto closeOrderAndUpdateBalance(SimulationOrder order, CandlesResDto candles, Simulation simulation) {
-        ReportOrder report = ReportOrderFactory.create(order, candles);
+    private SimulationOrderResDto closeOrderAndUpdateBalance(Simulation simulation, SimulationOrder order, ReportOrder report) {
         SimulationOrder updatedOrder = simulationOrderService.close(order, report);
         Simulation updatedSimulation = simulationService.addBalance(simulation, updatedOrder);
         return TestingServiceAssembler.toModel(updatedOrder, updatedSimulation, report, requestDto);

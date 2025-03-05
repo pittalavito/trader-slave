@@ -19,6 +19,6 @@ public class CandlesReqDto {
 
     private int lastNumCandle = 1000;
 
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 }
