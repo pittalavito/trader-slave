@@ -2,7 +2,7 @@ package app.traderslave.factory;
 
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
-import app.traderslave.model.report.ReportOrder;
+import app.traderslave.model.report.OrderReport;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.SOrderStatus;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @UtilityClass
-public class SimulationOrderEntityFactory {
+public class SimulationOrderFactory {
 
     public SimulationOrder create(Simulation simulation, CreateSimulationOrderReqDto dto, CandleResDto candle) {
         return SimulationOrder.builder()
@@ -29,7 +29,7 @@ public class SimulationOrderEntityFactory {
                 .build();
     }
 
-    public SimulationOrder close(SimulationOrder order, ReportOrder report) {
+    public SimulationOrder close(SimulationOrder order, OrderReport report) {
         order.setStatus(report.isLiquidated() ? SOrderStatus.LIQUIDATED : SOrderStatus.CLOSED);
         order.setClosePrice(report.getClosePrice());
         order.setCloseTime(report.getCloseTime());

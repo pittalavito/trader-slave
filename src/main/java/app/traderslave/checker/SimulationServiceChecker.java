@@ -10,7 +10,7 @@ import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
 
 @UtilityClass
-public class TestingChecker {
+public class SimulationServiceChecker {
 
     public void checkOrderStatusOpen(SimulationOrder order) {
         if (SOrderStatus.OPEN != order.getStatus()) {
@@ -27,6 +27,12 @@ public class TestingChecker {
     public void checkBalance(Simulation simulation, CreateSimulationOrderReqDto reqDto) {
         if (isBalanceZero(simulation) || isExcessiveAmount(simulation, reqDto)) {
             throw new CustomException(ExceptionEnum.INSUFFICIENT_BALANCE);
+        }
+    }
+
+    public void checkLeverage(CreateSimulationOrderReqDto reqDto) {
+        if (reqDto.getLeverage() < 1 || reqDto.getLeverage() > 100) {
+            throw new CustomException(ExceptionEnum.INVALID_LEVERAGE);
         }
     }
 

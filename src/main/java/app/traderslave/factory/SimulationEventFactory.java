@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
 import java.util.UUID;
 
 @UtilityClass
-public class SimulationEventEntityFactory {
+public class SimulationEventFactory {
 
     public SimulationEvent create(SimulationOrder order) {
         SimulationEvent.EventType eventType = SimulationEvent.EventType.retrieveByOrderStatus(order.getStatus());

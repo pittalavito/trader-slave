@@ -1,13 +1,12 @@
 package app.traderslave.utility;
 
 import app.traderslave.controller.dto.CandleResDto;
-import app.traderslave.exception.custom.CustomException;
-import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.OrderType;
-import app.traderslave.model.report.AiReportOrder;
-import app.traderslave.model.report.ReportOrder;
+import app.traderslave.model.report.OrderReport;
+import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
+import org.springframework.util.Assert;
 import java.math.BigDecimal;
 
 @UtilityClass
@@ -35,7 +34,6 @@ public class ReportUtils {
         BigDecimal initialAmountSize = BigDecimal.valueOf(order.getLeverage() * order.getAmountOfTrade().doubleValue());
         BigDecimal quantity = initialAmountSize.divide(order.getOpenPrice(), 8, java.math.RoundingMode.HALF_UP);
         BigDecimal actualAmountSize = quantity.multiply(closePrice);
-
         if (OrderType.BUY == order.getType()) {
             return actualAmountSize.subtract(initialAmountSize);
         } else {
@@ -49,17 +47,14 @@ public class ReportUtils {
                 .multiply(BigDecimal.valueOf(100));
     }
 
-    public AiReportOrder.StatusOrder calculateAiStatusOrder(SimulationOrder order, ReportOrder reportOrder) {
-        AiReportOrder.StatusOrder result;
-        boolean isProfit = reportOrder.getProfitLoss().doubleValue() > 0;
-
-        switch (order.getStatus()) {
-            case LIQUIDATED -> result = AiReportOrder.StatusOrder.LIQUIDATED;
-            case OPEN -> result = isProfit ? AiReportOrder.StatusOrder.OPEN_WITH_PROFIT : AiReportOrder.StatusOrder.OPEN_WITH_LOSS;
-            case CLOSED ->  result = isProfit ? AiReportOrder.StatusOrder.CLOSED_WITH_PROFIT : AiReportOrder.StatusOrder.CLOSED_WITH_LOSS;
-            default -> throw new CustomException(ExceptionEnum.AI_REPORT_ORDER_ERROR);
+    public @Nullable Boolean isProfit(OrderReport report) {
+        Assert.notNull(report.getProfitLoss(), "report get profit loss cannot be null");
+        Boolean result = null;
+        if (report.getProfitLoss().doubleValue() > 0) {
+            result = Boolean.TRUE;
+        } else if (report.getProfitLoss().doubleValue() < 0) {
+            result = Boolean.FALSE;
         }
-
         return result;
     }
 }

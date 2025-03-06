@@ -74,4 +74,8 @@ public class SimulationOrder extends BasePersistentModel {
 
     @Column(name = "MIN_PRICE_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
     private BigDecimal minPriceDuringTrade;
+
+    @Transient
+    private Simulation simulation;
+
 }

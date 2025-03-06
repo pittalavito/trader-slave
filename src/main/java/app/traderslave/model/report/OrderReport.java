@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportOrder {
+public class OrderReport {
     private BigDecimal closePrice;
     private LocalDateTime closeTime;
     private BigDecimal profitLoss;

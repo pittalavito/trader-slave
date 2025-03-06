@@ -17,8 +17,18 @@ public class CandlesReqDto {
 
     private boolean realTimeRequest = false;
 
+    /**
+     * Number of candles to retrieve. Used only if realTimeRequest is true.
+     */
     private int lastNumCandle = 1000;
 
+    /**
+     * Start time for the candle data. Can be null only if realTimeRequest is true.
+     */
     private LocalDateTime startTime;
+
+    /**
+     * End time for the candle data. Can be null only if realTimeRequest is true.
+     */
     private LocalDateTime endTime;
 }

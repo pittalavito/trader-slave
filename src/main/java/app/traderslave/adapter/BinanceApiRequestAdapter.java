@@ -16,7 +16,7 @@ public class BinanceApiRequestAdapter {
     private final int LIMIT_GET_KLINE = 1000;
 
     /**
-     * Find candles
+     * For requests coming from {@link app.traderslave.controller.DataSearchController#getCandles(CandlesReqDto)}
      */
     public BinanceGetKlinesRequestDto adapt(CandlesReqDto dto) {
         LocalDateTime endTime = dto.isRealTimeRequest() ? TimeUtils.now().minusSeconds(2) : dto.getEndTime();
@@ -32,7 +32,7 @@ public class BinanceApiRequestAdapter {
     }
 
     /**
-     * Find candle 1s
+     * For requests coming from {@link app.traderslave.controller.DataSearchController#getCandle(CandleReqDto)}
      */
     public BinanceGetKlinesRequestDto adapt(CandleReqDto dto) {
         LocalDateTime endTime = dto.isRealTimeRequest() ? TimeUtils.now().minusSeconds(1) : dto.getStartTime();
@@ -46,7 +46,7 @@ public class BinanceApiRequestAdapter {
         );
     }
 
-    public BinanceGetKlinesRequestDto adapt(CurrencyPair currencyPair, LocalDateTime starTime, LocalDateTime endTime, TimeFrame timeFrame, Integer limit) {
+    private BinanceGetKlinesRequestDto adapt(CurrencyPair currencyPair, LocalDateTime starTime, LocalDateTime endTime, TimeFrame timeFrame, Integer limit) {
         return BinanceGetKlinesRequestDto.builder()
                 .symbol(StringUtils.replace(currencyPair.name(), "_", ""))
                 .interval(timeFrame.getCode())

@@ -1,6 +1,6 @@
 package app.traderslave.service;
 
-import app.traderslave.factory.SimulationEventEntityFactory;
+import app.traderslave.factory.SimulationEventFactory;
 import app.traderslave.model.domain.SimulationEvent;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.repository.SimulationEventRepository;
@@ -13,12 +13,12 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class SimulationEventService {
+class SimulationEventService {
 
     private final SimulationEventRepository repository;
 
     public SimulationEvent create(SimulationOrder order) {
-        return repository.save(SimulationEventEntityFactory.create(order));
+        return repository.save(SimulationEventFactory.create(order));
     }
 
     public List<SimulationEvent> findBySimulationIdOrderByEventTimeAsc(Long simulationId) {

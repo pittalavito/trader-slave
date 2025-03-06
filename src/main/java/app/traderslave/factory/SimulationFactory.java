@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @UtilityClass
-public class SimulationEntityFactory {
+public class SimulationFactory {
 
     public Simulation create(CreateSimulationReqDto dto) {
         return Simulation.builder()

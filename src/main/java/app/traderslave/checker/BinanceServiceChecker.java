@@ -17,9 +17,7 @@ public class BinanceServiceChecker {
             TimeChecker.checkStartDate(dto.getStartTime());
             TimeChecker.checkDateOrder(dto.getStartTime(), dto.getEndTime());
             TimeChecker.checkCandleLimit(dto.getTimeFrame(), dto.getStartTime(), dto.getEndTime(), LIMIT_NUM_CANDLES);
-            return;
-        }
-        if (dto.getLastNumCandle() <= 0 || dto.getLastNumCandle() > LIMIT_NUM_CANDLES) {
+        } else if (dto.getLastNumCandle() <= 0 || dto.getLastNumCandle() > LIMIT_NUM_CANDLES) {
             throw new CustomException(ExceptionEnum.LAST_NUM_CANDLE_INVALID);
         }
     }
