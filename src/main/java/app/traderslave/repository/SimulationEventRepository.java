@@ -7,5 +7,8 @@ import java.util.List;
 
 @Repository
 public interface SimulationEventRepository extends JpaRepository<SimulationEvent, Long> {
+
     List<SimulationEvent> findBySimulationIdOrderByEventTimeAsc(Long simulationId);
+
+    void deleteBySimulationId(Long simulationId);
 }

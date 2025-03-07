@@ -12,6 +12,7 @@ public class SimulationEventFactory {
         SimulationEvent.EventType eventType = SimulationEvent.EventType.retrieveByOrderStatus(order.getStatus());
 
         return SimulationEvent.builder()
+                .orderId(order.getId())
                 .simulationId(order.getSimulationId())
                 .balanceUpdates(SimulationEvent.EventType.CREATED_ORDER == eventType ? order.getAmountOfTrade().negate() : order.getProfitLossMinusFees())
                 .eventTime(SimulationEvent.EventType.CREATED_ORDER == eventType ? order.getOpenTime() : order.getCloseTime())

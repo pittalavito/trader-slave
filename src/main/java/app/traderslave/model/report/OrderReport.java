@@ -1,6 +1,5 @@
 package app.traderslave.model.report;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +22,5 @@ public class OrderReport {
     private Long durationOfTradeInSeconds;
     private BigDecimal maxPriceDuringTrade;
     private BigDecimal minPriceDuringTrade;
-    @JsonIgnore
     private boolean liquidated;
 }

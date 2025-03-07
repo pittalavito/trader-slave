@@ -5,7 +5,6 @@ import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
-import app.traderslave.model.enums.SOrderStatus;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
 
@@ -13,7 +12,7 @@ import java.math.BigDecimal;
 public class SimulationServiceChecker {
 
     public void checkOrderStatusOpen(SimulationOrder order) {
-        if (SOrderStatus.OPEN != order.getStatus()) {
+        if (SimulationOrder.Status.OPEN != order.getStatus()) {
             throw new CustomException(ExceptionEnum.ORDER_STATUS_IS_NOT_OPEN);
         }
     }

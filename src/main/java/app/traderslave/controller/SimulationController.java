@@ -2,6 +2,7 @@ package app.traderslave.controller;
 
 import app.traderslave.controller.dto.*;
 import app.traderslave.service.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,6 @@ public class SimulationController {
     private final SimulationService simulationService;
 
     // --- SIMULATION --------------------------------------------------------------------------------------------------
-    @GetMapping
-    public Mono<ResponseEntity<GetSimulationResDto>> retrieve(@ModelAttribute @Validated GetSimulationReqDto dto) {
-        return simulationService.retrieve(dto)
-                .map(ResponseEntity::ok);
-    }
 
     @PostMapping
     public Mono<ResponseEntity<PostSimulationResDto>> create(@RequestBody @Validated CreateSimulationReqDto dto) {
@@ -32,26 +28,23 @@ public class SimulationController {
                 .map(ResponseEntity::ok);
     }
 
-    @DeleteMapping
-    public void delete(@RequestParam Long simulationId) {
-        //todo
+    @PutMapping
+    public Mono<ResponseEntity<CloseSimulationResDto>> close(@RequestBody @Validated CloseSimulationReqDto dto) {
+        return simulationService.close(dto)
+                .map(ResponseEntity::ok);
     }
 
-    @GetMapping(path = URI_ALL)
-    public void retrieveAll() {
-        //todo
-    }
-
+    @Transactional
     @DeleteMapping(path = URI_ALL)
     public void deleteAll() {
-        //todo
+        simulationService.deleteAll();
     }
 
-    // --- ORDER _____--------------------------------------------------------------------------------------------------
+    // --- ORDER -------------------------------------------------------------------------------------------------------
 
     @GetMapping(path = URI_ORDER)
-    public Mono<ResponseEntity<SimulationOrderResDto>> retrieveOrder(@ModelAttribute @Validated GetSimulationOrderReqDto dto) {
-        return simulationService.retrieveOrder(dto)
+    public Mono<ResponseEntity<SimulationOrderResDto>> getOrder(@ModelAttribute @Validated GetSimulationOrderReqDto dto) {
+        return simulationService.getOrder(dto)
                 .map(ResponseEntity::ok);
     }
 

@@ -4,6 +4,7 @@ import app.traderslave.factory.SimulationEventFactory;
 import app.traderslave.model.domain.SimulationEvent;
 import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.repository.SimulationEventRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,4 +26,13 @@ class SimulationEventService {
         return repository.findBySimulationIdOrderByEventTimeAsc(simulationId);
     }
 
+    @Transactional
+    public void deleteBySimulationId(Long simulationId) {
+        repository.deleteBySimulationId(simulationId);
+    }
+
+    @Transactional
+    public void deleteAll() {
+        repository.deleteAll();
+    }
 }

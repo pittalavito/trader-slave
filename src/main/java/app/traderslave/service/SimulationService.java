@@ -7,10 +7,9 @@ import app.traderslave.controller.SimulationController;
 import app.traderslave.controller.dto.*;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
-import app.traderslave.factory.OrderReportFactory;
 import app.traderslave.factory.SimulationFactory;
+import app.traderslave.model.domain.SimulationEvent;
 import app.traderslave.model.domain.SimulationOrder;
-import app.traderslave.model.enums.SOrderStatus;
 import app.traderslave.model.report.OrderReport;
 import app.traderslave.repository.SimulationRepository;
 import app.traderslave.model.domain.Simulation;
@@ -19,60 +18,38 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class SimulationService {
 
-    private final SimulationOrderReportService simulationOrderReportService;
+    private final SimulationRepository repository;
+    private final BinanceService binanceService;
     private final SimulationOrderService simulationOrderService;
     private final SimulationEventService simulationEventService;
-    private final BinanceService binanceService;
-    private final SimulationRepository repository;
+    private final SimulationOrderReportFactoryService simulationOrderReportFactoryService;
 
-    /**
-     * For requests coming from {@link SimulationController#retrieve(GetSimulationReqDto)}
-     */
-    public Mono<GetSimulationResDto> retrieve(GetSimulationReqDto dto) {
-        //todo
-        return null;
-    }
-
-    /**
-     * For requests coming from {@link SimulationController#create(CreateSimulationReqDto)}
-     */
-    @Transactional
     public Mono<PostSimulationResDto> create(CreateSimulationReqDto dto) {
         Simulation simulation = repository.save(SimulationFactory.create(dto));
-        return Mono.just(SimulationServiceAssembler.toModel(simulation));
+        return Mono.just(SimulationServiceAssembler.toModelCreate(simulation));
     }
 
-    /**
-     * For requests coming from {@link SimulationController#retrieveOrder(GetSimulationOrderReqDto)}
-     */
-    public Mono<SimulationOrderResDto> retrieveOrder(GetSimulationOrderReqDto dto) {
-        Simulation simulation = findByIdOrError(dto.getSimulationId());
-        SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(simulation.getId(), dto.getOrderId());
+    public Mono<SimulationOrderResDto> getOrder(GetSimulationOrderReqDto dto) {
+        SimulationOrder order = findOrderWithSimulationField(dto.getSimulationId(), dto.getOrderId());
 
-        if (SOrderStatus.OPEN != order.getStatus()) {
-            OrderReport report = OrderReportFactory.create(order);
-            return Mono.just(SimulationServiceAssembler.toModel(order, report, dto));
+        if (SimulationOrder.Status.OPEN == order.getStatus()) {
+            return simulationOrderReportFactoryService.create(order, dto)
+                    .flatMap(report -> manageOpenOrderAndToModel(order, dto));
         }
-        return simulationOrderReportService.create(order, dto)
-                .map(report -> {
-                    SimulationOrder orderResult = order;
-                    if (report.isLiquidated()) {
-                        orderResult = closeOrder(order, report);
-                    }
-                    return SimulationServiceAssembler.toModel(orderResult, report, dto);
-                });
+
+        return Mono.just(SimulationServiceAssembler.toModelCloseOrder(order, dto));
     }
 
-    /**
-     * For requests coming from {@link SimulationController#createOrder(CreateSimulationOrderReqDto)}
-     */
     public Mono<SimulationOrderResDto> createOrder(CreateSimulationOrderReqDto requestDto) {
         SimulationServiceChecker.checkLeverage(requestDto);
         SimulationServiceChecker.checkAmountOfTrade(requestDto);
@@ -81,22 +58,54 @@ public class SimulationService {
 
         return binanceService.findCandle(BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), requestDto))
                 .map(candle -> createOrder(simulation, requestDto, candle))
-                .map(order -> SimulationServiceAssembler.toModel(order, requestDto));
+                .map(order -> SimulationServiceAssembler.toModelCreateOrder(order, requestDto));
     }
 
-    /**
-     * For requests coming from {@link SimulationController#closeOrder(CloseSimulationOrderReqDto)}
-     */
     public Mono<SimulationOrderResDto> closeOrder(CloseSimulationOrderReqDto dto) {
-        Simulation simulation = findByIdOrError(dto.getSimulationId());
-        SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(simulation.getId(), dto.getOrderId());
+        SimulationOrder order = findOrderWithSimulationField(dto.getSimulationId(), dto.getOrderId());
         SimulationServiceChecker.checkOrderStatusOpen(order);
 
-        return simulationOrderReportService.create(order, dto)
+        return simulationOrderReportFactoryService.create(order, dto)
                 .map(report -> {
                     SimulationOrder updatedOrder = closeOrder(order, report);
-                    return SimulationServiceAssembler.toModel(updatedOrder, report, dto);
+                    return SimulationServiceAssembler.toModelCloseOrder(updatedOrder, dto);
                 });
+    }
+
+    public Mono<CloseSimulationResDto> close(CloseSimulationReqDto dto) {
+        Simulation simulation = findByIdOrError(dto.getSimulationId());
+
+        Map<SimulationOrder.Status, List<SimulationOrderResDto>> ordersMap = new EnumMap<>(SimulationOrder.Status.class);
+        ordersMap.put(SimulationOrder.Status.LIQUIDATED, new ArrayList<>());
+        ordersMap.put(SimulationOrder.Status.CLOSED, new ArrayList<>());
+        ordersMap.put(SimulationOrder.Status.OPEN, new ArrayList<>());
+
+        List<SimulationOrder> openOrders = simulationOrderService.findAllBySimulationId(simulation.getId()).stream()
+                .map(order -> addInfoInOrdersMapStepOne(ordersMap, simulation, order, dto))
+                .filter(order -> SimulationOrder.Status.OPEN == order.getStatus())
+                .toList();
+
+        if (CollectionUtils.isEmpty(openOrders)) {
+            List<SimulationEvent> events = simulationEventService.findBySimulationIdOrderByEventTimeAsc(simulation.getId());
+            delete(dto);
+            return Mono.just(SimulationServiceAssembler.toModelClose(ordersMap, events));
+        }
+
+        return Flux.fromIterable(openOrders)
+                .flatMap(order -> addInfoInOrdersMapStepTwo(ordersMap, order, dto))
+                .collectList()
+                .flatMap(reports -> {
+                    List<SimulationEvent> events = simulationEventService.findBySimulationIdOrderByEventTimeAsc(simulation.getId());
+                    delete(dto);
+                    return Mono.just(SimulationServiceAssembler.toModelClose(ordersMap, events));
+                });
+    }
+
+    @Transactional
+    public void deleteAll() {
+        simulationEventService.deleteAll();
+        simulationOrderService.deleteAll();
+        repository.deleteAll();
     }
 
     // PRIVATE METHODS -------------------------------------------------------------------------------------------------
@@ -117,6 +126,27 @@ public class SimulationService {
         return closedOrder;
     }
 
+    @Transactional
+    private void delete(CloseSimulationReqDto dto) {
+        if (dto.isDelete()) {
+            delete(dto.getSimulationId());
+        }
+    }
+
+    @Transactional
+    public void delete(Long simulationId) {
+        simulationEventService.deleteBySimulationId(simulationId);
+        simulationOrderService.deleteBySimulationId(simulationId);
+        repository.deleteById(simulationId);
+    }
+
+    private SimulationOrder findOrderWithSimulationField(Long simulationId, Long orderId) {
+        Simulation simulation = findByIdOrError(simulationId);
+        SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(orderId, simulationId);
+        order.setSimulation(simulation);
+        return order;
+    }
+
     private Simulation findByIdOrError(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new CustomException(ExceptionEnum.SIMULATION_NOT_FOUND));
@@ -128,5 +158,41 @@ public class SimulationService {
 
     private Simulation addBalance(Simulation simulation, SimulationOrder order) {
         return repository.save(SimulationFactory.addBalance(simulation, order));
+    }
+
+    private Mono<SimulationOrderResDto> manageOpenOrderAndToModel(SimulationOrder order, TimeReqDto dto) {
+        return simulationOrderReportFactoryService.create(order, dto)
+                .map(report -> {
+                    if (report.isLiquidated()) {
+                        return closeOrderAndToModel(order, report, dto);
+                    }
+                    return SimulationServiceAssembler.toModelOpenOrder(order, report, dto);
+                });
+    }
+
+    private SimulationOrder addInfoInOrdersMapStepOne(Map<SimulationOrder.Status, List<SimulationOrderResDto>> orders, Simulation simulation, SimulationOrder order, TimeReqDto dto) {
+        final SimulationOrder.Status status = order.getStatus();
+        if (SimulationOrder.Status.LIQUIDATED == status || SimulationOrder.Status.CLOSED == order.getStatus() ) {
+            orders.get(status).add(SimulationServiceAssembler.toModelCloseOrder(order, dto));
+        }
+        order.setSimulation(simulation);
+        return order;
+    }
+
+    private Mono<OrderReport> addInfoInOrdersMapStepTwo(Map<SimulationOrder.Status, List<SimulationOrderResDto>> orders, SimulationOrder order, TimeReqDto dto) {
+        return simulationOrderReportFactoryService.create(order, dto)
+                .map(report -> {
+                    if (report.isLiquidated()) {
+                        orders.get(SimulationOrder.Status.LIQUIDATED).add(closeOrderAndToModel(order, report, dto));
+                    } else {
+                        orders.get(SimulationOrder.Status.OPEN).add(SimulationServiceAssembler.toModelOpenOrder(order, report, dto));
+                    }
+                    return report;
+                });
+    }
+
+    private SimulationOrderResDto closeOrderAndToModel(SimulationOrder order, OrderReport report, TimeReqDto dto) {
+        SimulationOrder updatedOrder = closeOrder(order, report);
+        return SimulationServiceAssembler.toModelCloseOrder(updatedOrder, dto);
     }
 }

@@ -5,6 +5,7 @@ import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.report.OrderReport;
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.Assert;
 import java.math.BigDecimal;
@@ -47,12 +48,22 @@ public class ReportUtils {
                 .multiply(BigDecimal.valueOf(100));
     }
 
+    public @Nullable Boolean isProfit(SimulationOrder order) {
+        Assert.isTrue(SimulationOrder.Status.LIQUIDATED == order.getStatus() || SimulationOrder.Status.CLOSED == order.getStatus(), "status order cannot be open or null");
+        Assert.notNull(order.getProfitLoss(), "report get profit loss cannot be null");
+        return isProfit(order.getProfitLoss());
+    }
+
     public @Nullable Boolean isProfit(OrderReport report) {
         Assert.notNull(report.getProfitLoss(), "report get profit loss cannot be null");
+        return isProfit(report.getProfitLoss());
+    }
+
+    private @Nullable Boolean isProfit(@NotNull BigDecimal profitLoss) {
         Boolean result = null;
-        if (report.getProfitLoss().doubleValue() > 0) {
+        if (profitLoss.doubleValue() > 0) {
             result = Boolean.TRUE;
-        } else if (report.getProfitLoss().doubleValue() < 0) {
+        } else if (profitLoss.doubleValue() < 0) {
             result = Boolean.FALSE;
         }
         return result;

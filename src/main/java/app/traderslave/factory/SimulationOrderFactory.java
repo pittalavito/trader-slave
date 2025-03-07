@@ -5,7 +5,6 @@ import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
 import app.traderslave.model.report.OrderReport;
 import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationOrder;
-import app.traderslave.model.enums.SOrderStatus;
 import app.traderslave.utility.ReportUtils;
 import lombok.experimental.UtilityClass;
 import java.time.LocalDateTime;
@@ -20,7 +19,7 @@ public class SimulationOrderFactory {
                 .amountOfTrade(dto.getAmountOfTrade() == null ? simulation.getBalance() : dto.getAmountOfTrade())
                 .openPrice(candle.getClose())
                 .openTime(candle.getCloseTime())
-                .status(SOrderStatus.OPEN)
+                .status(SimulationOrder.Status.OPEN)
                 .type(dto.getOrderType())
                 .uid(UUID.randomUUID().toString())
                 .version(0)
@@ -30,7 +29,7 @@ public class SimulationOrderFactory {
     }
 
     public SimulationOrder close(SimulationOrder order, OrderReport report) {
-        order.setStatus(report.isLiquidated() ? SOrderStatus.LIQUIDATED : SOrderStatus.CLOSED);
+        order.setStatus(report.isLiquidated() ? SimulationOrder.Status.LIQUIDATED : SimulationOrder.Status.CLOSED);
         order.setClosePrice(report.getClosePrice());
         order.setCloseTime(report.getCloseTime());
         order.setProfitLoss(report.getProfitLoss());

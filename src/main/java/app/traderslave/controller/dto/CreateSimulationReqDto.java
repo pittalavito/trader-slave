@@ -10,4 +10,5 @@ public class CreateSimulationReqDto {
     @NotNull(message = "required")
     private CurrencyPair currencyPair;
     private Currency currency = Currency.USD;
+    private String description;
 }

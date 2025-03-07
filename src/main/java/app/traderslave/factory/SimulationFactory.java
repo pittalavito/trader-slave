@@ -17,6 +17,7 @@ public class SimulationFactory {
                 .currency(dto.getCurrency())
                 .balance(dto.getCurrency().getDefaultCapital())
                 .uid(UUID.randomUUID().toString())
+                .description(dto.getDescription())
                 .version(0)
                 .build();
     }

@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class SimulationOrderReportService {
+class SimulationOrderReportFactoryService {
 
     private final BinanceService binanceService;
 

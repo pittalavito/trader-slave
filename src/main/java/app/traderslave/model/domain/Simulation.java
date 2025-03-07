@@ -30,4 +30,7 @@ public class Simulation extends BasePersistentModel {
     @Positive
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
     private BigDecimal balance;
+
+    @Column(columnDefinition = SqlColumnDefinition.VARCHAR_255)
+    private String description;
 }

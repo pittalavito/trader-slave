@@ -1,7 +1,6 @@
 package app.traderslave.model.domain;
 
 import app.traderslave.model.enums.OrderType;
-import app.traderslave.model.enums.SOrderStatus;
 import app.traderslave.utility.SqlColumnDefinition;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
@@ -14,7 +13,9 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @Entity
 @NoArgsConstructor
-@Table(name = "SIMULATION_ORDER")
+@Table(name = "SIMULATION_ORDER", indexes = {
+        @Index(name = "order_idx_simulation_id", columnList = "simulationId")
+})
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SimulationOrder extends BasePersistentModel {
@@ -31,7 +32,7 @@ public class SimulationOrder extends BasePersistentModel {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.VARCHAR_20)
-    private SOrderStatus status;
+    private Status status;
 
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
     private BigDecimal openPrice;
@@ -78,4 +79,9 @@ public class SimulationOrder extends BasePersistentModel {
     @Transient
     private Simulation simulation;
 
+    public enum Status {
+        OPEN,
+        CLOSED,
+        LIQUIDATED;
+    }
 }

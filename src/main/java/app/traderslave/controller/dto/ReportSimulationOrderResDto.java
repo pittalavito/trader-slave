@@ -1,7 +1,7 @@
 package app.traderslave.controller.dto;
 
+import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.OrderType;
-import app.traderslave.model.enums.SOrderStatus;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import lombok.Data;
 public class ReportSimulationOrderResDto {
     private Long id;
     private OrderType orderType;
-    private SOrderStatus status;
+    private SimulationOrder.Status status;
     private String time;
     private String closeTime;
     private String openPrice;
