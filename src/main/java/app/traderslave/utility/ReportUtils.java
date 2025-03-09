@@ -48,12 +48,12 @@ public class ReportUtils {
                 .multiply(BigDecimal.valueOf(100));
     }
 
-    public BigDecimal calculatePercentageNumOrder(Integer numOrder, Integer numOrderInProfit) {
-        if (numOrderInProfit == 0 || numOrder == 0) {
+    public BigDecimal calculatePercentageNumOrder(Integer numOrder, Integer numOrderType) {
+        if (numOrderType == 0 || numOrder == 0) {
             return BigDecimal.ZERO;
         }
-        return BigDecimal.valueOf(numOrder)
-                .divide(BigDecimal.valueOf(numOrderInProfit), 2, java.math.RoundingMode.HALF_UP)
+        return BigDecimal.valueOf(numOrderType)
+                .divide(BigDecimal.valueOf(numOrder), 2, java.math.RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100));
     }
 
