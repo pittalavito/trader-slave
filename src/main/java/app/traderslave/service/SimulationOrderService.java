@@ -27,8 +27,8 @@ class SimulationOrderService {
         return repository.save(SimulationOrderFactory.create(simulation, dto, candle));
     }
 
-    public SimulationOrder close(SimulationOrder order, OrderReport report) {
-        return repository.save(SimulationOrderFactory.close(order, report));
+    public SimulationOrder close(SimulationOrder order, OrderReport report, boolean endSimulation) {
+        return repository.save(SimulationOrderFactory.close(order, report, endSimulation));
     }
 
     public List<SimulationOrder> findAllBySimulationId(Long simulationId) {

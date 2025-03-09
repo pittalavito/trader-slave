@@ -41,14 +41,14 @@ public class SimulationEvent extends BasePersistentModel {
     public enum EventType {
         CREATED_ORDER,
         CLOSED_ORDER,
-        LIQUIDATED_ORDER;
+        CLOSED_SIMULATION;
 
         public static EventType retrieveByOrderStatus(SimulationOrder.Status status) {
             EventType eventType = null;
-            switch (status) {
-                case LIQUIDATED -> eventType = LIQUIDATED_ORDER;
-                case CLOSED -> eventType = CLOSED_ORDER;
-                case OPEN -> eventType = CREATED_ORDER;
+            if(status == SimulationOrder.Status.OPEN) {
+                eventType = CREATED_ORDER;
+            } else {
+                eventType = CLOSED_ORDER;
             }
             return eventType;
         }

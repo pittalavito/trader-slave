@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 public class BinanceApiResponseAdapter {
 
     public List<CandleResDto> adapt(List<Object[]> response) {
+        //todo [Crilin] Version 1.0
+        //todo mettere errore se lista vuota
         return response.stream()
                 .map(BinanceApiResponseAdapter::adapt)
                 .collect(Collectors.toList());

@@ -21,10 +21,12 @@ public enum ExceptionEnum {
     AMOUNT_OF_TRADE_INVALID(HttpStatus.BAD_REQUEST, "Amount of trade must be positive"),
     ORDER_STATUS_IS_NOT_OPEN(HttpStatus.BAD_REQUEST, "Order status is not open"),
     SIMULATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Simulation not fount"),
-    TRANSIENT_SIMULATION_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "Transient simulation not fount"),
     SIMULATION_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Simulation order not fount"),
     STATUS_NOT_ALLOWED_FOR_THIS_METHOD(HttpStatus.INTERNAL_SERVER_ERROR, "Status not allowed for this method"),
-    INVALID_LEVERAGE(HttpStatus.BAD_REQUEST, "Invalid leverage");
+    INVALID_LEVERAGE(HttpStatus.BAD_REQUEST, "Invalid leverage"),
+    SIMULATION_STATUS_IS_NOT_OPEN(HttpStatus.BAD_REQUEST, "Simulation status is not open"),
+    START_TIME_IS_BEFORE_SIMULATION_START_TIME(HttpStatus.BAD_REQUEST, "Start time is before simulation start time"),
+    START_TIME_IS_BEFORE_LATEST_EVENT_TIME(HttpStatus.BAD_REQUEST, "Start time is before latest event time");
 
     private final HttpStatus httpStatus;
     private final String message;

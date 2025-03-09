@@ -42,12 +42,6 @@ public class SimulationController {
 
     // --- ORDER -------------------------------------------------------------------------------------------------------
 
-    @GetMapping(path = URI_ORDER)
-    public Mono<ResponseEntity<SimulationOrderResDto>> getOrder(@ModelAttribute @Validated GetSimulationOrderReqDto dto) {
-        return simulationService.getOrder(dto)
-                .map(ResponseEntity::ok);
-    }
-
     @PostMapping(path = URI_ORDER)
     public Mono<ResponseEntity<SimulationOrderResDto>> createOrder(@RequestBody @Validated CreateSimulationOrderReqDto dto) {
         return simulationService.createOrder(dto)

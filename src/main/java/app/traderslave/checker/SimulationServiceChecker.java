@@ -1,18 +1,39 @@
 package app.traderslave.checker;
 
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
+import app.traderslave.controller.dto.TimeReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.model.domain.Simulation;
+import app.traderslave.model.domain.SimulationEvent;
 import app.traderslave.model.domain.SimulationOrder;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @UtilityClass
 public class SimulationServiceChecker {
 
+    public void checkSimulationStatusOpen(Simulation simulation) {
+        if (!simulation.isOpen()) {
+            throw new CustomException(ExceptionEnum.SIMULATION_STATUS_IS_NOT_OPEN);
+        }
+    }
+
+    public void checkRequestTime(Simulation simulation, Optional<SimulationEvent> latestEvent, TimeReqDto dto) {
+        if (latestEvent.isEmpty() || dto.isRealTimeRequest() || dto.getStartTime() == null) {
+            return;
+        }
+        if(dto.getStartTime().isBefore(simulation.getStartTime())) {
+            throw new CustomException(ExceptionEnum.START_TIME_IS_BEFORE_SIMULATION_START_TIME);
+        }
+        if(dto.getStartTime().isBefore(latestEvent.get().getEventTime())) {
+            throw new CustomException(ExceptionEnum.START_TIME_IS_BEFORE_LATEST_EVENT_TIME);
+        }
+    }
+
     public void checkOrderStatusOpen(SimulationOrder order) {
-        if (SimulationOrder.Status.OPEN != order.getStatus()) {
+        if (!order.isOpen()) {
             throw new CustomException(ExceptionEnum.ORDER_STATUS_IS_NOT_OPEN);
         }
     }

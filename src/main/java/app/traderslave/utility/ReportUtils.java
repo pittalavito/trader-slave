@@ -16,9 +16,9 @@ public class ReportUtils {
     public BigDecimal calculateLiquidationPrice(BigDecimal currentPrice, OrderType type, int leverage) {
         BigDecimal percentage;
         if (OrderType.BUY.equals(type)) {
-            percentage = BigDecimal.valueOf(1 - 0.95/leverage);
+            percentage = BigDecimal.valueOf(1 - 0.90/leverage);
         } else {
-            percentage = BigDecimal.valueOf(1 + 0.95/leverage);
+            percentage = BigDecimal.valueOf(1 + 0.90/leverage);
         }
         return currentPrice.multiply(percentage);
     }
@@ -44,9 +44,30 @@ public class ReportUtils {
 
     public BigDecimal calculateProfitLossPercentage(SimulationOrder order, BigDecimal profitLoss) {
         return profitLoss
-                .divide(order.getAmountOfTrade(), 4, java.math.RoundingMode.HALF_UP)
+                .divide(order.getAmountOfTrade(), 2, java.math.RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100));
     }
+
+    public BigDecimal calculatePercentageNumOrder(Integer numOrder, Integer numOrderInProfit) {
+        if (numOrderInProfit == 0 || numOrder == 0) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimal.valueOf(numOrder)
+                .divide(BigDecimal.valueOf(numOrderInProfit), 2, java.math.RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
+    }
+
+    public BigDecimal calculatePercentage(BigDecimal startBalance, BigDecimal endBalance) {
+        BigDecimal percentage = endBalance
+            .divide(startBalance, 2, java.math.RoundingMode.HALF_UP)
+            .multiply(BigDecimal.valueOf(100));
+
+    if (endBalance.compareTo(startBalance) > 0) {
+        return percentage.subtract(BigDecimal.valueOf(100));
+    } else {
+        return BigDecimal.valueOf(100).subtract(percentage).negate();
+    }
+}
 
     public @Nullable Boolean isProfit(SimulationOrder order) {
         Assert.isTrue(SimulationOrder.Status.LIQUIDATED == order.getStatus() || SimulationOrder.Status.CLOSED == order.getStatus(), "status order cannot be open or null");

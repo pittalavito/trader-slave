@@ -1,45 +1,59 @@
 package app.traderslave.controller.dto;
 
 import app.traderslave.model.domain.SimulationEvent;
+import app.traderslave.model.enums.OrderType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CloseSimulationResDto {
-    private String requestInfo;
     private Long simulationId;
-    private List<SimulationOrderResDto> openOrders;
-    private List<SimulationOrderResDto> closeOrders;
-    private List<SimulationOrderResDto> liquidateOrders;
-    private List<BalanceEvent> balanceEvents;
+    private Map<Long, SimulationOrderResDto> ordersIdsMap;
+    private Map<SimulationOrderResDto.Status, List<Long>> ordersIdsStatusMap;
+    private List<Event> events;
 
     private BigDecimal initialBalance;
-    private BigDecimal finalRealizedBalance;
+    private BigDecimal finalBalance;
     private BigDecimal balancePercentageChange;
-    private BigDecimal maxRealizedBalanceDuringSimulation;
-    private BigDecimal minRealizedBalanceDuringSimulation;
 
-    private BigDecimal finalBalanceIfOpenOrdersWereClosedNow;
-    private BigDecimal balancePercentageChangeIfOpenOrdersWereClosedNow;
+    private BigDecimal maxUnrealizedBalance;
+    private BigDecimal minUnrealizedBalance;
 
-    private Long numOrders;
-    private Long numOrdersInProfit;
-    private Long numOrdersInLoss;
-
-    private BigDecimal percentageOrderInProfit;
+    private Integer numOrders;
+    private Integer numOrdersInProfit;
+    private Integer numOrdersInLoss;
+    private Integer numOrderLiquidated;
+    private Integer numOrderOpen;
+    private BigDecimal percentageOrderProfit;
+    private BigDecimal percentageNumOrderLoss;
+    private BigDecimal percentageNumOrderLiquidated;
+    private BigDecimal percentageNumOrderOpen;
 
     private Long durationOfSimulationInSeconds;
 
     @Data
     @Builder
-    public static class BalanceEvent {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class Event {
         private LocalDateTime time;
-        private SimulationEvent.EventType type;
-        private BigDecimal value;
-
+        private Long orderId;
+        private SimulationEvent.EventType eventType;
+        private BigDecimal balanceUpdate;
+        private OrderType orderType;
+        private BigDecimal openPrice;
+        private BigDecimal closePrice;
+        private LocalDateTime openTime;
+        private LocalDateTime closeTime;
+        private Integer leverage;
+        private BigDecimal amountOfTrade;
+        private BigDecimal percentageChange;
+        private Boolean isProfit;
     }
 }

@@ -9,5 +9,4 @@ import lombok.EqualsAndHashCode;
 public class CloseSimulationReqDto extends TimeReqDto {
     @NotNull(message = "required")
     private Long simulationId;
-    private boolean delete = false;
 }

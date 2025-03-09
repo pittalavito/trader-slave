@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -18,12 +19,18 @@ class SimulationEventService {
 
     private final SimulationEventRepository repository;
 
-    public SimulationEvent create(SimulationOrder order) {
-        return repository.save(SimulationEventFactory.create(order));
+    public SimulationEvent create(SimulationOrder order, boolean endSimulation) {
+        return repository.save(endSimulation ?
+                SimulationEventFactory.closeSImulation(order) :
+                SimulationEventFactory.create(order));
     }
 
     public List<SimulationEvent> findBySimulationIdOrderByEventTimeAsc(Long simulationId) {
         return repository.findBySimulationIdOrderByEventTimeAsc(simulationId);
+    }
+
+    public Optional<SimulationEvent> findLatestEventBySimulationId(Long simulationId) {
+        return repository.findLatestEventBySimulationId(simulationId);
     }
 
     @Transactional

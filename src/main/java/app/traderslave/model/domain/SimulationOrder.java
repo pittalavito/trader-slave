@@ -55,20 +55,17 @@ public class SimulationOrder extends BasePersistentModel {
     @Column(columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
     private BigDecimal profitLoss;
 
-    @Column(columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
-    private BigDecimal profitLossMinusFees;
-
-    @Column(columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    @Column(name = "PNL", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
     private BigDecimal percentageChange;
-
-    @Column(name = "MU_PROFIT_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
-    private BigDecimal maxUnrealizedProfitDuringTrade;
-
-    @Column(name = "MU_LOSS_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
-    private BigDecimal maxUnrealizedLossDuringTrade;
 
     @Column(name = "DU_TRADE_MILL", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
     private Long durationOfTradeInSeconds;
+
+    @Column(name = "MAX_U_PROFIT_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal maxUnrealizedProfitDuringTrade;
+
+    @Column(name = "MAX_U_LOSS_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
+    private BigDecimal maxUnrealizedLossDuringTrade;
 
     @Column(name = "MAX_PRICE_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
     private BigDecimal maxPriceDuringTrade;
@@ -76,12 +73,13 @@ public class SimulationOrder extends BasePersistentModel {
     @Column(name = "MIN_PRICE_DT", columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2)
     private BigDecimal minPriceDuringTrade;
 
-    @Transient
-    private Simulation simulation;
+    public boolean isOpen() {
+        return Status.OPEN == status;
+    }
 
     public enum Status {
         OPEN,
         CLOSED,
-        LIQUIDATED;
+        LIQUIDATED
     }
 }

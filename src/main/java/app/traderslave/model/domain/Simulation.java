@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @SuperBuilder
@@ -33,4 +34,29 @@ public class Simulation extends BasePersistentModel {
 
     @Column(columnDefinition = SqlColumnDefinition.VARCHAR_255)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = SqlColumnDefinition.VARCHAR_20)
+    private Status status;
+
+    @Column(nullable = false, columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
+    private LocalDateTime startTime;
+
+    @Column(nullable = false, columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
+    private LocalDateTime endTime;
+
+    //todo [Crilin] Version 1.0
+    //@Lob pensare di salvare solo il report finale
+    //@Column(columnDefinition = "CLOB")
+    //private String finalReport;
+
+    public boolean isOpen() {
+        return Status.OPEN == status;
+    }
+
+    public enum Status {
+        OPEN,
+        CLOSED
+    }
+
 }

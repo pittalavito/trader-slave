@@ -14,9 +14,21 @@ public class SimulationEventFactory {
         return SimulationEvent.builder()
                 .orderId(order.getId())
                 .simulationId(order.getSimulationId())
-                .balanceUpdates(SimulationEvent.EventType.CREATED_ORDER == eventType ? order.getAmountOfTrade().negate() : order.getProfitLossMinusFees())
+                .balanceUpdates(SimulationEvent.EventType.CREATED_ORDER == eventType ? order.getAmountOfTrade().negate() : order.getProfitLoss().abs())
                 .eventTime(SimulationEvent.EventType.CREATED_ORDER == eventType ? order.getOpenTime() : order.getCloseTime())
                 .eventType(eventType)
+                .uid(UUID.randomUUID().toString())
+                .version(0)
+                .build();
+    }
+
+    public SimulationEvent closeSImulation(SimulationOrder order) {
+        return SimulationEvent.builder()
+                .orderId(order.getId())
+                .simulationId(order.getSimulationId())
+                .balanceUpdates(order.getProfitLoss().abs())
+                .eventTime(order.getCloseTime())
+                .eventType(SimulationEvent.EventType.CLOSED_SIMULATION)
                 .uid(UUID.randomUUID().toString())
                 .version(0)
                 .build();

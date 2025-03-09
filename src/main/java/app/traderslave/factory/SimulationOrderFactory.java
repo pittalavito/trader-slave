@@ -28,12 +28,29 @@ public class SimulationOrderFactory {
                 .build();
     }
 
-    public SimulationOrder close(SimulationOrder order, OrderReport report) {
-        order.setStatus(report.isLiquidated() ? SimulationOrder.Status.LIQUIDATED : SimulationOrder.Status.CLOSED);
+    public SimulationOrder close(SimulationOrder order, OrderReport report, boolean endSimulation) {
+        if(!endSimulation) {
+            order.setStatus(report.isLiquidated() ? SimulationOrder.Status.LIQUIDATED : SimulationOrder.Status.CLOSED);
+        }
         order.setClosePrice(report.getClosePrice());
         order.setCloseTime(report.getCloseTime());
         order.setProfitLoss(report.getProfitLoss());
-        order.setProfitLossMinusFees(report.getProfitLossMinusFees());
+        order.setPercentageChange(report.getPercentageChange());
+        order.setMaxUnrealizedProfitDuringTrade(report.getMaxUnrealizedProfitDuringTrade());
+        order.setMaxUnrealizedLossDuringTrade(report.getMaxUnrealizedLossDuringTrade());
+        order.setDurationOfTradeInSeconds(report.getDurationOfTradeInSeconds());
+        order.setLastModificationDate(LocalDateTime.now());
+        order.setVersion(order.getVersion() + 1);
+        order.setMaxPriceDuringTrade(report.getMaxPriceDuringTrade());
+        order.setMinPriceDuringTrade(report.getMinPriceDuringTrade());
+        return order;
+    }
+
+    public SimulationOrder closeBySimulationClose(SimulationOrder order, OrderReport report) {
+        order.setStatus(SimulationOrder.Status.OPEN);
+        order.setClosePrice(report.getClosePrice());
+        order.setCloseTime(report.getCloseTime());
+        order.setProfitLoss(report.getProfitLoss());
         order.setPercentageChange(report.getPercentageChange());
         order.setMaxUnrealizedProfitDuringTrade(report.getMaxUnrealizedProfitDuringTrade());
         order.setMaxUnrealizedLossDuringTrade(report.getMaxUnrealizedLossDuringTrade());
