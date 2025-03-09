@@ -16,7 +16,6 @@ import java.util.Map;
 public class CloseSimulationResDto {
     private Long simulationId;
     private Map<Long, SimulationOrderResDto> ordersIdsMap;
-    private Map<SimulationOrderResDto.Status, List<Long>> ordersIdsStatusMap;
     private List<Event> events;
 
     private BigDecimal initialBalance;

@@ -4,7 +4,6 @@ import app.traderslave.model.domain.SimulationEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface SimulationEventRepository extends JpaRepository<SimulationEvent, Long> {
@@ -14,9 +13,9 @@ public interface SimulationEventRepository extends JpaRepository<SimulationEvent
 
     void deleteBySimulationId(Long simulationId);
 
-    default Optional<SimulationEvent> findLatestEventBySimulationId(Long simulationId) {
+    default SimulationEvent findLatestEventBySimulationId(Long simulationId) {
         List<SimulationEvent> events = findBySimulationIdOrderByEventTimeDesc(simulationId);
-        return events.isEmpty() ? Optional.empty() : Optional.of(events.get(0));
+        return events.stream().findFirst().orElse(null);
     }
 
 }

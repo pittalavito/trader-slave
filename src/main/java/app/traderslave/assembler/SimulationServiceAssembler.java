@@ -78,7 +78,7 @@ public class SimulationServiceAssembler {
         return CloseSimulationResDto.builder()
                 .simulationId(simulation.getId())
                 .ordersIdsMap(ordersIdsMap)
-                .ordersIdsStatusMap(ordersIdsStatusMap)
+                //.ordersIdsStatusMap(ordersIdsStatusMap)
                 .events(allEvents)
                 .initialBalance(simulation.getCurrency().getDefaultCapital())
                 .finalBalance(simulation.getBalance())

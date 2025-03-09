@@ -49,7 +49,7 @@ public class SimulationService {
     public Mono<CloseSimulationResDto> close(CloseSimulationReqDto dto) {
         Simulation simulation = findByIdOrError(dto.getSimulationId());
         SimulationServiceChecker.checkSimulationStatusOpen(simulation);
-        Optional<SimulationEvent> latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
+        SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
         SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
         Map<Long, SimulationOrderResDto> ordersIdsMap = new HashMap<>();
         Map<SimulationOrderResDto.Status, List<Long>> ordersIdsStatusMap = new EnumMap<>(SimulationOrderResDto.Status.class);
@@ -73,7 +73,7 @@ public class SimulationService {
         Simulation simulation = findByIdOrError(dto.getSimulationId());
         SimulationServiceChecker.checkSimulationStatusOpen(simulation);
         SimulationServiceChecker.checkBalance(simulation, dto);
-        Optional<SimulationEvent> latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
+        SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
         SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
 
         return binanceService.findCandle(BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), dto))
@@ -87,7 +87,7 @@ public class SimulationService {
     public Mono<SimulationOrderResDto> closeOrder(CloseSimulationOrderReqDto dto) {
         Simulation simulation = findByIdOrError(dto.getSimulationId());
         SimulationServiceChecker.checkSimulationStatusOpen(simulation);
-        Optional<SimulationEvent> latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
+        SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
         SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
         SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(dto.getOrderId(), simulation.getId());
         SimulationServiceChecker.checkOrderStatusOpen(order);

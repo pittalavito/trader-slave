@@ -29,7 +29,7 @@ class SimulationEventService {
         return repository.findBySimulationIdOrderByEventTimeAsc(simulationId);
     }
 
-    public Optional<SimulationEvent> findLatestEventBySimulationId(Long simulationId) {
+    public SimulationEvent findLatestEventBySimulationId(Long simulationId) {
         return repository.findLatestEventBySimulationId(simulationId);
     }
 

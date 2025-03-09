@@ -9,7 +9,6 @@ import app.traderslave.model.domain.SimulationEvent;
 import app.traderslave.model.domain.SimulationOrder;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @UtilityClass
 public class SimulationServiceChecker {
@@ -20,14 +19,14 @@ public class SimulationServiceChecker {
         }
     }
 
-    public void checkRequestTime(Simulation simulation, Optional<SimulationEvent> latestEvent, TimeReqDto dto) {
-        if (latestEvent.isEmpty() || dto.isRealTimeRequest() || dto.getStartTime() == null) {
-            return;
+    public void checkRequestTime(Simulation simulation, SimulationEvent latestEvent, TimeReqDto dto) {
+        if(dto.getStartTime() == null || dto.isRealTimeRequest()) {
+           return;
         }
         if(dto.getStartTime().isBefore(simulation.getStartTime())) {
             throw new CustomException(ExceptionEnum.START_TIME_IS_BEFORE_SIMULATION_START_TIME);
         }
-        if(dto.getStartTime().isBefore(latestEvent.get().getEventTime())) {
+        if (latestEvent != null && dto.getStartTime().isBefore(latestEvent.getEventTime())) {
             throw new CustomException(ExceptionEnum.START_TIME_IS_BEFORE_LATEST_EVENT_TIME);
         }
     }
