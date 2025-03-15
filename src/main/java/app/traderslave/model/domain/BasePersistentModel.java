@@ -20,11 +20,11 @@ public abstract class BasePersistentModel {
     @Column(nullable = false, unique = true, columnDefinition = SqlColumnDefinition.VARCHAR_UID)
     private String uid;
 
-    @Column(nullable = false, columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
-    private LocalDateTime creationDate;
+    @Column(columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
+    private LocalDateTime creationDate = LocalDateTime.now();
 
-    @Column(nullable = false, columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
-    private LocalDateTime lastModificationDate;
+    @Column(columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
+    private LocalDateTime lastModificationDate = LocalDateTime.now();
 
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.INTEGER_DEFAULT_0)
     private Integer version;

@@ -70,7 +70,6 @@ public class ReportUtils {
 }
 
     public @Nullable Boolean isProfit(SimulationOrder order) {
-        Assert.isTrue(SimulationOrder.Status.LIQUIDATED == order.getStatus() || SimulationOrder.Status.CLOSED == order.getStatus(), "status order cannot be open or null");
         Assert.notNull(order.getProfitLoss(), "report get profit loss cannot be null");
         return isProfit(order.getProfitLoss());
     }

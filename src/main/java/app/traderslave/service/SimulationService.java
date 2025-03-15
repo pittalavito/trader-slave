@@ -120,7 +120,7 @@ public class SimulationService {
 
     @Transactional
     private SimulationOrder closeOrder(Simulation simulation, SimulationOrder order, OrderReport report, boolean endSimulation) {
-        SimulationOrder closedOrder = simulationOrderService.close(order, report, false);
+        SimulationOrder closedOrder = simulationOrderService.close(order, report, endSimulation);
         repository.save(SimulationFactory.addBalance(simulation, order));
         simulationEventService.create(closedOrder, endSimulation);
         return closedOrder;
@@ -152,8 +152,8 @@ public class SimulationService {
     private CloseSimulationResDto closeStepThree(Long simulationId, Map<Long, SimulationOrderResDto> ordersIdsMap, Map<SimulationOrderResDto.Status, List<Long>> ordersIdsStatusMap, TimeReqDto dto) {
         List<SimulationEvent> events = simulationEventService.findBySimulationIdOrderByEventTimeAsc(simulationId);
         Simulation simulation = findByIdOrError(simulationId);
+        simulation = repository.save(SimulationFactory.close(simulation, dto));
         CloseSimulationResDto resDto = SimulationServiceAssembler.toModelClose(simulation, ordersIdsMap, ordersIdsStatusMap, events);
-        repository.save(SimulationFactory.close(simulation, dto));
         simulationEventService.deleteAll();
         simulationOrderService.deleteAll();
         return resDto;

@@ -9,7 +9,6 @@ import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.utility.ReportUtils;
 import app.traderslave.utility.TimeUtils;
 import lombok.experimental.UtilityClass;
-import org.springframework.util.Assert;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +41,6 @@ public class SimulationServiceAssembler {
     }
 
     public SimulationOrderResDto toModelCloseOrder(SimulationOrder order, TimeReqDto dto) {
-        Assert.isTrue(SimulationOrder.Status.CLOSED == order.getStatus() || SimulationOrder.Status.LIQUIDATED == order.getStatus(), "Status order cannot be OPEN");
         return SimulationOrderResDto.builder()
                 .requestInfo(buildRequestInfo(dto))
                 .orderType(order.getType())
@@ -72,7 +70,7 @@ public class SimulationServiceAssembler {
         int numOrdersInProfit = ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_PROFIT).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.CLOSED_WITH_PROFIT).size();
         int numOrdersInLoss = ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_LOSS).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.CLOSED_WITH_LOSS).size();
         int numOrderLiquidated = ordersIdsStatusMap.get(SimulationOrderResDto.Status.LIQUIDATED).size();
-        int numOrderOpen = ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_NEUTRAL).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_LOSS).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_PROFIT).size();
+        int numOrderClosedBySimulation = ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_NEUTRAL).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_LOSS).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_PROFIT).size();
         List<CloseSimulationResDto.Event> allEvents = buildEvents(events, ordersIdsMap);
 
         return CloseSimulationResDto.builder()
@@ -89,11 +87,11 @@ public class SimulationServiceAssembler {
                 .numOrdersInProfit(numOrdersInProfit)
                 .numOrdersInLoss(numOrdersInLoss)
                 .numOrderLiquidated(numOrderLiquidated)
-                .numOrderOpen(numOrderOpen)
+                .numOrderClosedBySimulation(numOrderClosedBySimulation)
                 .percentageOrderProfit(ReportUtils.calculatePercentageNumOrder(numOrders, numOrdersInProfit))
                 .percentageNumOrderLoss(ReportUtils.calculatePercentageNumOrder(numOrders, numOrdersInLoss))
                 .percentageNumOrderLiquidated(ReportUtils.calculatePercentageNumOrder(numOrders, numOrderLiquidated))
-                .percentageNumOrderOpen(ReportUtils.calculatePercentageNumOrder(numOrders, numOrderOpen))
+                .percentageNumOrderOpen(ReportUtils.calculatePercentageNumOrder(numOrders, numOrderClosedBySimulation))
                 .durationOfSimulationInSeconds(TimeUtils.calculateDiffInSecond(simulation.getStartTime(), simulation.getEndTime()))
                 .build();
     }

@@ -29,7 +29,7 @@ public class CloseSimulationResDto {
     private Integer numOrdersInProfit;
     private Integer numOrdersInLoss;
     private Integer numOrderLiquidated;
-    private Integer numOrderOpen;
+    private Integer numOrderClosedBySimulation;
     private BigDecimal percentageOrderProfit;
     private BigDecimal percentageNumOrderLoss;
     private BigDecimal percentageNumOrderLiquidated;
