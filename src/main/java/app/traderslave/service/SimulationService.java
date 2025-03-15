@@ -141,7 +141,7 @@ public class SimulationService {
     }
 
     private SimulationOrderResDto closeStepTwo(Map<Long, SimulationOrderResDto> orders, Map<SimulationOrderResDto.Status, List<Long>> ordersIdsStatusMap, Simulation simulation, SimulationOrder order, TimeReqDto dto, OrderReport report) {
-        SimulationOrder updatedOrder = closeOrder(simulation, order, report, order.isOpen());
+        SimulationOrder updatedOrder = closeOrder(simulation, order, report, true);
         SimulationOrderResDto resDto = SimulationServiceAssembler.toModelCloseOrder(updatedOrder, dto);
         orders.put(order.getId(), resDto);
         ordersIdsStatusMap.get(resDto.getStatus()).add(order.getId());
