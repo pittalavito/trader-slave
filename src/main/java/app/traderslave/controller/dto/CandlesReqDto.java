@@ -4,9 +4,11 @@ import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.experimental.FieldNameConstants;
 import java.time.LocalDateTime;
 
 @Data
+@FieldNameConstants
 public class CandlesReqDto {
 
     @NotNull(message = "required")
