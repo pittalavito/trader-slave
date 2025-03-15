@@ -133,6 +133,8 @@ public class SimulationServiceAssembler {
     }
 
     private CloseSimulationResDto.Event buildEvent(SimulationEvent event, SimulationOrderResDto order) {
+        boolean isCreatedOrder =  SimulationEvent.EventType.CREATED_ORDER == event.getEventType();
+
         return CloseSimulationResDto.Event.builder()
                 .time(event.getEventTime())
                 .orderId(event.getOrderId())
@@ -140,13 +142,13 @@ public class SimulationServiceAssembler {
                 .balanceUpdate(event.getBalanceUpdates())
                 .orderType(order.getOrderType())
                 .openPrice(order.getOpenPrice())
-                .closePrice(order.getClosePrice())
                 .openTime(order.getOpenTime())
-                .closeTime(order.getCloseTime())
-                .leverage(order.getLeverage())
                 .amountOfTrade(order.getAmountOfTrade())
-                .percentageChange(order.getPercentageChange())
-                .isProfit(null)
+                .leverage(order.getLeverage())
+                .closePrice(isCreatedOrder ? null : order.getClosePrice())
+                .closeTime(isCreatedOrder ? null : order.getCloseTime())
+                .percentageChange(isCreatedOrder ? null : order.getPercentageChange())
+                .isProfit(isCreatedOrder ? null : ReportUtils.isProfit(order.getProfitLoss()))
                 .build();
     }
 }

@@ -79,7 +79,7 @@ public class ReportUtils {
         return isProfit(report.getProfitLoss());
     }
 
-    private @Nullable Boolean isProfit(@NotNull BigDecimal profitLoss) {
+    public @Nullable Boolean isProfit(@NotNull BigDecimal profitLoss) {
         Boolean result = null;
         if (profitLoss.doubleValue() > 0) {
             result = Boolean.TRUE;
