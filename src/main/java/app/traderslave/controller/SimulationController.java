@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/simulation")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)

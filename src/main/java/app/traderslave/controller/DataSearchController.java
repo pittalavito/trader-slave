@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/data-search")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
