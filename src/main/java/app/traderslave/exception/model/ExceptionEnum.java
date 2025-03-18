@@ -26,7 +26,8 @@ public enum ExceptionEnum {
     INVALID_LEVERAGE(HttpStatus.BAD_REQUEST, "Invalid leverage"),
     SIMULATION_STATUS_IS_NOT_OPEN(HttpStatus.BAD_REQUEST, "Simulation status is not open"),
     START_TIME_IS_BEFORE_SIMULATION_START_TIME(HttpStatus.BAD_REQUEST, "Start time is before simulation start time"),
-    START_TIME_IS_BEFORE_LATEST_EVENT_TIME(HttpStatus.BAD_REQUEST, "Start time is before latest event time");
+    START_TIME_IS_BEFORE_LATEST_EVENT_TIME(HttpStatus.BAD_REQUEST, "Start time is before latest event time"),
+    H2_CONSOLE_NOT_AVAILABLE(HttpStatus.INTERNAL_SERVER_ERROR, "H2 Console is only available in 'h2' profile");
 
     private final HttpStatus httpStatus;
     private final String message;
