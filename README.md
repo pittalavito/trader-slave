@@ -40,7 +40,7 @@ Di seguito una sintesi delle sue funzionalità principali:
    - Creazione e gestione degli ordini di trading all'interno di una simulazione.
 
 ### **Demo**:
-   - Link https://pittalavito.github.io/trader-slave-doc/html/main.html
+   - Link https://pittalavito.github.io/trader-slave-demo/html/main.html
    - Repository: https://github.com/pittalavito/trader-slave-demo
 
 
