@@ -22,9 +22,12 @@ Di seguito una sintesi delle sue funzionalità principali:
 
 ### **Tecnologie utilizzate**
 
-- **Java**
-- **Database H2**: Utilizzato per la gestione dei dati in locale ma è già configurato anche il db relazionale 
+- **Java: version 17**
+- **Database**: H2 utilizzato per la gestione dei dati in locale ma è già configurato anche il db mysql in un altro file di "properties"
+- **Spring boot: version 3.4**
+- **Utilizzate: Optional, API stream, Web-flux, Hibernate, Crud-repository, Exception-handler, Design pattern......
 
+ 
 ### **API principali**
 1. **DatasetController**:
    - Endpoint per ottenere dati storici di mercato (candlestick).
@@ -39,6 +42,7 @@ Di seguito una sintesi delle sue funzionalità principali:
 ### **Demo**:
    - Link https://pittalavito.github.io/trader-slave-doc/html/main.html
    - Repository: https://github.com/pittalavito/trader-slave-demo
+
 
 ### **Eseguibile**:
    - Per il jar compreso di collection postman e file di utility per l'esecuzione in locale -> https://github.com/pittalavito/trader-slave-release
