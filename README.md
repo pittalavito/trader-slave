@@ -25,7 +25,7 @@ Di seguito una sintesi delle sue funzionalità principali:
 - **Java: version 17**
 - **Database**: H2 utilizzato per la gestione dei dati in locale ma è già configurato anche il db mysql in un altro file di "properties"
 - **Spring boot: version 3.4**
-- **Utilizzate: Optional, API stream, Web-flux, Hibernate, Crud-repository, Exception-handler, Design pattern......
+- **Other:** Optional, API stream, Web-flux, Hibernate, Crud-repository, Exception-handler, Design pattern......
 
  
 ### **API principali**
