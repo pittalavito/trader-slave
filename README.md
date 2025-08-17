@@ -1,6 +1,9 @@
 # Trader-slave
 
-L'applicativo è un sistema per la simulazione e gestione di operazioni di trading su coppie di valute (es. BTC/USDT). Di seguito una sintesi delle sue funzionalità principali:
+L'applicativo è un sistema per la simulazione e gestione di operazioni di trading su coppie di valute (es. BTC/USDT). 
+E' progettato per simulare scenari di trading realistici, fornendo strumenti per analisi e test di strategie.
+
+Di seguito una sintesi delle sue funzionalità principali:
 
 ### **Caratteristiche principali**
 
@@ -33,14 +36,9 @@ L'applicativo è un sistema per la simulazione e gestione di operazioni di tradi
 3. **SimulationOrderController**:
    - Creazione e gestione degli ordini di trading all'interno di una simulazione.
 
-### **Informazioni aggiuntive**
-L'applicativo è progettato per simulare scenari di trading realistici, fornendo strumenti per analisi e test di strategie.
+### **Demo**:
+   - Link https://pittalavito.github.io/trader-slave-doc/html/main.html
+   - Repository: https://github.com/pittalavito/trader-slave-demo
 
-Per una demo con un piccolo FE di dimostrazione:
-    - Link https://pittalavito.github.io/trader-slave-doc/html/main.html
-    - Repository: https://github.com/pittalavito/trader-slave-demo
-Per il jar compreso di collection postman e file di utility per l'esecuzione in locale:
-    - Repository: https://github.com/pittalavito/trader-slave-release
-
-Per il file jar compreo di collection post man:
-    - Repository: https://github.com/pittalavito/trader-slave-release
+### **Eseguibile**:
+   - Per il jar compreso di collection postman e file di utility per l'esecuzione in locale -> https://github.com/pittalavito/trader-slave-release
