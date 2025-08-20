@@ -42,13 +42,20 @@ public class JupiterPerpetualCsvAssembler {
         report.increaseNumberOfClosedTradesWithLoss(trade);
         report.increaseNumberOfClosedTradesLiquidation(trade);
 
-        report.increaseTotalTradeSize(trade);
+        report.increaseTotalSize(trade);
+        report.increaseTotalProfitSize(trade);
+        report.increaseTotalLossSize(trade);
+        report.increaseTotalLiquidationSize(trade);
 
         report.increaseTotalTradeFees(trade);
         report.increaseTotalLiquidationFees(trade);
 
         report.increaseTotalProfitLoss(trade);
         report.increaseTotalDepositWithdraw(trade);
+
+        report.increaseAvgTradeProfit(trade);
+        report.increaseAvgTradeLoss(trade);
+        report.increaseAvgTradeLiquidation(trade);
 
         return report;
     }

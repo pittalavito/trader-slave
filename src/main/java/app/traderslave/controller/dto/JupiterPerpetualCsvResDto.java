@@ -15,14 +15,17 @@ public class JupiterPerpetualCsvResDto {
     @Data
     public static class Report {
 
-        private Integer numberOfOpenTrades = 0;
+        private Integer numOpen = 0;
 
-        private Integer numberOfClosedTrades = 0;
-        private Integer numberOfClosedTradersWithProfit = 0;
-        private Integer numberOfClosedTradersWithLoss = 0;
-        private Integer numberOfClosedTradersLiquidation = 0;
+        private Integer numClosed = 0;
+        private Integer numClosedProfit = 0;
+        private Integer numClosedLoss = 0;
+        private Integer numClosedLiquidation = 0;
 
-        private BigDecimal totalTradeSize = BigDecimal.ZERO;
+        private BigDecimal totalSize = BigDecimal.ZERO;
+        private BigDecimal totalProfitSize = BigDecimal.ZERO;
+        private BigDecimal totalLossSize = BigDecimal.ZERO;
+        private BigDecimal totalLiquidationSize = BigDecimal.ZERO;
 
         private BigDecimal totalTradeFees = BigDecimal.ZERO;
         private BigDecimal totalLiquidationFees = BigDecimal.ZERO;
@@ -30,9 +33,12 @@ public class JupiterPerpetualCsvResDto {
         private BigDecimal totalProfitLoss = BigDecimal.ZERO;
         private BigDecimal totalDepositWithdraw = BigDecimal.ZERO;
 
+        private BigDecimal avgTradeProfit = BigDecimal.ZERO;
+        private BigDecimal avgTradeLoss = BigDecimal.ZERO;
+        private BigDecimal avgTradeLiquidation = BigDecimal.ZERO;
+
         /* TODO add other field, for example
         private BigDecimal avgTradeSize = BigDecimal.ZERO
-        private BigDecimal avgTradeSizeWithProfit = BigDecimal.ZERO;
         private BigDecimal avgTradeSizeWithLoss = BigDecimal.ZERO;
         private BigDecimal avgTradeSizeLiquidation = BigDecimal.ZERO;
         private BigDecimal avgTradeForDay = BigDecimal.ZERO
@@ -45,54 +51,111 @@ public class JupiterPerpetualCsvResDto {
 
         public void increaseNumberOfOpenTrades(JupiterPerpetualCsvReqDto trade) {
             if (trade.isIncrease()) {
-                this.numberOfOpenTrades++;
+                numOpen++;
             }
         }
 
         public void increaseNumberOfClosedTrades(JupiterPerpetualCsvReqDto trade) {
             if (trade.isDecrease()) {
-                this.numberOfClosedTrades++;
+                numClosed++;
             }
         }
 
         public void increaseNumberOfClosedTradesWithProfit(JupiterPerpetualCsvReqDto trade) {
             if (trade.isProfit()) {
-                this.numberOfClosedTradersWithProfit++;
+                numClosedProfit++;
             }
         }
 
         public void increaseNumberOfClosedTradesWithLoss(JupiterPerpetualCsvReqDto trade) {
             if (!trade.isLiquidation() && trade.isLoss()) {
-                this.numberOfClosedTradersWithLoss++;
+                numClosedLoss++;
             }
         }
 
         public void increaseNumberOfClosedTradesLiquidation(JupiterPerpetualCsvReqDto trade) {
             if (trade.isLiquidation()) {
-                this.numberOfClosedTradersLiquidation++;
+                numClosedLiquidation++;
             }
         }
 
-        public void increaseTotalTradeSize(JupiterPerpetualCsvReqDto trade) {
+        public void increaseTotalSize(JupiterPerpetualCsvReqDto trade) {
             if (trade.isDecrease()) {
-                this.totalTradeSize = this.totalTradeSize.add(trade.getTradeSize());
+                totalSize = totalSize.add(trade.getTradeSize());
+            }
+        }
+
+        public void increaseTotalProfitSize(JupiterPerpetualCsvReqDto trade) {
+            if (trade.isProfit()) {
+                totalProfitSize = totalProfitSize.add(trade.getTradeSize());
+            }
+        }
+
+        public void increaseTotalLossSize(JupiterPerpetualCsvReqDto trade) {
+            if (!trade.isLiquidation() && trade.isLoss()) {
+                totalLossSize = totalLossSize.add(trade.getTradeSize());
+            }
+        }
+
+        public void increaseTotalLiquidationSize(JupiterPerpetualCsvReqDto trade) {
+            if (trade.isLiquidation()) {
+                totalLiquidationSize = totalLiquidationSize.add(trade.getTradeSize());
             }
         }
 
         public void increaseTotalTradeFees(JupiterPerpetualCsvReqDto trade) {
-            this.totalTradeFees = this.totalTradeFees.add(trade.getTradeFee());
+            totalTradeFees = totalTradeFees.add(trade.getTradeFee());
         }
 
         public void increaseTotalLiquidationFees(JupiterPerpetualCsvReqDto trade) {
-            this.totalLiquidationFees = this.totalLiquidationFees.add(trade.getLiquidationFee());
+            totalLiquidationFees = totalLiquidationFees.add(trade.getLiquidationFee());
         }
 
         public void increaseTotalProfitLoss(JupiterPerpetualCsvReqDto trade) {
-            this.totalProfitLoss = this.totalProfitLoss.add(trade.getProfitLoss());
+            totalProfitLoss = totalProfitLoss.add(trade.getProfitLoss());
         }
 
         public void increaseTotalDepositWithdraw(JupiterPerpetualCsvReqDto trade) {
-            this.totalDepositWithdraw = this.totalDepositWithdraw.add(trade.getDepositWithdraw());
+            totalDepositWithdraw = totalDepositWithdraw.add(trade.getDepositWithdraw());
+        }
+
+        public void increaseAvgTradeProfit(JupiterPerpetualCsvReqDto trade) {
+            if (!trade.isProfit()) {
+                return;
+            }
+            if (numClosedProfit > 1) {
+                var normalized = avgTradeProfit.doubleValue() * (numClosedProfit - 1);
+                BigDecimal addedSize = BigDecimal.valueOf(normalized).add(trade.getProfitLoss());
+                avgTradeProfit = addedSize.divide(BigDecimal.valueOf(numClosedProfit), 2, java.math.RoundingMode.HALF_UP);
+            } else {
+                avgTradeProfit = trade.getProfitLoss();
+            }
+        }
+
+        public void increaseAvgTradeLoss(JupiterPerpetualCsvReqDto trade) {
+            if (trade.isLiquidation() || !trade.isLoss()) {
+                return;
+            }
+            if (numClosedLoss > 1) {
+                var normalized = avgTradeLoss.doubleValue() * (numClosedLoss - 1);
+                BigDecimal addedSize = BigDecimal.valueOf(normalized).add(trade.getProfitLoss());
+                avgTradeLoss = addedSize.divide(BigDecimal.valueOf(numClosedLoss), 2, java.math.RoundingMode.HALF_UP);
+            } else {
+                avgTradeLoss = trade.getProfitLoss();
+            }
+        }
+
+        public void increaseAvgTradeLiquidation(JupiterPerpetualCsvReqDto trade) {
+            if (!trade.isLiquidation()) {
+                return;
+            }
+            if (numClosedLiquidation > 1) {
+                var normalized = avgTradeLiquidation.doubleValue() * (numClosedLiquidation - 1);
+                BigDecimal addedSize = BigDecimal.valueOf(normalized).add(trade.getProfitLoss());
+                avgTradeLiquidation = addedSize.divide(BigDecimal.valueOf(numClosedLiquidation), 2, java.math.RoundingMode.HALF_UP);
+            } else {
+                avgTradeLiquidation = trade.getProfitLoss();
+            }
         }
     }
 }
