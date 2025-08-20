@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CurrencyPair {
-    BTC_USDT(Currency.BTC, Currency.USDT);
+    BTC_USDT(Currency.BTC, Currency.USDT),
+    SOL_USDC(Currency.SOL, Currency.USDC);
 
     private final Currency numCurrency;
     private final Currency denCurrency;

@@ -2,6 +2,7 @@ package app.traderslave.controller;
 
 import app.traderslave.controller.dto.*;
 import app.traderslave.service.*;
+import app.traderslave.utility.ControllerPath;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import reactor.core.publisher.Mono;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/simulation")
+@RequestMapping(ControllerPath.SIMULATION)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class SimulationController {
 

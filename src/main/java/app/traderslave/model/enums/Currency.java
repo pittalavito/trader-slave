@@ -10,7 +10,9 @@ import java.math.BigDecimal;
 public enum Currency {
     BTC("bitcoin", BigDecimal.valueOf(1d)),
     USD("american dollar", BigDecimal.valueOf(1000d)),
-    USDT("tether american dollar", BigDecimal.valueOf(1000d));
+    USDT("tether american dollar", BigDecimal.valueOf(1000d)),
+    USDC("usd coin", BigDecimal.valueOf(1000d)),
+    SOL("solana", BigDecimal.valueOf(100d));
 
     private final String name;
     private final BigDecimal defaultCapital;

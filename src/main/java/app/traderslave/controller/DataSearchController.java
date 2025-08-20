@@ -2,6 +2,7 @@ package app.traderslave.controller;
 
 import app.traderslave.controller.dto.*;
 import app.traderslave.service.BinanceService;
+import app.traderslave.utility.ControllerPath;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/data-search")
+@RequestMapping(ControllerPath.DATA_SEARCH)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class DataSearchController {
 
