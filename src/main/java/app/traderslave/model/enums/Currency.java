@@ -12,7 +12,8 @@ public enum Currency {
     USD("american dollar", BigDecimal.valueOf(1000d)),
     USDT("tether american dollar", BigDecimal.valueOf(1000d)),
     USDC("usd coin", BigDecimal.valueOf(1000d)),
-    SOL("solana", BigDecimal.valueOf(100d));
+    SOL("solana", BigDecimal.valueOf(100d)),
+    ETH("ethereum", BigDecimal.valueOf(10d));
 
     private final String name;
     private final BigDecimal defaultCapital;
