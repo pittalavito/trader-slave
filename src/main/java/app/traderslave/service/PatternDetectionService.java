@@ -1,7 +1,6 @@
 package app.traderslave.service;
 
 import app.traderslave.controller.dto.CandleResDto;
-import app.traderslave.controller.dto.CandlesReqDto;
 import app.traderslave.controller.dto.PatternDetectionReqDto;
 import app.traderslave.model.Pattern;
 import app.traderslave.utility.PatternUtils;
@@ -25,7 +24,6 @@ public class PatternDetectionService {
         return binanceService.findCandles(dto)
                 .map(candles -> detectPatterns(candles.getList(), dto.getLookBack(), dto.getTolerancePercent(), dto.getMinDistance()));
     }
-
 
     /**
     * Detects the most common patterns in the candles.
@@ -56,9 +54,8 @@ public class PatternDetectionService {
         detectedPatterns.addAll(PatternUtils.detectFallingWedge(candles, lookBack, minDistance));
         detectedPatterns.addAll(PatternUtils.detectRectangle(candles, lookBack, tolerancePercent));
 
+        detectedPatterns.forEach(pattern -> pattern.setBreakoutConfirmed(PatternUtils.isBreakoutConfirmed(pattern, candles)));
 
-        return detectedPatterns.stream()
-                .filter(pattern -> PatternUtils.isBreakoutConfirmed(pattern, candles))
-                .toList();
+        return detectedPatterns;
     }
 }

@@ -20,4 +20,14 @@ public class PatternDetectionReqDto extends CandlesReqDto {
      * Minimum distance between patterns
      */
     private Integer minDistance = 3;
+
+    /**
+     * Whether to show all candles involved in the pattern
+     */
+    private Boolean showAllCandles = false;
+
+    /**
+     * Whether to return only patterns with confirmed breakouts
+     */
+    private Boolean onlyBreakoutConfirmed = true;
 }

@@ -1,11 +1,8 @@
 package app.traderslave.controller;
 
 import app.traderslave.assembler.JupiterPerpetualCsvAssembler;
-import app.traderslave.controller.dto.CandlesResDto;
-import app.traderslave.controller.dto.JupiterPerpetualCsvReqDto;
-import app.traderslave.controller.dto.JupiterPerpetualCsvResDto;
-import app.traderslave.controller.dto.PatternDetectionReqDto;
-import app.traderslave.model.Pattern;
+import app.traderslave.assembler.PatternDetectionAssembler;
+import app.traderslave.controller.dto.*;
 import app.traderslave.service.PatternDetectionService;
 import app.traderslave.utility.ControllerPath;
 import app.traderslave.utility.CsvUtils;
@@ -15,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -37,7 +32,8 @@ public class TradeAnalysesController {
     }
 
     @PostMapping(path = URI_PATTERN_DETECTION)
-    public ResponseEntity<Mono<List<Pattern>>> detectPatterns(@RequestBody PatternDetectionReqDto dto) {
-        return ResponseEntity.ok(patternDetectionService.detect(dto));
+    public ResponseEntity<Mono<PatternDetectionResDto>> detectPatterns(@RequestBody PatternDetectionReqDto dto) {
+        var body = patternDetectionService.detect(dto).map(patterns -> PatternDetectionAssembler.toModel(patterns, dto));
+        return ResponseEntity.ok(body);
     }
 }

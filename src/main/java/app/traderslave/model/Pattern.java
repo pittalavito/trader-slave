@@ -24,5 +24,9 @@ public class Pattern {
     public PatternType.Category getCategory() {
         return patternType.getCategory();
     }
+
+    public String getDescription() {
+        return patternType.getDescription();
+    }
 }
 
