@@ -13,6 +13,40 @@ import java.util.stream.IntStream;
 @UtilityClass
 public class PatternUtils {
 
+    /**
+     * Detects the most common patterns in the candles.
+     *
+     * @param candles List of OHLC candles
+     * @param lookBack Number of candles to identify local maxima/minima
+     * @param tolerancePercent Maximum difference between maxima/minima for similar patterns
+     * @param minDistance Minimum number of candles between two maxima/minima to consider the pattern valid
+     * @return List of detected patterns
+     */
+    public List<Pattern> detectPatterns(List<CandleResDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<Pattern> detectedPatterns = new ArrayList<>();
+
+        detectedPatterns.addAll(detectDoubleTop(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectDoubleBottom(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectHeadAndShoulders(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectInverseHeadAndShoulders(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectTripleTop(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectTripleBottom(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectRoundingTop(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectRoundingBottom(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectAscendingTriangle(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectDescendingTriangle(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectSymmetricalTriangle(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectFlag(candles, lookBack));
+        detectedPatterns.addAll(detectPennant(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatterns.addAll(detectRisingWedge(candles, lookBack, minDistance));
+        detectedPatterns.addAll(detectFallingWedge(candles, lookBack, minDistance));
+        detectedPatterns.addAll(detectRectangle(candles, lookBack, tolerancePercent));
+
+        detectedPatterns.forEach(pattern -> pattern.setBreakoutConfirmed(isBreakoutConfirmed(pattern, candles)));
+
+        return detectedPatterns;
+    }
+
     public List<Pattern> detectDoubleTop(List<CandleResDto> candles, int lookBack, double tolerancePercent, int minDistance) {
         List<CandleResDto> maxima = findLocalMaxima(candles, lookBack);
         List<Pattern> patternsFound = new ArrayList<>();
