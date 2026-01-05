@@ -1,4 +1,4 @@
-package app.traderslave.service;
+package app.traderslave.service.simulation;
 
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;

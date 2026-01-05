@@ -5,6 +5,7 @@ import app.traderslave.controller.dto.PatternDetectionResDto;
 import app.traderslave.model.Pattern;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
+
 import java.util.List;
 
 @UtilityClass
@@ -12,18 +13,21 @@ public class PatternDetectionAssembler {
 
     public PatternDetectionResDto toModel(List<Pattern> patterns, PatternDetectionReqDto reqDto) {
         PatternDetectionResDto resDto = new PatternDetectionResDto();
+        resDto.setPatterns(toModelList(patterns, reqDto));
+        return resDto;
+    }
 
-        var listOfPattern = patterns.stream()
-                .map(pattern -> toModel(pattern, reqDto))
-                .toList();
-
-        if (Boolean.TRUE == reqDto.getOnlyBreakoutConfirmed()) {
-            listOfPattern = listOfPattern.stream()
-                    .filter(PatternDetectionResDto.Pattern::isBreakoutConfirmed)
+    private List<PatternDetectionResDto.Pattern> toModelList(List<Pattern> patterns, PatternDetectionReqDto reqDto) {
+        if (Boolean.TRUE != reqDto.getOnlyBreakoutConfirmed()) {
+            return patterns.stream()
+                    .map(pattern -> toModel(pattern, reqDto))
                     .toList();
         }
-        resDto.setPatterns(listOfPattern);
-        return resDto;
+
+        return patterns.stream()
+                .filter(Pattern::isBreakoutConfirmed)
+                .map(pattern -> toModel(pattern, reqDto))
+                .toList();
     }
 
     private PatternDetectionResDto.Pattern toModel(Pattern pattern, PatternDetectionReqDto reqDto) {

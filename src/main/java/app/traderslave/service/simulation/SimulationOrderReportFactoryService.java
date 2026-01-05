@@ -1,4 +1,4 @@
-package app.traderslave.service;
+package app.traderslave.service.simulation;
 
 import app.traderslave.adapter.BinanceServiceAdapter;
 import app.traderslave.checker.TimeChecker;
@@ -10,6 +10,7 @@ import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
 import app.traderslave.model.report.OrderReport;
+import app.traderslave.service.BinanceService;
 import app.traderslave.utility.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

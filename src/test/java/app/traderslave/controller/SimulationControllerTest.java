@@ -3,7 +3,7 @@ package app.traderslave.controller;
 import app.traderslave.controller.dto.*;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.OrderType;
-import app.traderslave.service.SimulationService;
+import app.traderslave.service.simulation.SimulationService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

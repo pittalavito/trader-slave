@@ -3,6 +3,7 @@ package app.traderslave.adapter;
 import app.traderslave.controller.dto.*;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
+import app.traderslave.service.simulation.SimulationService;
 import lombok.experimental.UtilityClass;
 import java.time.LocalDateTime;
 
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 public class BinanceServiceAdapter {
 
     /**
-     * For requests coming from {@link app.traderslave.service.SimulationService#createOrder(CreateSimulationOrderReqDto)}
+     * For requests coming from {@link SimulationService#createOrder(CreateSimulationOrderReqDto)}
      */
     public CandleReqDto adapt(CurrencyPair currencyPair, CreateSimulationOrderReqDto dto) {
         CandleReqDto reqDto = new CandleReqDto();

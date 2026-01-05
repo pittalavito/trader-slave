@@ -1,4 +1,4 @@
-package app.traderslave.service;
+package app.traderslave.service.simulation;
 
 import app.traderslave.adapter.BinanceServiceAdapter;
 import app.traderslave.assembler.SimulationServiceAssembler;
@@ -13,6 +13,7 @@ import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.model.report.OrderReport;
 import app.traderslave.repository.SimulationRepository;
 import app.traderslave.model.domain.Simulation;
+import app.traderslave.service.BinanceService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
