@@ -6,5 +6,5 @@ import lombok.experimental.UtilityClass;
 public class ControllerPath {
     public static final String SIMULATION = "/simulation";
     public static final String DATA_SEARCH = "/data-search";
-    public static final String TRADE_ANALYSES = "/trade-analyses";
+    public static final String TRADE_ANALYSES = "/data-analyses";
 }
