@@ -73,7 +73,7 @@ public class PatternDetectionAssembler {
 
     /** Filters candles in the pattern based on request criteria */
     private void filter(PatternDetectionResDto.Pattern patternRto, PatternDetectionReqDto reqDto) {
-        if (Boolean.TRUE == reqDto.getShowAllCandles()) {
+        if (Boolean.TRUE != reqDto.getShowAllCandles()) {
             patternRto.setCandles(null);
         }
     }
