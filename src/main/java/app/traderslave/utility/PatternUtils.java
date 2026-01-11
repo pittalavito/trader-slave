@@ -1,6 +1,7 @@
 package app.traderslave.utility;
 
 import app.traderslave.controller.dto.CandleResDto;
+import app.traderslave.controller.dto.PatternDetectionReqDto;
 import app.traderslave.model.Pattern;
 import app.traderslave.model.enums.PatternType;
 import lombok.experimental.UtilityClass;
@@ -12,6 +13,11 @@ import java.util.stream.IntStream;
 
 @UtilityClass
 public class PatternUtils {
+
+
+    public List<Pattern> detectPatterns(List<CandleResDto> candles, PatternDetectionReqDto dto) {
+        return detectPatterns(candles, dto.getLookBack(), dto.getTolerancePercent(), dto.getMinDistance());
+    }
 
     /**
      * Detects the most common patterns in the candles.

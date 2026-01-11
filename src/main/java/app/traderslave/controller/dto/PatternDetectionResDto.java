@@ -3,12 +3,17 @@ package app.traderslave.controller.dto;
 import app.traderslave.model.enums.PatternType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 public class PatternDetectionResDto {
 
     private List<Pattern> patterns;
+    private LocalDateTime closeTime;
+    private BigDecimal close;
 
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,8 +23,14 @@ public class PatternDetectionResDto {
         private String category;
         private String description;
         private boolean breakoutConfirmed;
-        private List<CandleResDto> candles;
-        private CandleResDto lastCandle;
+        private List<Candle> candles;
+        private Candle lastCandle;
     }
 
+    @Data
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class Candle {
+        private LocalDateTime closeTime;
+        private BigDecimal close;
+    }
 }

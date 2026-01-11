@@ -4,7 +4,6 @@ import app.traderslave.assembler.JupiterPerpetualCsvAssembler;
 import app.traderslave.assembler.PatternDetectionAssembler;
 import app.traderslave.controller.dto.*;
 import app.traderslave.utility.CsvUtils;
-import app.traderslave.utility.PatternUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,6 @@ public class DataAnalysesService {
 
     public Mono<PatternDetectionResDto> detectPatterns(PatternDetectionReqDto dto) {
         return binanceService.findCandles(dto)
-                .map(candles -> PatternUtils.detectPatterns(candles.getList(), dto.getLookBack(), dto.getTolerancePercent(), dto.getMinDistance()))
-                .map(patterns -> PatternDetectionAssembler.toModel(patterns, dto));
+                .map(candles -> PatternDetectionAssembler.toModel(candles, dto));
     }
-
 }
