@@ -45,4 +45,10 @@ public class TimeUtils {
                 convertToMillisecond(endDate) - (numCandle * timeFrame.getMillisecond())
         );
     }
+
+    public LocalDateTime calculateEndDate(@NotNull LocalDateTime startDate, @NotNull TimeFrame timeFrame, long numCandle) {
+        return convertToLocalDateTime(
+                convertToMillisecond(startDate) + (numCandle * timeFrame.getMillisecond())
+        );
+    }
 }

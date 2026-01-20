@@ -6,28 +6,19 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PatternDetectionReqDto extends CandlesReqDto {
-    /**
-     * Number of candles to look back for local maxima/minima
-     */
+
+    /** Number of candles to look back for local maxima/minima */
     private Integer lookBack = 5;
 
-    /**
-     * Tolerance for pattern similarity
-     */
+    /** Tolerance percentage for pattern recognition */
     private Double tolerancePercent = 0.02;
 
-    /**
-     * Minimum distance between patterns
-     */
+    /** Minimum distance between key points in the pattern */
     private Integer minDistance = 3;
 
-    /**
-     * Whether to show all candles involved in the pattern
-     */
+    /** Whether to include all candles forming the pattern in the response */
     private Boolean showAllCandles = false;
 
-    /**
-     * Whether to return only patterns with confirmed breakouts
-     */
+    /** Whether to filter only patterns with confirmed breakout */
     private Boolean onlyBreakoutConfirmed = true;
 }

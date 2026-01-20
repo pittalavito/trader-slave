@@ -22,6 +22,7 @@ public class BinanceApi {
         this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
     }
 
+    // todo cache responses
     public Mono<List<Object[]>> getKlines(BinanceGetKlinesRequestDto requestDto) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(KLINES_URL)

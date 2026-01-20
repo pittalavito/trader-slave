@@ -1,5 +1,6 @@
 package app.traderslave.controller;
 
+import app.traderslave.command.SimulationPatternStrategyCommand;
 import app.traderslave.controller.dto.*;
 import app.traderslave.service.simulation.SimulationService;
 import app.traderslave.utility.ControllerPath;
@@ -19,8 +20,10 @@ public class SimulationController {
 
     private static final String URI_ORDER = "/order";
     private static final String URI_ALL = "/all";
+    private static final String URI_PATTERN_STRATEGY = "/pattern-strategy";
 
     private final SimulationService simulationService;
+    private final SimulationPatternStrategyCommand simulationPatternStrategyCommand;
 
     // --- SIMULATION --------------------------------------------------------------------------------------------------
 
@@ -33,6 +36,12 @@ public class SimulationController {
     @PutMapping
     public Mono<ResponseEntity<CloseSimulationResDto>> close(@RequestBody @Validated CloseSimulationReqDto dto) {
         return simulationService.close(dto)
+                .map(ResponseEntity::ok);
+    }
+
+    @PostMapping(path = URI_PATTERN_STRATEGY)
+    public Mono<ResponseEntity<CloseSimulationResDto>> simulationPatternStrategy() throws InterruptedException {
+        return simulationPatternStrategyCommand.execute()
                 .map(ResponseEntity::ok);
     }
 

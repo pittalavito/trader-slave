@@ -78,6 +78,7 @@ public class PatternDetectionAssembler {
         }
     }
 
+    /** Sorts patterns by the close time of their last candle in descending order */
     private int sortByCloseTimeDesc(PatternDetectionResDto.Pattern p1, PatternDetectionResDto.Pattern p2) {
         LocalDateTime dt1 = p1.getLastCandle().getCloseTime();
         LocalDateTime dt2 = p2.getLastCandle().getCloseTime();

@@ -10,5 +10,5 @@ public abstract class BaseMonoCommand<T, R>{
 
     protected T requestDto;
 
-    public abstract Mono<R> execute();
+    public abstract Mono<R> execute() throws InterruptedException;
 }

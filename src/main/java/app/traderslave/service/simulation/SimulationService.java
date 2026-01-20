@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 @Slf4j
@@ -33,6 +35,11 @@ public class SimulationService {
     private final SimulationOrderService simulationOrderService;
     private final SimulationEventService simulationEventService;
     private final SimulationOrderReportFactoryService simulationOrderReportFactoryService;
+
+    public BigDecimal getBalanceById(Long simulationId) {
+        Simulation simulation = findByIdOrError(simulationId);
+        return simulation.getBalance();
+    }
 
     /**
      * CREATE SIMULATION

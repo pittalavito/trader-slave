@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 public class PostSimulationResDto {
-    private Long simulationId;
+    private Long id;
     private Currency currency;
     private BigDecimal balance;
     private CurrencyPair currencyPair;

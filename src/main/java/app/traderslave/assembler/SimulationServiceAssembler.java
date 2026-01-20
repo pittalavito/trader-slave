@@ -17,7 +17,7 @@ public class SimulationServiceAssembler {
 
     public PostSimulationResDto toModelCreate(Simulation simulation) {
         return PostSimulationResDto.builder()
-                .simulationId(simulation.getId())
+                .id(simulation.getId())
                 .currencyPair(simulation.getCurrencyPair())
                 .description(simulation.getDescription())
                 .balance(simulation.getBalance())
