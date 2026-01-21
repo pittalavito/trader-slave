@@ -21,3 +21,4 @@ public class BinanceGetKlinesRequestDto {
     private Long startTime;
     private Long endTime;
 }
+

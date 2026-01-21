@@ -27,7 +27,7 @@ public class DevH2ConsoleController {
     @Value("${spring.profiles.active}")
     private String propertiesActiveProfile;
 
-    @Value("${server.port}" + "${server.servlet.context-path}" + "${spring.h2.console.path}")
+    //@Value("${server.port}" + "${server.servlet.context-path}" + "${spring.h2.console.path}")
     private String h2ConsolePath;
 
     private static final String INPUT_PASSWORD_SELECTOR = "input[name='password']";

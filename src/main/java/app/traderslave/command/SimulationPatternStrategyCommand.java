@@ -24,13 +24,13 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
 
     private static final int CANDLES_INTERVAL = 72;
 
-    private static final int LEVERAGE = 10;
+    private static final int LEVERAGE = 20;
 
     private static final TimeFrame TIME_FRAME = TimeFrame.FIVE_MINUTES;
     private static final CurrencyPair CURRENCY_PAIR = CurrencyPair.SOL_USDC;
     private static final BigDecimal PERCENTAGE_OF_BALANCE_PER_TRADE = BigDecimal.valueOf(0.05);
-    private static final BigDecimal TAKE_PROFIT_PERCENTAGE = BigDecimal.valueOf(0.02);
-    private static final BigDecimal STOP_LOSS_PERCENTAGE = BigDecimal.valueOf(0.05);
+    private static final BigDecimal TAKE_PROFIT_PERCENTAGE = BigDecimal.valueOf(0.03);
+    private static final BigDecimal STOP_LOSS_PERCENTAGE = BigDecimal.valueOf(0.03);
 
     private static final LocalDateTime SIMULATION_START_TIME = LocalDateTime.of(2026, 1, 1, 0, 0);
     private static final LocalDateTime SIMULATION_END_TIME = LocalDateTime.of(2026, 1, 19, 0, 0);
@@ -50,7 +50,6 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
 
         SimulationOrderResDto openOrder = null;
 
-        int accumulator = 0;
         while (analysisTime.isBefore(SIMULATION_END_TIME)) {
             // Set time frame for pattern detection
             patternReq.setStartTime(TimeUtils.calculateStartDate(analysisTime, TIME_FRAME, CANDLES_INTERVAL));
@@ -63,12 +62,6 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
                 openOrder = processNewOrder(patterns, simulation, analysisTime);
             } else {
                 openOrder = processCloseOrder(simulation, openOrder, patterns, analysisTime);
-            }
-            accumulator++;
-            if (accumulator >= 100) {
-                log.info("Sleep for a while to avoid rate limit...");
-                accumulator = 0;
-                Thread.sleep(TimeFrame.ONE_MINUTE.getMillisecond());
             }
             analysisTime = analysisTime.plusMinutes(10);
         }
