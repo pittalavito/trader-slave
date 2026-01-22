@@ -5,6 +5,7 @@ import app.traderslave.controller.dto.CandlesResDto;
 import app.traderslave.controller.dto.PatternDetectionReqDto;
 import app.traderslave.controller.dto.PatternDetectionResDto;
 import app.traderslave.model.Pattern;
+import app.traderslave.model.domain.BinanceCandleBackTest;
 import app.traderslave.utility.PatternUtils;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
@@ -13,6 +14,15 @@ import java.util.List;
 
 @UtilityClass
 public class PatternDetectionAssembler {
+
+    public PatternDetectionResDto toModelBackTest(List<BinanceCandleBackTest> candles, PatternDetectionReqDto dto) {
+        if (!CollectionUtils.isEmpty(candles)) {
+            CandlesResDto candlesDto = adapt(candles);
+            return toModel(candlesDto, dto);
+        }
+        return new PatternDetectionResDto();
+    }
+
 
     public PatternDetectionResDto toModel(CandlesResDto candles, PatternDetectionReqDto dto) {
         PatternDetectionResDto result = new PatternDetectionResDto();
@@ -83,5 +93,27 @@ public class PatternDetectionAssembler {
         LocalDateTime dt1 = p1.getLastCandle().getCloseTime();
         LocalDateTime dt2 = p2.getLastCandle().getCloseTime();
         return dt2.compareTo(dt1);
+    }
+
+    public CandlesResDto adapt(List<BinanceCandleBackTest> tests) {
+        List<CandleResDto> candles = tests.stream()
+                .map(PatternDetectionAssembler::adapt)
+                .toList();
+        return CandlesResDto.builder()
+                .list(candles)
+                .size(candles.size())
+                .build();
+    }
+
+    public CandleResDto adapt(BinanceCandleBackTest test) {
+        CandleResDto resDto = new CandleResDto();
+        resDto.setOpenTime(test.getOpenTime());
+        resDto.setCloseTime(test.getCloseTime());
+        resDto.setOpen(test.getOpen());
+        resDto.setHigh(test.getHigh());
+        resDto.setLow(test.getLow());
+        resDto.setClose(test.getClose());
+        resDto.setVolume(test.getVolume());
+        return resDto;
     }
 }

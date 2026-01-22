@@ -24,7 +24,6 @@ public class BinanceService {
 
     public Mono<CandleResDto> findCandle(CandleReqDto dto) {
         BinanceServiceChecker.checkDatesGetKline(dto);
-
         return binanceApi.getKlines(BinanceApiRequestAdapter.adapt(dto))
                 .map(BinanceApiResponseAdapter::adapt)
                 .filter(CollectionUtils::hasUniqueObject)
@@ -33,7 +32,6 @@ public class BinanceService {
 
     public Mono<CandlesResDto> findCandles(CandlesReqDto dto) {
         BinanceServiceChecker.checkDatesGetKline(dto);
-
         return fetchCandleSticks(new HashSet<>(), BinanceApiRequestAdapter.adapt(dto))
                 .collectList()
                 .flatMap(BinanceServiceAssembler::toModel);

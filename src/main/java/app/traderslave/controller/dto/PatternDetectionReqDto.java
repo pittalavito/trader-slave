@@ -11,7 +11,7 @@ public class PatternDetectionReqDto extends CandlesReqDto {
     private Integer lookBack = 5;
 
     /** Tolerance percentage for pattern recognition */
-    private Double tolerancePercent = 0.02;
+    private Double tolerancePercent = 0.01;
 
     /** Minimum distance between key points in the pattern */
     private Integer minDistance = 3;

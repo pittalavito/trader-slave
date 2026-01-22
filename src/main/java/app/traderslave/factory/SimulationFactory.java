@@ -21,6 +21,7 @@ public class SimulationFactory {
                 .status(Simulation.Status.OPEN)
                 .startTime(dto.getStartTime())
                 .uid(UUID.randomUUID().toString())
+                .creationDate(LocalDateTime.now())
                 .description(dto.getDescription())
                 .version(0)
                 .build();

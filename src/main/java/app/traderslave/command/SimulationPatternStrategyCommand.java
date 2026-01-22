@@ -1,9 +1,11 @@
 package app.traderslave.command;
 
+import app.traderslave.assembler.PatternDetectionAssembler;
 import app.traderslave.controller.dto.*;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.enums.TimeFrame;
+import app.traderslave.service.BinanceCandleBackTestService;
 import app.traderslave.service.DataAnalysesService;
 import app.traderslave.service.simulation.SimulationService;
 import app.traderslave.utility.SignalUtils;
@@ -16,6 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -24,28 +27,32 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
 
     private static final int CANDLES_INTERVAL = 72;
 
-    private static final int LEVERAGE = 20;
+    private static final int LEVERAGE = 25;
 
     private static final TimeFrame TIME_FRAME = TimeFrame.FIVE_MINUTES;
     private static final CurrencyPair CURRENCY_PAIR = CurrencyPair.SOL_USDC;
     private static final BigDecimal PERCENTAGE_OF_BALANCE_PER_TRADE = BigDecimal.valueOf(0.05);
+
     private static final BigDecimal TAKE_PROFIT_PERCENTAGE = BigDecimal.valueOf(0.03);
     private static final BigDecimal STOP_LOSS_PERCENTAGE = BigDecimal.valueOf(0.03);
 
-    private static final LocalDateTime SIMULATION_START_TIME = LocalDateTime.of(2026, 1, 1, 0, 0);
-    private static final LocalDateTime SIMULATION_END_TIME = LocalDateTime.of(2026, 1, 19, 0, 0);
+    private static final LocalDateTime SIMULATION_START_TIME = LocalDateTime.of(2025, 1, 1, 0, 0);
+    private static final LocalDateTime SIMULATION_END_TIME = LocalDateTime.of(2025, 11, 1, 0, 0);
 
     private final DataAnalysesService dataAnalysesService;
     private final SimulationService simulationService;
+    private final BinanceCandleBackTestService binanceCandleBackTestService;
 
     @Override
     public Mono<CloseSimulationResDto> execute() throws InterruptedException {
         PostSimulationResDto simulation = simulationService.create(createSimulationRequest()).block();
         assert simulation != null;
 
-        PatternDetectionResDto patterns;
-
         LocalDateTime analysisTime = TimeUtils.calculateEndDate(SIMULATION_START_TIME, TimeFrame.FIVE_MINUTES, CANDLES_INTERVAL);
+        if (analysisTime.isAfter(SIMULATION_END_TIME)) {
+            analysisTime = SIMULATION_END_TIME.minusSeconds(1);
+        }
+
         PatternDetectionReqDto patternReq = createPatterRequest(analysisTime);
 
         SimulationOrderResDto openOrder = null;
@@ -54,10 +61,9 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
             // Set time frame for pattern detection
             patternReq.setStartTime(TimeUtils.calculateStartDate(analysisTime, TIME_FRAME, CANDLES_INTERVAL));
             patternReq.setEndTime(analysisTime);
-
-            patterns = dataAnalysesService.detectPatterns(patternReq).block();
+            var candles = binanceCandleBackTestService.getCandlesBackTest(patternReq);
+            PatternDetectionResDto patterns = PatternDetectionAssembler.toModelBackTest(candles, patternReq);
             assert patterns != null;
-
             if (openOrder == null) {
                 openOrder = processNewOrder(patterns, simulation, analysisTime);
             } else {
@@ -117,7 +123,7 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
 
     private SimulationOrderResDto processNewOrder(PatternDetectionResDto patterns, PostSimulationResDto simulation, LocalDateTime localDateTime) {
         final OrderType orderType;
-        switch (SignalUtils.generateLastSignal(patterns)) {
+        switch (SignalUtils.generate(patterns)) {
             case BUY -> orderType = OrderType.BUY;
             case SELL -> orderType = OrderType.SELL;
             default -> {
