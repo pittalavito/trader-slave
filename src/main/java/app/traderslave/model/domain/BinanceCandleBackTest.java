@@ -22,6 +22,9 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BinanceCandleBackTest extends BasePersistentModel {
 
+    @Column(nullable = false, unique = true, columnDefinition = SqlColumnDefinition.VARCHAR_100)
+    private String uid;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.VARCHAR_20)
     private CurrencyPair currencyPair;
@@ -59,6 +62,12 @@ public class BinanceCandleBackTest extends BasePersistentModel {
 
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
     private BigDecimal takerBuyQuoteAssetVolume;
+
+    @Column(nullable = true, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
+    private BigDecimal sma50;
+
+    @Column(nullable = true, columnDefinition = SqlColumnDefinition.BIG_DECIMAL_30_2_DEFAULT_0)
+    private BigDecimal sma200;
 
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.INTEGER_DEFAULT_0)
     private Integer numberOfTrades;

@@ -45,6 +45,10 @@ public class Simulation extends BasePersistentModel {
     @Column(columnDefinition = SqlColumnDefinition.TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP)
     private LocalDateTime endTime;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, columnDefinition = SqlColumnDefinition.VARCHAR_20)
+    private DataSource dataSource;
+
     //todo [Crilin] Version 1.0
     //@Lob pensare di salvare solo il report finale
     //@Column(columnDefinition = "CLOB")
@@ -57,6 +61,11 @@ public class Simulation extends BasePersistentModel {
     public enum Status {
         OPEN,
         CLOSED
+    }
+
+    public enum DataSource {
+        BACKTEST,
+        BINANCE_API
     }
 
 }

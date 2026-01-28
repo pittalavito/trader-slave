@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -19,12 +18,15 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BinanceCandleBackTestService {
 
-    private static final int BATCH_SIZE = 50;
+    public static final int BATCH_SIZE = 250;
 
-    private final BinanceService binanceService;
     private final BinanceCandleBsckTestRepository binanceCandleBsckTestRepository;
 
-    public List<BinanceCandleBackTest> getCandlesBackTest(CandlesReqDto candlesReqDto) {
+    public BinanceCandleBackTest getCandle() {
+        return null;
+    }
+
+    public List<BinanceCandleBackTest> getCandles(CandlesReqDto candlesReqDto) {
         return binanceCandleBsckTestRepository.findAllByCurrencyPairAndTimeFrameAndOpenTimeGreaterThanEqualAndCloseTimeLessThanEqualOrderByOpenTimeAsc(
                 candlesReqDto.getCurrencyPair(),
                 candlesReqDto.getTimeFrame(),
@@ -35,7 +37,12 @@ public class BinanceCandleBackTestService {
 
     @Transactional
     public void saveCandleBackTest(CandlesReqDto candleDto, CandlesResDto candlesRto) {
-        var updated = candlesRto.getList().stream()
+        saveCandleBackTest(candleDto, candlesRto.getList());
+    }
+
+    @Transactional
+    public void saveCandleBackTest(CandlesReqDto candleDto, List<CandleResDto> candlesRtoList) {
+        var updated = candlesRtoList.stream()
                 .map(candleRto -> buildIfAbsent(candleRto, candleDto))
                 .filter(Optional::isPresent)
                 .toList();
@@ -52,7 +59,7 @@ public class BinanceCandleBackTestService {
         log.info("Total new candle back tests saved: {}", updated.size());
     }
 
-    public Optional<BinanceCandleBackTest> buildIfAbsent(CandleResDto candleRto, CandlesReqDto candleDto) {
+    private Optional<BinanceCandleBackTest> buildIfAbsent(CandleResDto candleRto, CandlesReqDto candleDto) {
         var existingCandle = binanceCandleBsckTestRepository.findByUid(generateUid(candleDto, candleRto));
         if (existingCandle.isEmpty()) {
             log.info("Saving candle back test: {}", candleRto);
@@ -83,9 +90,9 @@ public class BinanceCandleBackTestService {
     }
 
     private String generateUid(CandlesReqDto candleDto, CandleResDto candleRto) {
-        return candleDto.getCurrencyPair().name() + "_" +
-                candleDto.getTimeFrame().name() + "_" +
-                candleRto.getOpenTime().toString() + "_" +
-                candleRto.getCloseTime().toString();
+        return candleDto.getCurrencyPair().name()
+                + "_" + candleDto.getTimeFrame().getCode()
+                + "_" + candleRto.getOpenTime()
+                + "_" + candleRto.getCloseTime();
     }
 }

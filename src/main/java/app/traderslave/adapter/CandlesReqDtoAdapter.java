@@ -8,7 +8,7 @@ import lombok.experimental.UtilityClass;
 import java.time.LocalDateTime;
 
 @UtilityClass
-public class BinanceServiceAdapter {
+public class CandlesReqDtoAdapter {
 
     /**
      * For requests coming from {@link SimulationService#createOrder(CreateSimulationOrderReqDto)}

@@ -1,6 +1,6 @@
 package app.traderslave.service.simulation;
 
-import app.traderslave.adapter.BinanceServiceAdapter;
+import app.traderslave.adapter.CandlesReqDtoAdapter;
 import app.traderslave.assembler.SimulationServiceAssembler;
 import app.traderslave.checker.SimulationServiceChecker;
 import app.traderslave.checker.TimeChecker;
@@ -36,7 +36,7 @@ public class SimulationService {
     private final SimulationEventService simulationEventService;
     private final SimulationOrderReportFactoryService simulationOrderReportFactoryService;
 
-    public BigDecimal getBalanceById(Long simulationId) {
+    public BigDecimal getBalance(Long simulationId) {
         Simulation simulation = findByIdOrError(simulationId);
         return simulation.getBalance();
     }
@@ -50,12 +50,11 @@ public class SimulationService {
         return Mono.just(SimulationServiceAssembler.toModelCreate(simulation));
     }
 
-
     /**
      * CLOSE SIMULATION
      */
     public Mono<CloseSimulationResDto> close(CloseSimulationReqDto dto) {
-        Simulation simulation = findByIdOrError(dto.getSimulationId());
+         Simulation simulation = findByIdOrError(dto.getSimulationId());
         SimulationServiceChecker.checkSimulationStatusOpen(simulation);
         SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
         SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
@@ -66,7 +65,8 @@ public class SimulationService {
         return Flux.fromIterable(simulationOrderService.findAllBySimulationId(simulation.getId()))
                 .map(order -> closeStepOne(ordersIdsMap, ordersIdsStatusMap, order, dto))
                 .filter(SimulationOrder::isOpen)
-                .flatMap(order ->simulationOrderReportFactoryService.create(simulation, order, dto)
+                .flatMap(order ->
+                        simulationOrderReportFactoryService.create(simulation, order, dto)
                                 .map(report -> closeStepTwo(ordersIdsMap, ordersIdsStatusMap, simulation, order, dto, report)))
                 .collectList()
                 .map(reports -> closeStepThree(simulation.getId(), ordersIdsMap, ordersIdsStatusMap, dto));
@@ -84,7 +84,8 @@ public class SimulationService {
         SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
         SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
 
-        return binanceService.findCandle(BinanceServiceAdapter.adapt(simulation.getCurrencyPair(), dto))
+        var request = CandlesReqDtoAdapter.adapt(simulation.getCurrencyPair(), dto);
+        return binanceService.findCandle(request)
                 .map(candle -> createOrder(simulation, dto, candle))
                 .map(order -> SimulationServiceAssembler.toModelCreateOrder(order, dto));
     }
@@ -117,6 +118,14 @@ public class SimulationService {
     }
 
     // PRIVATE METHODS -------------------------------------------------------------------------------------------------
+
+    private Simulation validateCloseSimulation(CloseSimulationReqDto dto) {
+        Simulation simulation = findByIdOrError(dto.getSimulationId());
+        SimulationServiceChecker.checkSimulationStatusOpen(simulation);
+        SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
+        SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
+        return simulation;
+    }
 
     @Transactional
     private SimulationOrder createOrder(Simulation simulation, CreateSimulationOrderReqDto dto, CandleResDto candle) {
@@ -162,8 +171,8 @@ public class SimulationService {
         Simulation simulation = findByIdOrError(simulationId);
         simulation = repository.save(SimulationFactory.close(simulation, dto));
         CloseSimulationResDto resDto = SimulationServiceAssembler.toModelClose(simulation, ordersIdsMap, ordersIdsStatusMap, events);
-        simulationEventService.deleteAll();
-        simulationOrderService.deleteAll();
+        //simulationEventService.deleteAll();
+        //simulationOrderService.deleteAll();
         return resDto;
     }
 }

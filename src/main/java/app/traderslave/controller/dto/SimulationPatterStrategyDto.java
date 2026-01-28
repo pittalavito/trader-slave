@@ -5,26 +5,25 @@ import app.traderslave.model.enums.TimeFrame;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @FieldNameConstants
+@EqualsAndHashCode(callSuper = true)
 public class SimulationPatterStrategyDto extends TimeReqDto {
 
-    private static final int CANDLES_INTERVAL = 72;
+    private CurrencyPair currencyPair = CurrencyPair.SOL_USDC;
+    private LocalDateTime simulationStartTime = LocalDateTime.of(2025, 6, 1, 0, 0);
+    private LocalDateTime simulationEndTime = LocalDateTime.of(2026, 1, 20, 0, 0);
 
-    private static final int LEVERAGE = 20;
+    private TimeFrame patternDetectionTimeFrame = TimeFrame.FIVE_MINUTES;
+    private TimeFrame emaAnalysisTimeFrame = TimeFrame.FIFTEEN_MINUTES;
 
-    private static final TimeFrame TIME_FRAME = TimeFrame.FIVE_MINUTES;
-    private static final CurrencyPair CURRENCY_PAIR = CurrencyPair.SOL_USDC;
-    private static final BigDecimal PERCENTAGE_OF_BALANCE_PER_TRADE = BigDecimal.valueOf(0.05);
+    private BigDecimal amountForTradePercentage = BigDecimal.valueOf(0.05);
+    private BigDecimal takeProfitPercentage = BigDecimal.valueOf(0.0275);
+    private BigDecimal stopLossPercentage = BigDecimal.valueOf(0.0175);
 
-    private static final BigDecimal TAKE_PROFIT_PERCENTAGE = BigDecimal.valueOf(0.03);
-    private static final BigDecimal STOP_LOSS_PERCENTAGE = BigDecimal.valueOf(0.03);
-
-    private static final LocalDateTime SIMULATION_START_TIME = LocalDateTime.of(2026, 1, 1, 0, 0);
-    private static final LocalDateTime SIMULATION_END_TIME = LocalDateTime.of(2026, 1, 20, 0, 0);
+    private int candleInterval = 72;
+    private int leverage = 20;
 }

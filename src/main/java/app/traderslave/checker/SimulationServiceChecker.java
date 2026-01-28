@@ -8,8 +8,11 @@ import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.domain.SimulationEvent;
 import app.traderslave.model.domain.SimulationOrder;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 import java.math.BigDecimal;
 
+@Slf4j
 @UtilityClass
 public class SimulationServiceChecker {
 
@@ -27,6 +30,7 @@ public class SimulationServiceChecker {
             throw new CustomException(ExceptionEnum.START_TIME_IS_BEFORE_SIMULATION_START_TIME);
         }
         if (latestEvent != null && dto.getStartTime().isBefore(latestEvent.getEventTime())) {
+            log.error("Request start time {} is before latest event time {}", dto.getStartTime(), latestEvent.getEventTime());
             throw new CustomException(ExceptionEnum.START_TIME_IS_BEFORE_LATEST_EVENT_TIME);
         }
     }

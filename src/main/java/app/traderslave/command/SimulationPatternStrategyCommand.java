@@ -2,11 +2,9 @@ package app.traderslave.command;
 
 import app.traderslave.assembler.PatternDetectionAssembler;
 import app.traderslave.controller.dto.*;
-import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.OrderType;
-import app.traderslave.model.enums.TimeFrame;
 import app.traderslave.service.BinanceCandleBackTestService;
-import app.traderslave.service.DataAnalysesService;
+import app.traderslave.service.BinanceService;
 import app.traderslave.service.simulation.SimulationService;
 import app.traderslave.utility.SignalUtils;
 import app.traderslave.utility.TimeUtils;
@@ -15,95 +13,162 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, CloseSimulationResDto> {
 
-    private static final int CANDLES_INTERVAL = 72;
-
-    private static final int LEVERAGE = 25;
-
-    private static final TimeFrame TIME_FRAME = TimeFrame.FIVE_MINUTES;
-    private static final CurrencyPair CURRENCY_PAIR = CurrencyPair.SOL_USDC;
-    private static final BigDecimal PERCENTAGE_OF_BALANCE_PER_TRADE = BigDecimal.valueOf(0.05);
-
-    private static final BigDecimal TAKE_PROFIT_PERCENTAGE = BigDecimal.valueOf(0.03);
-    private static final BigDecimal STOP_LOSS_PERCENTAGE = BigDecimal.valueOf(0.03);
-
-    private static final LocalDateTime SIMULATION_START_TIME = LocalDateTime.of(2025, 1, 1, 0, 0);
-    private static final LocalDateTime SIMULATION_END_TIME = LocalDateTime.of(2025, 11, 1, 0, 0);
-
-    private final DataAnalysesService dataAnalysesService;
     private final SimulationService simulationService;
+    private final BinanceService binanceService;
     private final BinanceCandleBackTestService binanceCandleBackTestService;
+
+    private final SimulationPatterStrategyDto params = new SimulationPatterStrategyDto();
+
 
     @Override
     public Mono<CloseSimulationResDto> execute() throws InterruptedException {
-        PostSimulationResDto simulation = simulationService.create(createSimulationRequest()).block();
-        assert simulation != null;
+        loadData();
 
-        LocalDateTime analysisTime = TimeUtils.calculateEndDate(SIMULATION_START_TIME, TimeFrame.FIVE_MINUTES, CANDLES_INTERVAL);
-        if (analysisTime.isAfter(SIMULATION_END_TIME)) {
-            analysisTime = SIMULATION_END_TIME.minusSeconds(1);
-        }
+        var simulation = initiateSimulation();
+        var order = initiateSimulationOrder();
 
-        PatternDetectionReqDto patternReq = createPatterRequest(analysisTime);
+        var analysisTimeReq = initAnalysisEndTime();
+        var analysisPatternReq = initiatePatterDetection(analysisTimeReq);
 
-        SimulationOrderResDto openOrder = null;
+        while (analysisTimeReq.isBefore(params.getSimulationEndTime())) {
+            var candles = binanceCandleBackTestService.getCandles(analysisPatternReq);
+            var patterns = PatternDetectionAssembler.toModelBackTest(candles, analysisPatternReq);
 
-        while (analysisTime.isBefore(SIMULATION_END_TIME)) {
-            // Set time frame for pattern detection
-            patternReq.setStartTime(TimeUtils.calculateStartDate(analysisTime, TIME_FRAME, CANDLES_INTERVAL));
-            patternReq.setEndTime(analysisTime);
-            var candles = binanceCandleBackTestService.getCandlesBackTest(patternReq);
-            PatternDetectionResDto patterns = PatternDetectionAssembler.toModelBackTest(candles, patternReq);
-            assert patterns != null;
-            if (openOrder == null) {
-                openOrder = processNewOrder(patterns, simulation, analysisTime);
+            if (orderIsOpen(order)) {
+                order = closeOrder(simulation, order, patterns, analysisTimeReq);
             } else {
-                openOrder = processCloseOrder(simulation, openOrder, patterns, analysisTime);
+                order = openOrder(patterns, simulation, analysisTimeReq);
             }
-            analysisTime = analysisTime.plusMinutes(10);
+            analysisTimeReq = analysisTimeReq.plusMinutes(10);
+            analysisPatternReq.setStartTime(TimeUtils.calculateStartDate(analysisTimeReq, params.getPatternDetectionTimeFrame(), params.getCandleInterval()));
+            analysisPatternReq.setEndTime(analysisTimeReq);
         }
-
-        return simulationService.close(createCloseSimulationRequest(simulation.getId(), analysisTime));
+        return closeSimulation(simulation.getId(), analysisTimeReq);
     }
 
-    private CreateSimulationReqDto createSimulationRequest() {
-        CreateSimulationReqDto dto = new CreateSimulationReqDto();
-        dto.setCurrencyPair(CURRENCY_PAIR);
-        dto.setStartTime(SIMULATION_START_TIME);
-        dto.setDescription("Pattern Strategy Simulation");
-        return dto;
+    private void loadData() {
+        var request = new CandlesReqDto();
+        request.setCurrencyPair(params.getCurrencyPair());
+        request.setStartTime(params.getSimulationStartTime());
+        request.setEndTime(params.getSimulationEndTime());
+
+        // pattern detection candles backtest load
+        request.setTimeFrame(params.getPatternDetectionTimeFrame());
+        binanceService.findCandles(request)
+                .doOnNext(response -> binanceCandleBackTestService.saveCandleBackTest(request, response))
+                .block();
+
+       // // ema candles backtest load
+       // request.setTimeFrame(params.getEmaAnalysisTimeFrame());
+       // candlesResponse = binanceService.findCandles(request).block();
+       // if (candlesResponse != null) {
+       //     binanceCandleBackTestService.saveCandleBackTest(request, candlesResponse);
+       // }
     }
 
-    private PatternDetectionReqDto createPatterRequest(LocalDateTime endTime) {
+    private PostSimulationResDto initiateSimulation() {
+        CreateSimulationReqDto reqDto = new CreateSimulationReqDto();
+        reqDto.setCurrencyPair(params.getCurrencyPair());
+        reqDto.setStartTime(params.getSimulationStartTime());
+        reqDto.setDescription("Pattern Strategy Simulation");
+
+        PostSimulationResDto resDto = simulationService.create(reqDto).block();
+        assert resDto != null;
+        return resDto;
+    }
+
+    private SimulationOrderResDto initiateSimulationOrder() {
+        return SimulationOrderResDto.builder().build();
+    }
+
+    private LocalDateTime initAnalysisEndTime() {
+        var analysisTime = TimeUtils.calculateEndDate(params.getSimulationStartTime(), params.getPatternDetectionTimeFrame(), params.getCandleInterval());
+        if (analysisTime.isAfter(params.getSimulationEndTime())) {
+            analysisTime = params.getSimulationEndTime().minusSeconds(1);
+        }
+        return analysisTime;
+    }
+
+    private PatternDetectionReqDto initiatePatterDetection(LocalDateTime endTime) {
         PatternDetectionReqDto dto = new PatternDetectionReqDto();
-        dto.setCurrencyPair(CurrencyPair.SOL_USDC);
-        dto.setTimeFrame(TimeFrame.FIVE_MINUTES);
-        dto.setStartTime(SIMULATION_START_TIME);
+        dto.setCurrencyPair(params.getCurrencyPair());
+        dto.setTimeFrame(params.getPatternDetectionTimeFrame());
+        dto.setStartTime(params.getSimulationStartTime());
         dto.setEndTime(endTime);
         dto.setOnlyBreakoutConfirmed(true);
         return dto;
+    }
+
+    private boolean orderIsOpen(SimulationOrderResDto openOrder) {
+        return openOrder != null && openOrder.getOrderId() != null;
+    }
+
+    private SimulationOrderResDto openOrder(PatternDetectionResDto patterns, PostSimulationResDto simulation, LocalDateTime localDateTime) {
+        final OrderType orderType;
+        switch (SignalUtils.generate(patterns)) {
+            case BUY -> orderType = OrderType.BUY;
+            case SELL -> orderType = OrderType.SELL;
+            default -> {
+                return initiateSimulationOrder();
+            }
+        }
+        CreateSimulationOrderReqDto orderReq = createOrderRequest(simulation.getId(), orderType, localDateTime);
+        return simulationService.createOrder(orderReq).block();
     }
 
     private CreateSimulationOrderReqDto createOrderRequest(Long simulationId, OrderType orderType, LocalDateTime localDateTime) {
         CreateSimulationOrderReqDto dto = new CreateSimulationOrderReqDto();
         dto.setSimulationId(simulationId);
         dto.setOrderType(orderType);
-        dto.setLeverage(LEVERAGE);
+        dto.setLeverage(params.getLeverage());
         dto.setMaxAmountOfTrade(false);
         dto.setStartTime(localDateTime);
 
-        BigDecimal balance = simulationService.getBalanceById(simulationId);
-        dto.setAmountOfTrade(balance.multiply(PERCENTAGE_OF_BALANCE_PER_TRADE));
+        log.info("Creating {} order at {}", orderType, localDateTime);
+        BigDecimal balance = simulationService.getBalance(simulationId);
+        dto.setAmountOfTrade(balance.multiply(params.getAmountForTradePercentage()));
         return dto;
+    }
+
+    private SimulationOrderResDto closeOrder(PostSimulationResDto simulation, SimulationOrderResDto openOrder, PatternDetectionResDto patterns, LocalDateTime localDateTime) {
+        final boolean confirmedTrend = SignalUtils.confirmOrderSignal(openOrder.getOrderType(), patterns);
+        final boolean closeOrder;
+        final boolean takeProfitHit;
+        final boolean stopLossHit;
+
+        final BigDecimal closePrice = patterns.getClose();
+        final BigDecimal takeProfitPrice;
+        final BigDecimal stopLossPrice;
+
+        // todo aggiungere controllo ema
+        if (OrderType.BUY == openOrder.getOrderType()) {
+            takeProfitPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.add(params.getTakeProfitPercentage()));
+            stopLossPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.subtract(params.getStopLossPercentage()));
+            takeProfitHit = closePrice.compareTo(takeProfitPrice) >= 0;
+            stopLossHit = closePrice.compareTo(stopLossPrice) <= 0;
+        } else {
+            takeProfitPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.subtract(params.getTakeProfitPercentage()));
+            stopLossPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.add(params.getStopLossPercentage()));
+            takeProfitHit = closePrice.compareTo(takeProfitPrice) <= 0;
+            stopLossHit = closePrice.compareTo(stopLossPrice) >= 0;
+        }
+
+        closeOrder = (stopLossHit) || (takeProfitHit && !confirmedTrend);
+        if (closeOrder) {
+            log.info("Closing order {}: takeProfitHit={}, stopLossHit={}, confirmedTrend={}", openOrder.getOrderId(), takeProfitHit, stopLossHit, confirmedTrend);
+            CloseSimulationOrderReqDto closeOrderReq = createCloseOrderRequest(simulation.getId(), openOrder.getOrderId(), localDateTime);
+            simulationService.closeOrder(closeOrderReq).block();
+            return null;
+        }
+        return openOrder;
     }
 
     private CloseSimulationOrderReqDto createCloseOrderRequest(Long simulationId, Long orderId, LocalDateTime startTime) {
@@ -114,47 +179,10 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
         return dto;
     }
 
-    private CloseSimulationReqDto createCloseSimulationRequest(Long simulationId, LocalDateTime localDateTime) {
+    private Mono<CloseSimulationResDto> closeSimulation(Long simulationId, LocalDateTime localDateTime) {
         CloseSimulationReqDto dto = new CloseSimulationReqDto();
         dto.setSimulationId(simulationId);
         dto.setStartTime(localDateTime);
-        return dto;
-    }
-
-    private SimulationOrderResDto processNewOrder(PatternDetectionResDto patterns, PostSimulationResDto simulation, LocalDateTime localDateTime) {
-        final OrderType orderType;
-        switch (SignalUtils.generate(patterns)) {
-            case BUY -> orderType = OrderType.BUY;
-            case SELL -> orderType = OrderType.SELL;
-            default -> {
-                return null;
-            }
-        }
-        CreateSimulationOrderReqDto orderReq = createOrderRequest(simulation.getId(), orderType, localDateTime);
-        return simulationService.createOrder(orderReq).block();
-    }
-
-    private SimulationOrderResDto processCloseOrder(PostSimulationResDto simulation, SimulationOrderResDto openOrder, PatternDetectionResDto patterns, LocalDateTime localDateTime) {
-        final BigDecimal closePrice = patterns.getClose();
-        final BigDecimal takeProfitPrice;
-        final BigDecimal stopLossPrice;
-        final boolean closeOrder;
-
-        if (OrderType.BUY == openOrder.getOrderType()) {
-            takeProfitPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.add(TAKE_PROFIT_PERCENTAGE));
-            stopLossPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.subtract(STOP_LOSS_PERCENTAGE));
-            closeOrder = closePrice.compareTo(takeProfitPrice) >= 0 || closePrice.compareTo(stopLossPrice) <= 0;
-        } else {
-            takeProfitPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.subtract(TAKE_PROFIT_PERCENTAGE));
-            stopLossPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.add(STOP_LOSS_PERCENTAGE));
-            closeOrder = closePrice.compareTo(takeProfitPrice) <= 0 || closePrice.compareTo(stopLossPrice) >= 0;
-        }
-
-        if (closeOrder) {
-            CloseSimulationOrderReqDto closeOrderReq = createCloseOrderRequest(simulation.getId(), openOrder.getOrderId(), localDateTime);
-            simulationService.closeOrder(closeOrderReq).block();
-            return null;
-        }
-        return openOrder;
+        return simulationService.close(dto);
     }
 }

@@ -1,5 +1,6 @@
 package app.traderslave.controller.dto;
 
+import app.traderslave.model.domain.Simulation;
 import app.traderslave.model.enums.Currency;
 import app.traderslave.model.enums.CurrencyPair;
 import jakarta.validation.constraints.NotNull;
@@ -13,4 +14,5 @@ public class CreateSimulationReqDto {
     private Currency currency = Currency.USD;
     private String description;
     private LocalDateTime startTime;
+    private Simulation.DataSource dataSource = Simulation.DataSource.BINANCE_API;
 }

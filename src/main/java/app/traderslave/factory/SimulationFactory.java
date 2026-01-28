@@ -23,6 +23,7 @@ public class SimulationFactory {
                 .uid(UUID.randomUUID().toString())
                 .creationDate(LocalDateTime.now())
                 .description(dto.getDescription())
+                .dataSource(dto.getDataSource())
                 .version(0)
                 .build();
     }

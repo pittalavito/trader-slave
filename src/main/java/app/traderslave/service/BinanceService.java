@@ -1,6 +1,6 @@
 package app.traderslave.service;
 
-import app.traderslave.assembler.BinanceServiceAssembler;
+import app.traderslave.assembler.CandlesResDtoAssembler;
 import app.traderslave.checker.BinanceServiceChecker;
 import app.traderslave.controller.dto.*;
 import app.traderslave.adapter.BinanceApiRequestAdapter;
@@ -34,7 +34,7 @@ public class BinanceService {
         BinanceServiceChecker.checkDatesGetKline(dto);
         return fetchCandleSticks(new HashSet<>(), BinanceApiRequestAdapter.adapt(dto))
                 .collectList()
-                .flatMap(BinanceServiceAssembler::toModel);
+                .flatMap(CandlesResDtoAssembler::toModel);
     }
 
     private Flux<CandleResDto> fetchCandleSticks(Set<CandleResDto> accumulatedCandlesList, BinanceGetKlinesRequestDto clientReqDto) {
