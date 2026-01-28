@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -44,7 +43,7 @@ public class SimulationService {
     /**
      * CREATE SIMULATION
      */
-    public Mono<PostSimulationResDto> create(CreateSimulationReqDto dto) {
+    public Mono<CreateSimulationResDto> create(CreateSimulationReqDto dto) {
         TimeChecker.checkStartDate(dto.getStartTime());
         Simulation simulation = repository.save(SimulationFactory.create(dto));
         return Mono.just(SimulationServiceAssembler.toModelCreate(simulation));
@@ -54,10 +53,88 @@ public class SimulationService {
      * CLOSE SIMULATION
      */
     public Mono<CloseSimulationResDto> close(CloseSimulationReqDto dto) {
-         Simulation simulation = findByIdOrError(dto.getSimulationId());
+        SimulationRecord data = validateReqAndGetRecord(dto);
+        return execute(data, dto);
+    }
+
+    /**
+     * CREATE ORDER
+     */
+    public Mono<SimulationOrderResDto> createOrder(CreateSimulationOrderReqDto dto) {
+        SimulationRecord data = validateReqAndGetRecord(dto);
+        return execute(data, dto);
+    }
+
+    /**
+     * CLOSE ORDER
+     */
+    public Mono<SimulationOrderResDto> closeOrder(CloseSimulationOrderReqDto dto) {
+        SimulationRecord data = validateReqAndGetRecord(dto);
+        return execute(data, dto);
+    }
+
+    /**
+     * CLEAN ALL DATA
+     */
+    @Transactional
+    public void deleteAll() {
+        simulationEventService.deleteAll();
+        simulationOrderService.deleteAll();
+        repository.deleteAll();
+    }
+
+    // VALIDATE REQ METHODS --------------------------------------------------------------------------------------------
+
+    private SimulationRecord validateReqAndGetRecord(CreateSimulationOrderReqDto dto) {
+        SimulationServiceChecker.checkLeverage(dto);
+        SimulationServiceChecker.checkAmountOfTrade(dto);
+        Simulation simulation = findByIdOrError(dto.getSimulationId());
+        SimulationServiceChecker.checkSimulationStatusOpen(simulation);
+        SimulationServiceChecker.checkBalance(simulation, dto);
+        SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
+        SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
+        return new SimulationRecord(simulation, null);
+    }
+
+    private SimulationRecord validateReqAndGetRecord(CloseSimulationOrderReqDto dto) {
+        Simulation simulation = findByIdOrError(dto.getSimulationId());
         SimulationServiceChecker.checkSimulationStatusOpen(simulation);
         SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
         SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
+        SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(dto.getOrderId(), simulation.getId());
+        SimulationServiceChecker.checkOrderStatusOpen(order);
+        return new SimulationRecord(simulation, order);
+    }
+
+    private SimulationRecord validateReqAndGetRecord(CloseSimulationReqDto dto) {
+        Simulation simulation = findByIdOrError(dto.getSimulationId());
+        SimulationServiceChecker.checkSimulationStatusOpen(simulation);
+        SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
+        SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
+        return new SimulationRecord(simulation, null);
+    }
+
+    // EXECUTE LOGIC METHODS -------------------------------------------------------------------------------------------
+
+    private Mono<SimulationOrderResDto> execute(SimulationRecord rec, CreateSimulationOrderReqDto dto) {
+        final Simulation simulation = rec.simulation();
+        CandleReqDto request = CandlesReqDtoAdapter.adapt(simulation.getCurrencyPair(), dto);
+        return binanceService.findCandle(request)
+                .map(candle -> createOrder(simulation, dto, candle))
+                .map(order -> SimulationServiceAssembler.toModelCreateOrder(order, dto));
+    }
+
+    private Mono<SimulationOrderResDto> execute(SimulationRecord rec, CloseSimulationOrderReqDto dto) {
+        final Simulation simulation = rec.simulation();
+        final SimulationOrder order = rec.order();
+        return simulationOrderReportFactoryService.create(simulation, order, dto)
+                .map(report -> closeOrder(simulation, order, report, false))
+                .map(updatedOrder -> SimulationServiceAssembler.toModelCloseOrder(updatedOrder, dto));
+    }
+
+    private Mono<CloseSimulationResDto> execute(SimulationRecord rec, CloseSimulationReqDto dto) {
+        final Simulation simulation = rec.simulation();
+
         Map<Long, SimulationOrderResDto> ordersIdsMap = new HashMap<>();
         Map<SimulationOrderResDto.Status, List<Long>> ordersIdsStatusMap = new EnumMap<>(SimulationOrderResDto.Status.class);
         Arrays.stream(SimulationOrderResDto.Status.values()).forEach( status -> ordersIdsStatusMap.put(status, new ArrayList<>()));
@@ -72,60 +149,6 @@ public class SimulationService {
                 .map(reports -> closeStepThree(simulation.getId(), ordersIdsMap, ordersIdsStatusMap, dto));
     }
 
-    /**
-     * CREATE ORDER
-     */
-    public Mono<SimulationOrderResDto> createOrder(CreateSimulationOrderReqDto dto) {
-        SimulationServiceChecker.checkLeverage(dto);
-        SimulationServiceChecker.checkAmountOfTrade(dto);
-        Simulation simulation = findByIdOrError(dto.getSimulationId());
-        SimulationServiceChecker.checkSimulationStatusOpen(simulation);
-        SimulationServiceChecker.checkBalance(simulation, dto);
-        SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
-        SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
-
-        var request = CandlesReqDtoAdapter.adapt(simulation.getCurrencyPair(), dto);
-        return binanceService.findCandle(request)
-                .map(candle -> createOrder(simulation, dto, candle))
-                .map(order -> SimulationServiceAssembler.toModelCreateOrder(order, dto));
-    }
-
-    /**
-     * CLOSE ORDER
-     */
-    public Mono<SimulationOrderResDto> closeOrder(CloseSimulationOrderReqDto dto) {
-        Simulation simulation = findByIdOrError(dto.getSimulationId());
-        SimulationServiceChecker.checkSimulationStatusOpen(simulation);
-        SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
-        SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
-        SimulationOrder order = simulationOrderService.findByIdAndSimulationIdOrError(dto.getOrderId(), simulation.getId());
-        SimulationServiceChecker.checkOrderStatusOpen(order);
-
-        return simulationOrderReportFactoryService.create(simulation, order, dto)
-                .map(report -> closeOrder(simulation, order, report, false))
-                .map(updatedOrder -> SimulationServiceAssembler.toModelCloseOrder(updatedOrder, dto));
-    }
-
-    /**
-     * CLEAN ALL DATA
-     */
-    @Transactional
-    public void deleteAll() {
-        simulationEventService.deleteAll();
-        simulationOrderService.deleteAll();
-        repository.deleteAll();
-        //inserire eliminazione degli indici
-    }
-
-    // PRIVATE METHODS -------------------------------------------------------------------------------------------------
-
-    private Simulation validateCloseSimulation(CloseSimulationReqDto dto) {
-        Simulation simulation = findByIdOrError(dto.getSimulationId());
-        SimulationServiceChecker.checkSimulationStatusOpen(simulation);
-        SimulationEvent latestEvent = simulationEventService.findLatestEventBySimulationId(simulation.getId());
-        SimulationServiceChecker.checkRequestTime(simulation, latestEvent, dto);
-        return simulation;
-    }
 
     @Transactional
     private SimulationOrder createOrder(Simulation simulation, CreateSimulationOrderReqDto dto, CandleResDto candle) {
@@ -174,5 +197,9 @@ public class SimulationService {
         //simulationEventService.deleteAll();
         //simulationOrderService.deleteAll();
         return resDto;
+    }
+
+    private record SimulationRecord(Simulation simulation, SimulationOrder order) {
+
     }
 }

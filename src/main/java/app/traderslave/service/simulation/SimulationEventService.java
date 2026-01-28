@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class SimulationEventService {
+public class SimulationEventService {
 
     private final SimulationEventRepository repository;
 

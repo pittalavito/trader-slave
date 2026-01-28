@@ -28,7 +28,7 @@ public class SimulationController {
     // --- SIMULATION --------------------------------------------------------------------------------------------------
 
     @PostMapping
-    public Mono<ResponseEntity<PostSimulationResDto>> create(@RequestBody @Validated CreateSimulationReqDto dto) {
+    public Mono<ResponseEntity<CreateSimulationResDto>> create(@RequestBody @Validated CreateSimulationReqDto dto) {
         return simulationService.create(dto)
                 .map(ResponseEntity::ok);
     }

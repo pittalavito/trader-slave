@@ -31,17 +31,17 @@ class SimulationControllerTest {
         createSimulationReqDto.setStartTime(LocalDateTime.now());
         createSimulationReqDto.setDescription("Description");
 
-        PostSimulationResDto postSimulationResDto = PostSimulationResDto.builder().build();
+        CreateSimulationResDto createSimulationResDto = CreateSimulationResDto.builder().build();
 
-        Mockito.when(simulationService.create(any(CreateSimulationReqDto.class))).thenReturn(Mono.just(postSimulationResDto));
+        Mockito.when(simulationService.create(any(CreateSimulationReqDto.class))).thenReturn(Mono.just(createSimulationResDto));
 
         webTestClient.post()
                 .uri("/simulation")
                 .bodyValue(createSimulationReqDto)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(PostSimulationResDto.class)
-                .isEqualTo(postSimulationResDto);
+                .expectBody(CreateSimulationResDto.class)
+                .isEqualTo(createSimulationResDto);
     }
 
     @Test

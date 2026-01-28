@@ -74,13 +74,13 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
        // }
     }
 
-    private PostSimulationResDto initiateSimulation() {
+    private CreateSimulationResDto initiateSimulation() {
         CreateSimulationReqDto reqDto = new CreateSimulationReqDto();
         reqDto.setCurrencyPair(params.getCurrencyPair());
         reqDto.setStartTime(params.getSimulationStartTime());
         reqDto.setDescription("Pattern Strategy Simulation");
 
-        PostSimulationResDto resDto = simulationService.create(reqDto).block();
+        CreateSimulationResDto resDto = simulationService.create(reqDto).block();
         assert resDto != null;
         return resDto;
     }
@@ -111,7 +111,7 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
         return openOrder != null && openOrder.getOrderId() != null;
     }
 
-    private SimulationOrderResDto openOrder(PatternDetectionResDto patterns, PostSimulationResDto simulation, LocalDateTime localDateTime) {
+    private SimulationOrderResDto openOrder(PatternDetectionResDto patterns, CreateSimulationResDto simulation, LocalDateTime localDateTime) {
         final OrderType orderType;
         switch (SignalUtils.generate(patterns)) {
             case BUY -> orderType = OrderType.BUY;
@@ -138,7 +138,7 @@ public class SimulationPatternStrategyCommand extends BaseMonoCommand<Void, Clos
         return dto;
     }
 
-    private SimulationOrderResDto closeOrder(PostSimulationResDto simulation, SimulationOrderResDto openOrder, PatternDetectionResDto patterns, LocalDateTime localDateTime) {
+    private SimulationOrderResDto closeOrder(CreateSimulationResDto simulation, SimulationOrderResDto openOrder, PatternDetectionResDto patterns, LocalDateTime localDateTime) {
         final boolean confirmedTrend = SignalUtils.confirmOrderSignal(openOrder.getOrderType(), patterns);
         final boolean closeOrder;
         final boolean takeProfitHit;

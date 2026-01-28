@@ -15,8 +15,8 @@ import java.util.Map;
 @UtilityClass
 public class SimulationServiceAssembler {
 
-    public PostSimulationResDto toModelCreate(Simulation simulation) {
-        return PostSimulationResDto.builder()
+    public CreateSimulationResDto toModelCreate(Simulation simulation) {
+        return CreateSimulationResDto.builder()
                 .id(simulation.getId())
                 .currencyPair(simulation.getCurrencyPair())
                 .description(simulation.getDescription())

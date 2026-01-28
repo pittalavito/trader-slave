@@ -1,6 +1,7 @@
 package app.traderslave.checker;
 
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
+import app.traderslave.controller.dto.CreateSimulationReqDto;
 import app.traderslave.controller.dto.TimeReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
@@ -9,7 +10,6 @@ import app.traderslave.model.domain.SimulationEvent;
 import app.traderslave.model.domain.SimulationOrder;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-
 import java.math.BigDecimal;
 
 @Slf4j
