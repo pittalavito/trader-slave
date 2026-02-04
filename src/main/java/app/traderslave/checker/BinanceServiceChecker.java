@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @UtilityClass
 public class BinanceServiceChecker {
 
-    public static final int LIMIT_NUM_CANDLES = 150000;
+    public static final int LIMIT_NUM_CANDLES = 1500000;
 
     public void checkDatesGetKline(CandlesReqDto dto) {
         if (!dto.isRealTimeRequest()) {

@@ -1,10 +1,12 @@
-package app.traderslave.service;
+package app.traderslave.service.domain;
 
+import app.traderslave.controller.dto.CandleReqDto;
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CandlesReqDto;
 import app.traderslave.controller.dto.CandlesResDto;
-import app.traderslave.model.domain.BinanceCandleBackTest;
-import app.traderslave.repository.BinanceCandleBsckTestRepository;
+import app.traderslave.model.domain.CandleBackTest;
+import app.traderslave.model.enums.TimeFrame;
+import app.traderslave.repository.CandleBackTestRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,18 +18,27 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class BinanceCandleBackTestService {
+public class CandleBackTestDomainService {
 
-    public static final int BATCH_SIZE = 250;
+    public static final int BATCH_SIZE = 500;
 
-    private final BinanceCandleBsckTestRepository binanceCandleBsckTestRepository;
+    private final CandleBackTestRepository candleBackTestRepository;
 
-    public BinanceCandleBackTest getCandle() {
-        return null;
+    public CandleBackTest getCandle(CandleReqDto candleReqDto) {
+        var backTest = candleBackTestRepository.findAllByCurrencyPairAndTimeFrameAndOpenTimeGreaterThanEqualAndCloseTimeLessThanEqualOrderByOpenTimeAsc(
+                candleReqDto.getCurrencyPair(),
+                TimeFrame.ONE_MINUTE,
+                candleReqDto.getStartTime(),
+                candleReqDto.getStartTime().plusMinutes(1)
+        );
+
+        return backTest.stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Candle not found"));
     }
 
-    public List<BinanceCandleBackTest> getCandles(CandlesReqDto candlesReqDto) {
-        return binanceCandleBsckTestRepository.findAllByCurrencyPairAndTimeFrameAndOpenTimeGreaterThanEqualAndCloseTimeLessThanEqualOrderByOpenTimeAsc(
+    public List<CandleBackTest> getCandles(CandlesReqDto candlesReqDto) {
+        return candleBackTestRepository.findAllByCurrencyPairAndTimeFrameAndOpenTimeGreaterThanEqualAndCloseTimeLessThanEqualOrderByOpenTimeAsc(
                 candlesReqDto.getCurrencyPair(),
                 candlesReqDto.getTimeFrame(),
                 candlesReqDto.getStartTime(),
@@ -43,34 +54,28 @@ public class BinanceCandleBackTestService {
     @Transactional
     public void saveCandleBackTest(CandlesReqDto candleDto, List<CandleResDto> candlesRtoList) {
         var updated = candlesRtoList.stream()
-                .map(candleRto -> buildIfAbsent(candleRto, candleDto))
-                .filter(Optional::isPresent)
+                .map(candleRto -> build(candleRto, candleDto))
                 .toList();
 
         for (int i = 0; i < updated.size(); i += BATCH_SIZE) {
             var batch = updated.subList(i, Math.min(i + BATCH_SIZE, updated.size()))
                     .stream()
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
                     .toList();
-            binanceCandleBsckTestRepository.saveAll(batch);
-            log.info("Saved batch of {} candle back tests", batch.size());
+            candleBackTestRepository.saveAll(batch);
         }
         log.info("Total new candle back tests saved: {}", updated.size());
     }
 
-    private Optional<BinanceCandleBackTest> buildIfAbsent(CandleResDto candleRto, CandlesReqDto candleDto) {
-        var existingCandle = binanceCandleBsckTestRepository.findByUid(generateUid(candleDto, candleRto));
+    private Optional<CandleBackTest> buildIfAbsent(CandleResDto candleRto, CandlesReqDto candleDto) {
+        var existingCandle = candleBackTestRepository.findByUid(generateUid(candleDto, candleRto));
         if (existingCandle.isEmpty()) {
-            log.info("Saving candle back test: {}", candleRto);
             return Optional.of(build(candleRto, candleDto));
         }
-        log.info("Candle back test already exists: {}", candleRto);
         return Optional.empty();
     }
 
-    private BinanceCandleBackTest build(CandleResDto candleRto, CandlesReqDto candleDto) {
-        return BinanceCandleBackTest.builder()
+    private CandleBackTest build(CandleResDto candleRto, CandlesReqDto candleDto) {
+        return CandleBackTest.builder()
                 .uid(generateUid(candleDto, candleRto))
                 .currencyPair(candleDto.getCurrencyPair())
                 .open(candleRto.getOpen())

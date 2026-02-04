@@ -2,7 +2,8 @@ package app.traderslave.controller;
 
 import app.traderslave.command.SimulationPatternStrategyCommand;
 import app.traderslave.controller.dto.*;
-import app.traderslave.service.simulation.SimulationService;
+import app.traderslave.service.manager.SimulationManagerService;
+import app.traderslave.service.manager.SimulationOrderManagerService;
 import app.traderslave.utility.ControllerPath;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,46 +23,43 @@ public class SimulationController {
     private static final String URI_ALL = "/all";
     private static final String URI_PATTERN_STRATEGY = "/pattern-strategy";
 
-    private final SimulationService simulationService;
+    private final SimulationManagerService simulationManagerService;
+    private final SimulationOrderManagerService orderManagerService;
     private final SimulationPatternStrategyCommand simulationPatternStrategyCommand;
 
     // --- SIMULATION --------------------------------------------------------------------------------------------------
 
     @PostMapping
-    public Mono<ResponseEntity<CreateSimulationResDto>> create(@RequestBody @Validated CreateSimulationReqDto dto) {
-        return simulationService.create(dto)
-                .map(ResponseEntity::ok);
+    public ResponseEntity<CreateSimulationResDto> create(@RequestBody @Validated CreateSimulationReqDto dto) {
+        return ResponseEntity.ok(simulationManagerService.create(dto));
     }
 
     @PutMapping
-    public Mono<ResponseEntity<CloseSimulationResDto>> close(@RequestBody @Validated CloseSimulationReqDto dto) {
-        return simulationService.close(dto)
-                .map(ResponseEntity::ok);
+    public ResponseEntity<CloseSimulationResDto> close(@RequestBody @Validated CloseSimulationReqDto dto) {
+        return ResponseEntity.ok(simulationManagerService.close(dto));
     }
 
     @PostMapping(path = URI_PATTERN_STRATEGY)
-    public Mono<ResponseEntity<CloseSimulationResDto>> simulationPatternStrategy() throws InterruptedException {
-        return simulationPatternStrategyCommand.execute()
-                .map(ResponseEntity::ok);
+    public ResponseEntity<CloseSimulationResDto> simulationPatternStrategy(@RequestBody @Validated SimulationPatterStrategyDto dto) throws InterruptedException {
+        simulationPatternStrategyCommand.setRequestDto(dto);
+        return ResponseEntity.ok(simulationPatternStrategyCommand.execute());
     }
 
     @Transactional
     @DeleteMapping(path = URI_ALL)
     public void deleteAll() {
-        simulationService.deleteAll();
+        simulationManagerService.deleteAll();
     }
 
     // --- ORDER -------------------------------------------------------------------------------------------------------
 
     @PostMapping(path = URI_ORDER)
-    public Mono<ResponseEntity<SimulationOrderResDto>> createOrder(@RequestBody @Validated CreateSimulationOrderReqDto dto) {
-        return simulationService.createOrder(dto)
-                .map(ResponseEntity::ok);
+    public ResponseEntity<SimulationOrderResDto> createOrder(@RequestBody @Validated CreateSimulationOrderReqDto dto) {
+        return ResponseEntity.ok(orderManagerService.create(dto));
     }
 
     @PutMapping(path = URI_ORDER)
-    public Mono<ResponseEntity<SimulationOrderResDto>> closeOrder(@RequestBody @Validated CloseSimulationOrderReqDto dto) {
-        return simulationService.closeOrder(dto)
-                .map(ResponseEntity::ok);
+    public ResponseEntity<SimulationOrderResDto> closeOrder(@RequestBody @Validated CloseSimulationOrderReqDto dto) {
+            return ResponseEntity.ok(orderManagerService.close(dto));
     }
 }

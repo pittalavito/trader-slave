@@ -1,4 +1,4 @@
-package app.traderslave.service.simulation;
+package app.traderslave.service.domain;
 
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class SimulationOrderService {
+public class SimulationOrderDomainService {
 
     private final SimulationOrderRepository repository;
 

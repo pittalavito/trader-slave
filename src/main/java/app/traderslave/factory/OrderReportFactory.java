@@ -20,7 +20,7 @@ public class OrderReportFactory {
         BigDecimal maxPriceDuringTrade = order.getOpenPrice();
         BigDecimal minPriceDuringTrade = order.getOpenPrice();
 
-        candles.getList().sort(Comparator.comparing(CandleResDto::getCloseTime));
+        //candles.getList().sort(Comparator.comparing(CandleResDto::getCloseTime));
         for (CandleResDto candle : candles.getList()) {
             lastUtilCandle = candle;
             maxPriceDuringTrade = maxPriceDuringTrade.max(candle.getHigh());

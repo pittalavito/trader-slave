@@ -1,4 +1,4 @@
-package app.traderslave.service.simulation;
+package app.traderslave.service.domain;
 
 import app.traderslave.factory.SimulationEventFactory;
 import app.traderslave.model.domain.SimulationEvent;
@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class SimulationEventService {
+public class SimulationDomainEventService {
 
     private final SimulationEventRepository repository;
 

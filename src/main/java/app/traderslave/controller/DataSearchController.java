@@ -1,7 +1,7 @@
 package app.traderslave.controller;
 
 import app.traderslave.controller.dto.*;
-import app.traderslave.service.BinanceCandleBackTestService;
+import app.traderslave.service.domain.CandleBackTestDomainService;
 import app.traderslave.service.BinanceService;
 import app.traderslave.utility.ControllerPath;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -24,7 +22,7 @@ public class DataSearchController {
     private static final String URL_CANDLE_BACK_TEST = "/candles-back-test";
 
     private final BinanceService binanceService;
-    private final BinanceCandleBackTestService binanceCandleBackTestService;
+    private final CandleBackTestDomainService candleBackTestDomainService;
 
     @GetMapping(path = URL_CANDLE)
     public Mono<ResponseEntity<CandleResDto>> getCandle(@ModelAttribute @Validated CandleReqDto requestDto) {
@@ -42,7 +40,7 @@ public class DataSearchController {
     public ResponseEntity<Void> saveCandleBackTest(@ModelAttribute @Validated CandlesReqDto requestDto) {
         var response = binanceService.findCandles(requestDto).block();
         assert response != null;
-        binanceCandleBackTestService.saveCandleBackTest(requestDto, response);
+        candleBackTestDomainService.saveCandleBackTest(requestDto, response);
         return ResponseEntity.ok().build();
     }
 }

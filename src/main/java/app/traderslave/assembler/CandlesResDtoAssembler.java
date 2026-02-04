@@ -2,7 +2,7 @@ package app.traderslave.assembler;
 
 import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.controller.dto.CandlesResDto;
-import app.traderslave.model.domain.BinanceCandleBackTest;
+import app.traderslave.model.domain.CandleBackTest;
 import lombok.experimental.UtilityClass;
 import reactor.core.publisher.Mono;
 import java.util.Comparator;
@@ -21,7 +21,7 @@ public class CandlesResDtoAssembler {
         );
     }
 
-    public CandlesResDto toModelBackTest(List<BinanceCandleBackTest> responseList) {
+    public CandlesResDto toModelBackTest(List<CandleBackTest> responseList) {
         var list = responseList.stream()
                 .map(CandlesResDtoAssembler::toModel)
                 .toList();
@@ -31,7 +31,7 @@ public class CandlesResDtoAssembler {
                 .build();
     }
 
-    public CandleResDto toModel(BinanceCandleBackTest candle) {
+    public CandleResDto toModel(CandleBackTest candle) {
         return CandleResDto.builder()
                 .openTime(candle.getOpenTime())
                 .closeTime(candle.getCloseTime())

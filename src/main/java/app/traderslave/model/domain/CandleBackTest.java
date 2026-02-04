@@ -17,10 +17,15 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @Entity
 @NoArgsConstructor
-@Table(name = "BINANCE_CANDLE_BACK_TEST")
+@Table(name = "BINANCE_CANDLE_BACK_TEST", indexes = {
+        @Index(name = "candle_back_test_currency_pair_idx", columnList = "currencyPair"),
+        @Index(name = "candle_back_test_currency_pair_idx", columnList = "timeFrame"),
+        @Index(name = "candle_back_test_open_time_idx", columnList = "openTime"),
+        @Index(name = "candle_back_test_close_time_idx", columnList = "closeTime")
+})
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BinanceCandleBackTest extends BasePersistentModel {
+public class CandleBackTest extends BasePersistentModel {
 
     @Column(nullable = false, unique = true, columnDefinition = SqlColumnDefinition.VARCHAR_100)
     private String uid;

@@ -3,16 +3,12 @@ package app.traderslave.adapter;
 import app.traderslave.controller.dto.*;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
-import app.traderslave.service.simulation.SimulationService;
 import lombok.experimental.UtilityClass;
 import java.time.LocalDateTime;
 
 @UtilityClass
 public class CandlesReqDtoAdapter {
 
-    /**
-     * For requests coming from {@link SimulationService#createOrder(CreateSimulationOrderReqDto)}
-     */
     public CandleReqDto adapt(CurrencyPair currencyPair, CreateSimulationOrderReqDto dto) {
         CandleReqDto reqDto = new CandleReqDto();
         reqDto.setCurrencyPair(currencyPair);
@@ -21,9 +17,6 @@ public class CandlesReqDtoAdapter {
         return reqDto;
     }
 
-    /**
-     * For requests coming not public class SimulationOrderReportService
-     */
     public CandlesReqDto adapt(LocalDateTime openTime, CurrencyPair currencyPair, LocalDateTime endTime, TimeFrame timeFrame) {
         CandlesReqDto reqDto = new CandlesReqDto();
         reqDto.setCurrencyPair(currencyPair);

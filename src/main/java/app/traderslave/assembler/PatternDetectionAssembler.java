@@ -5,7 +5,7 @@ import app.traderslave.controller.dto.CandlesResDto;
 import app.traderslave.controller.dto.PatternDetectionReqDto;
 import app.traderslave.controller.dto.PatternDetectionResDto;
 import app.traderslave.model.Pattern;
-import app.traderslave.model.domain.BinanceCandleBackTest;
+import app.traderslave.model.domain.CandleBackTest;
 import app.traderslave.utility.PatternUtils;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
@@ -15,7 +15,7 @@ import java.util.List;
 @UtilityClass
 public class PatternDetectionAssembler {
 
-    public PatternDetectionResDto toModelBackTest(List<BinanceCandleBackTest> candles, PatternDetectionReqDto dto) {
+    public PatternDetectionResDto toModelBackTest(List<CandleBackTest> candles, PatternDetectionReqDto dto) {
         if (!CollectionUtils.isEmpty(candles)) {
             CandlesResDto candlesDto = adapt(candles);
             return toModel(candlesDto, dto);
@@ -95,7 +95,7 @@ public class PatternDetectionAssembler {
         return dt2.compareTo(dt1);
     }
 
-    public CandlesResDto adapt(List<BinanceCandleBackTest> tests) {
+    public CandlesResDto adapt(List<CandleBackTest> tests) {
         List<CandleResDto> candles = tests.stream()
                 .map(PatternDetectionAssembler::adapt)
                 .toList();
@@ -105,7 +105,7 @@ public class PatternDetectionAssembler {
                 .build();
     }
 
-    public CandleResDto adapt(BinanceCandleBackTest test) {
+    public CandleResDto adapt(CandleBackTest test) {
         CandleResDto resDto = new CandleResDto();
         resDto.setOpenTime(test.getOpenTime());
         resDto.setCloseTime(test.getCloseTime());

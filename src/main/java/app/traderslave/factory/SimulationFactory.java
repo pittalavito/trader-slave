@@ -7,6 +7,7 @@ import app.traderslave.model.domain.SimulationOrder;
 import app.traderslave.utility.TimeUtils;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -37,7 +38,8 @@ public class SimulationFactory {
     }
 
     public Simulation subtractBalance(Simulation simulation, SimulationOrder order) {
-        simulation.setBalance(simulation.getBalance().subtract(order.getAmountOfTrade()));
+        BigDecimal newBalance = simulation.getBalance().subtract(order.getAmountOfTrade()).setScale(2, RoundingMode.HALF_UP);
+        simulation.setBalance(newBalance);
         simulation.setVersion(simulation.getVersion() + 1);
         simulation.setLastModificationDate(LocalDateTime.now());
         return simulation;
@@ -45,8 +47,9 @@ public class SimulationFactory {
 
     public Simulation addBalance(Simulation simulation, SimulationOrder order) {
         BigDecimal amountOfTradePlusProfitLoss = order.getAmountOfTrade().add(order.getProfitLoss());
+        BigDecimal newBalance = simulation.getBalance().add(amountOfTradePlusProfitLoss).setScale(2, RoundingMode.HALF_UP);;
 
-        simulation.setBalance(simulation.getBalance().add(amountOfTradePlusProfitLoss));
+        simulation.setBalance(newBalance);
         simulation.setVersion(simulation.getVersion() + 1);
         simulation.setLastModificationDate(LocalDateTime.now());
         return simulation;

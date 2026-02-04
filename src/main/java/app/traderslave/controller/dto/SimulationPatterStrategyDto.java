@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 public class SimulationPatterStrategyDto extends TimeReqDto {
 
     private CurrencyPair currencyPair = CurrencyPair.SOL_USDC;
-    private LocalDateTime simulationStartTime = LocalDateTime.of(2025, 6, 1, 0, 0);
-    private LocalDateTime simulationEndTime = LocalDateTime.of(2026, 1, 20, 0, 0);
+    private LocalDateTime simulationStartTime = LocalDateTime.of(2025, 1, 1, 0, 0);
+    private LocalDateTime simulationEndTime = LocalDateTime.of(2025, 1, 8, 0, 0);
 
     private TimeFrame patternDetectionTimeFrame = TimeFrame.FIVE_MINUTES;
     private TimeFrame emaAnalysisTimeFrame = TimeFrame.FIFTEEN_MINUTES;
