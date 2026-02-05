@@ -1,0 +1,18 @@
+package app.traderslave.domain.repository;
+
+import app.traderslave.domain.model.SimulationOrder;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface SimulationOrderRepository extends JpaRepository<SimulationOrder, Long> {
+
+    List<SimulationOrder> findAllBySimulationId(Long simulationId);
+
+    Optional<SimulationOrder> findByIdAndSimulationId(Long id, Long simulationId);
+
+    void deleteBySimulationId(Long simulationId);
+
+}

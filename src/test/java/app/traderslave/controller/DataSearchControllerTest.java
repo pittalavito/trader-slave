@@ -3,8 +3,8 @@ package app.traderslave.controller;
 import app.traderslave.controller.dto.*;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
-import app.traderslave.service.BinanceService;
-import app.traderslave.remote.api.BinanceApi;
+import app.traderslave.remote.service.BinanceRemoteService;
+import app.traderslave.remote.client.BinanceClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +22,16 @@ class DataSearchControllerTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private BinanceService binanceService;
+    private BinanceRemoteService binanceRemoteService;
 
     @MockitoBean
-    private BinanceApi binanceApi;
+    private BinanceClient binanceClient;
 
     @Test
     void testGetCandlesOk() {
         CandlesResDto candlesResDto = CandlesResDto.builder().build();
 
-        Mockito.when(binanceService.findCandles(any(CandlesReqDto.class))).thenReturn(Mono.just(candlesResDto));
+        Mockito.when(binanceRemoteService.findCandlesAsync(any(CandlesReqDto.class))).thenReturn(Mono.just(candlesResDto));
 
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -52,7 +52,7 @@ class DataSearchControllerTest {
     void testGetCandleOk() {
         CandleResDto candleResDto = CandleResDto.builder().build();
 
-        Mockito.when(binanceService.findCandle(any(CandleReqDto.class))).thenReturn(Mono.just(candleResDto));
+        Mockito.when(binanceRemoteService.findCandleAsync(any(CandleReqDto.class))).thenReturn(Mono.just(candleResDto));
 
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder

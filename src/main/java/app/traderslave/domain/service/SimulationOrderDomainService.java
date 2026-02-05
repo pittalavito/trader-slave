@@ -1,0 +1,52 @@
+package app.traderslave.domain.service;
+
+import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
+import app.traderslave.exception.custom.CustomException;
+import app.traderslave.exception.model.ExceptionEnum;
+import app.traderslave.domain.factory.SimulationOrderFactory;
+import app.traderslave.model.Candle;
+import app.traderslave.model.OrderReport;
+import app.traderslave.domain.model.Simulation;
+import app.traderslave.domain.model.SimulationOrder;
+import app.traderslave.domain.repository.SimulationOrderRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+public class SimulationOrderDomainService {
+
+    private final SimulationOrderRepository repository;
+
+    public SimulationOrder create(Simulation simulation, CreateSimulationOrderReqDto dto, Candle candle) {
+        return repository.save(SimulationOrderFactory.create(simulation, dto, candle));
+    }
+
+    public SimulationOrder close(SimulationOrder order, OrderReport report, boolean endSimulation) {
+        return repository.save(SimulationOrderFactory.close(order, report, endSimulation));
+    }
+
+    public List<SimulationOrder> findAllBySimulationId(Long simulationId) {
+        return repository.findAllBySimulationId(simulationId);
+    }
+
+    public SimulationOrder findByIdAndSimulationIdOrError(Long id, Long simulationId) {
+        return repository.findByIdAndSimulationId(id, simulationId)
+                .orElseThrow(() -> new CustomException(ExceptionEnum.SIMULATION_ORDER_NOT_FOUND));
+    }
+
+    @Transactional
+    public void deleteBySimulationId(Long simulationId) {
+        repository.deleteBySimulationId(simulationId);
+    }
+
+    @Transactional
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+}

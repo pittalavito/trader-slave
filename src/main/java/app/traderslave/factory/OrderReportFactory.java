@@ -1,27 +1,25 @@
 package app.traderslave.factory;
 
-import app.traderslave.controller.dto.CandleResDto;
-import app.traderslave.controller.dto.CandlesResDto;
-import app.traderslave.model.report.OrderReport;
-import app.traderslave.model.domain.SimulationOrder;
+import app.traderslave.model.Candle;
+import app.traderslave.model.OrderReport;
+import app.traderslave.domain.model.SimulationOrder;
 import app.traderslave.model.enums.OrderType;
-import app.traderslave.utility.ReportUtils;
-import app.traderslave.utility.TimeUtils;
+import app.traderslave.utils.ReportUtils;
+import app.traderslave.utils.TimeUtils;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
-import java.util.Comparator;
+import java.util.List;
 
 @UtilityClass
 public class OrderReportFactory {
 
-    public OrderReport create(SimulationOrder order, CandlesResDto candles) {
+    public OrderReport create(SimulationOrder order, List<Candle> candles) {
         boolean isLiquidated = false;
-        CandleResDto lastUtilCandle = new CandleResDto();
+        Candle lastUtilCandle = new Candle();
         BigDecimal maxPriceDuringTrade = order.getOpenPrice();
         BigDecimal minPriceDuringTrade = order.getOpenPrice();
 
-        //candles.getList().sort(Comparator.comparing(CandleResDto::getCloseTime));
-        for (CandleResDto candle : candles.getList()) {
+        for (Candle candle : candles) {
             lastUtilCandle = candle;
             maxPriceDuringTrade = maxPriceDuringTrade.max(candle.getHigh());
             minPriceDuringTrade = minPriceDuringTrade.min(candle.getLow());
@@ -48,7 +46,7 @@ public class OrderReportFactory {
                 .build();
     }
 
-    public OrderReport create(SimulationOrder order, CandlesResDto candles, OrderReport rep1) {
+    public OrderReport create(SimulationOrder order, List<Candle> candles, OrderReport rep1) {
         OrderReport lastReport = create(order, candles);
 
         BigDecimal maxUnrealizedProfitDuringTrade = rep1.getMaxUnrealizedProfitDuringTrade().max(lastReport.getMaxUnrealizedProfitDuringTrade());

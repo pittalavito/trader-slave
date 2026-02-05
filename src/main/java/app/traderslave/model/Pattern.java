@@ -1,11 +1,9 @@
 package app.traderslave.model;
 
-import app.traderslave.controller.dto.CandleResDto;
 import app.traderslave.model.enums.PatternType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Data
@@ -14,7 +12,7 @@ import java.util.List;
 public class Pattern {
 
     private PatternType patternType;
-    private List<CandleResDto> candles;
+    private List<Candle> candles;
     private boolean breakoutConfirmed;
 
     public PatternType.Direction getDirection() {

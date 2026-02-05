@@ -1,0 +1,44 @@
+package app.traderslave.domain.service;
+
+import app.traderslave.domain.factory.SimulationEventFactory;
+import app.traderslave.domain.model.SimulationEvent;
+import app.traderslave.domain.model.SimulationOrder;
+import app.traderslave.domain.repository.SimulationEventRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+public class SimulationDomainEventService {
+
+    private final SimulationEventRepository repository;
+
+    public SimulationEvent create(SimulationOrder order, boolean endSimulation) {
+        return repository.save(endSimulation ?
+                SimulationEventFactory.closeSImulation(order) :
+                SimulationEventFactory.create(order));
+    }
+
+    public List<SimulationEvent> findBySimulationIdOrderByEventTimeAsc(Long simulationId) {
+        return repository.findBySimulationIdOrderByEventTimeAsc(simulationId);
+    }
+
+    public SimulationEvent findLatestEventBySimulationId(Long simulationId) {
+        return repository.findLatestEventBySimulationId(simulationId);
+    }
+
+    @Transactional
+    public void deleteBySimulationId(Long simulationId) {
+        repository.deleteBySimulationId(simulationId);
+    }
+
+    @Transactional
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+}

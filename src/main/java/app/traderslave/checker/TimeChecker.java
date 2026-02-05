@@ -2,7 +2,7 @@ package app.traderslave.checker;
 
 import app.traderslave.exception.custom.*;
 import app.traderslave.exception.model.ExceptionEnum;
-import app.traderslave.utility.TimeUtils;
+import app.traderslave.utils.TimeUtils;
 import lombok.experimental.UtilityClass;
 import java.time.LocalDateTime;
 

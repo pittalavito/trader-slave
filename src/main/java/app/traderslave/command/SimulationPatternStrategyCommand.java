@@ -1,15 +1,16 @@
 package app.traderslave.command;
 
+import app.traderslave.command.base.BaseCommand;
 import app.traderslave.assembler.PatternDetectionAssembler;
 import app.traderslave.controller.dto.*;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.enums.TimeFrame;
-import app.traderslave.service.domain.CandleBackTestDomainService;
-import app.traderslave.service.BinanceService;
-import app.traderslave.service.manager.SimulationManagerService;
-import app.traderslave.service.manager.SimulationOrderManagerService;
-import app.traderslave.utility.SignalUtils;
-import app.traderslave.utility.TimeUtils;
+import app.traderslave.domain.service.CandleBackTestDomainService;
+import app.traderslave.remote.service.BinanceRemoteService;
+import app.traderslave.service.simulation.SimulationManagerService;
+import app.traderslave.service.simulation.SimulationOrderManagerService;
+import app.traderslave.utils.SignalUtils;
+import app.traderslave.utils.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class SimulationPatternStrategyCommand extends BaseCommand<SimulationPatt
 
     private final SimulationManagerService simulationManagerService;
     private final SimulationOrderManagerService simulationOrderManagerService;
-    private final BinanceService binanceService;
+    private final BinanceRemoteService binanceRemoteService;
     private final CandleBackTestDomainService candleBackTestDomainService;
 
     @Override
@@ -38,7 +39,7 @@ public class SimulationPatternStrategyCommand extends BaseCommand<SimulationPatt
         var analysisTimeReq = initAnalysisEndTime();
         var analysisPatternReq = initiatePatterDetection(analysisTimeReq);
 
-        while (analysisTimeReq.isBefore(requestDto.getSimulationEndTime())) {
+        while (analysisTimeReq.isBefore(commandRequest.getSimulationEndTime())) {
             var candles = candleBackTestDomainService.getCandles(analysisPatternReq);
             var patterns = PatternDetectionAssembler.toModelBackTest(candles, analysisPatternReq);
 
@@ -48,7 +49,7 @@ public class SimulationPatternStrategyCommand extends BaseCommand<SimulationPatt
                 order = openOrder(patterns, simulation, analysisTimeReq);
             }
             analysisTimeReq = analysisTimeReq.plusMinutes(10);
-            analysisPatternReq.setStartTime(TimeUtils.calculateStartDate(analysisTimeReq, requestDto.getPatternDetectionTimeFrame(), requestDto.getCandleInterval()));
+            analysisPatternReq.setStartTime(TimeUtils.calculateStartDate(analysisTimeReq, commandRequest.getPatternDetectionTimeFrame(), commandRequest.getCandleInterval()));
             analysisPatternReq.setEndTime(analysisTimeReq);
         }
         return closeSimulation(simulation.getId(), analysisTimeReq);
@@ -56,28 +57,28 @@ public class SimulationPatternStrategyCommand extends BaseCommand<SimulationPatt
 
     private void loadData() {
         var request = new CandlesReqDto();
-        request.setCurrencyPair(requestDto.getCurrencyPair());
-        request.setStartTime(requestDto.getSimulationStartTime());
-        request.setEndTime(requestDto.getSimulationEndTime());
-        request.setTimeFrame(requestDto.getPatternDetectionTimeFrame());
+        request.setCurrencyPair(commandRequest.getCurrencyPair());
+        request.setStartTime(commandRequest.getSimulationStartTime());
+        request.setEndTime(commandRequest.getSimulationEndTime());
+        request.setTimeFrame(commandRequest.getPatternDetectionTimeFrame());
 
         if (!CollectionUtils.isEmpty(candleBackTestDomainService.getCandles(request))) {
             return;
         }
 
         request.setTimeFrame(TimeFrame.ONE_MINUTE);
-        binanceService.findCandles(request)
+        binanceRemoteService.findCandlesAsync(request)
                 .doOnNext(response -> candleBackTestDomainService.saveCandleBackTest(request, response))
                 .block();
 
         request.setTimeFrame(TimeFrame.FIVE_MINUTES);
-        binanceService.findCandles(request)
+        binanceRemoteService.findCandlesAsync(request)
                 .doOnNext(response -> candleBackTestDomainService.saveCandleBackTest(request, response))
                 .block();
 
-        if (TimeFrame.ONE_MINUTE != requestDto.getPatternDetectionTimeFrame() && TimeFrame.FIVE_MINUTES != requestDto.getPatternDetectionTimeFrame()) {
-            request.setTimeFrame(requestDto.getPatternDetectionTimeFrame());
-            binanceService.findCandles(request)
+        if (TimeFrame.ONE_MINUTE != commandRequest.getPatternDetectionTimeFrame() && TimeFrame.FIVE_MINUTES != commandRequest.getPatternDetectionTimeFrame()) {
+            request.setTimeFrame(commandRequest.getPatternDetectionTimeFrame());
+            binanceRemoteService.findCandlesAsync(request)
                     .doOnNext(response -> candleBackTestDomainService.saveCandleBackTest(request, response))
                     .block();
         }
@@ -85,8 +86,8 @@ public class SimulationPatternStrategyCommand extends BaseCommand<SimulationPatt
 
     private CreateSimulationResDto initiateSimulation() {
         CreateSimulationReqDto reqDto = new CreateSimulationReqDto();
-        reqDto.setCurrencyPair(requestDto.getCurrencyPair());
-        reqDto.setStartTime(requestDto.getSimulationStartTime());
+        reqDto.setCurrencyPair(commandRequest.getCurrencyPair());
+        reqDto.setStartTime(commandRequest.getSimulationStartTime());
         reqDto.setDescription("Pattern Strategy Simulation");
         return simulationManagerService.create(reqDto);
     }
@@ -96,18 +97,18 @@ public class SimulationPatternStrategyCommand extends BaseCommand<SimulationPatt
     }
 
     private LocalDateTime initAnalysisEndTime() {
-        var analysisTime = TimeUtils.calculateEndDate(requestDto.getSimulationStartTime(), requestDto.getPatternDetectionTimeFrame(), requestDto.getCandleInterval());
-        if (analysisTime.isAfter(requestDto.getSimulationEndTime())) {
-            analysisTime = requestDto.getSimulationEndTime().minusSeconds(1);
+        var analysisTime = TimeUtils.calculateEndDate(commandRequest.getSimulationStartTime(), commandRequest.getPatternDetectionTimeFrame(), commandRequest.getCandleInterval());
+        if (analysisTime.isAfter(commandRequest.getSimulationEndTime())) {
+            analysisTime = commandRequest.getSimulationEndTime().minusSeconds(1);
         }
         return analysisTime;
     }
 
     private PatternDetectionReqDto initiatePatterDetection(LocalDateTime endTime) {
         PatternDetectionReqDto dto = new PatternDetectionReqDto();
-        dto.setCurrencyPair(requestDto.getCurrencyPair());
-        dto.setTimeFrame(requestDto.getPatternDetectionTimeFrame());
-        dto.setStartTime(requestDto.getSimulationStartTime());
+        dto.setCurrencyPair(commandRequest.getCurrencyPair());
+        dto.setTimeFrame(commandRequest.getPatternDetectionTimeFrame());
+        dto.setStartTime(commandRequest.getSimulationStartTime());
         dto.setEndTime(endTime);
         dto.setOnlyBreakoutConfirmed(true);
         return dto;
@@ -134,13 +135,13 @@ public class SimulationPatternStrategyCommand extends BaseCommand<SimulationPatt
         CreateSimulationOrderReqDto dto = new CreateSimulationOrderReqDto();
         dto.setSimulationId(simulationId);
         dto.setOrderType(orderType);
-        dto.setLeverage(requestDto.getLeverage());
+        dto.setLeverage(commandRequest.getLeverage());
         dto.setMaxAmountOfTrade(false);
         dto.setStartTime(localDateTime);
 
         log.info("Creating {} order at {}", orderType, localDateTime);
-        BigDecimal balance = simulationManagerService.getBalance(simulationId);
-        dto.setAmountOfTrade(balance.multiply(requestDto.getAmountForTradePercentage()));
+        BigDecimal balance = BigDecimal.ONE; //todo simulationManagerService.getBalance(simulationId);
+        dto.setAmountOfTrade(balance.multiply(commandRequest.getAmountForTradePercentage()));
         return dto;
     }
 
@@ -156,13 +157,13 @@ public class SimulationPatternStrategyCommand extends BaseCommand<SimulationPatt
 
         // todo aggiungere controllo ema
         if (OrderType.BUY == openOrder.getOrderType()) {
-            takeProfitPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.add(requestDto.getTakeProfitPercentage()));
-            stopLossPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.subtract(requestDto.getStopLossPercentage()));
+            takeProfitPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.add(commandRequest.getTakeProfitPercentage()));
+            stopLossPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.subtract(commandRequest.getStopLossPercentage()));
             takeProfitHit = closePrice.compareTo(takeProfitPrice) >= 0;
             stopLossHit = closePrice.compareTo(stopLossPrice) <= 0;
         } else {
-            takeProfitPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.subtract(requestDto.getTakeProfitPercentage()));
-            stopLossPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.add(requestDto.getStopLossPercentage()));
+            takeProfitPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.subtract(commandRequest.getTakeProfitPercentage()));
+            stopLossPrice = openOrder.getOpenPrice().multiply(BigDecimal.ONE.add(commandRequest.getStopLossPercentage()));
             takeProfitHit = closePrice.compareTo(takeProfitPrice) <= 0;
             stopLossHit = closePrice.compareTo(stopLossPrice) >= 0;
         }

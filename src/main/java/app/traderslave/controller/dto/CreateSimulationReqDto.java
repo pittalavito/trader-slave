@@ -1,6 +1,6 @@
 package app.traderslave.controller.dto;
 
-import app.traderslave.model.domain.Simulation;
+import app.traderslave.domain.model.Simulation;
 import app.traderslave.model.enums.Currency;
 import app.traderslave.model.enums.CurrencyPair;
 import jakarta.validation.constraints.NotNull;

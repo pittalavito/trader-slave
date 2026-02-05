@@ -2,16 +2,15 @@ package app.traderslave.controller;
 
 import app.traderslave.command.SimulationPatternStrategyCommand;
 import app.traderslave.controller.dto.*;
-import app.traderslave.service.manager.SimulationManagerService;
-import app.traderslave.service.manager.SimulationOrderManagerService;
-import app.traderslave.utility.ControllerPath;
+import app.traderslave.service.simulation.SimulationManagerService;
+import app.traderslave.service.simulation.SimulationOrderManagerService;
+import app.traderslave.utils.ControllerPath;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 @CrossOrigin
 @RestController
@@ -27,8 +26,6 @@ public class SimulationController {
     private final SimulationOrderManagerService orderManagerService;
     private final SimulationPatternStrategyCommand simulationPatternStrategyCommand;
 
-    // --- SIMULATION --------------------------------------------------------------------------------------------------
-
     @PostMapping
     public ResponseEntity<CreateSimulationResDto> create(@RequestBody @Validated CreateSimulationReqDto dto) {
         return ResponseEntity.ok(simulationManagerService.create(dto));
@@ -39,19 +36,11 @@ public class SimulationController {
         return ResponseEntity.ok(simulationManagerService.close(dto));
     }
 
-    @PostMapping(path = URI_PATTERN_STRATEGY)
-    public ResponseEntity<CloseSimulationResDto> simulationPatternStrategy(@RequestBody @Validated SimulationPatterStrategyDto dto) throws InterruptedException {
-        simulationPatternStrategyCommand.setRequestDto(dto);
-        return ResponseEntity.ok(simulationPatternStrategyCommand.execute());
-    }
-
     @Transactional
     @DeleteMapping(path = URI_ALL)
     public void deleteAll() {
         simulationManagerService.deleteAll();
     }
-
-    // --- ORDER -------------------------------------------------------------------------------------------------------
 
     @PostMapping(path = URI_ORDER)
     public ResponseEntity<SimulationOrderResDto> createOrder(@RequestBody @Validated CreateSimulationOrderReqDto dto) {
@@ -60,6 +49,13 @@ public class SimulationController {
 
     @PutMapping(path = URI_ORDER)
     public ResponseEntity<SimulationOrderResDto> closeOrder(@RequestBody @Validated CloseSimulationOrderReqDto dto) {
-            return ResponseEntity.ok(orderManagerService.close(dto));
+        return ResponseEntity.ok(orderManagerService.close(dto));
     }
+
+    @PostMapping(path = URI_PATTERN_STRATEGY)
+    public ResponseEntity<CloseSimulationResDto> simulationPatternStrategy(@RequestBody @Validated SimulationPatterStrategyDto dto) {
+        simulationPatternStrategyCommand.setCommandRequest(dto);
+        return ResponseEntity.ok(simulationPatternStrategyCommand.execute());
+    }
+
 }

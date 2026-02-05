@@ -1,12 +1,11 @@
 package app.traderslave.assembler;
 
-import app.traderslave.controller.dto.CandleResDto;
-import app.traderslave.controller.dto.CandlesResDto;
 import app.traderslave.controller.dto.PatternDetectionReqDto;
 import app.traderslave.controller.dto.PatternDetectionResDto;
+import app.traderslave.model.Candle;
 import app.traderslave.model.Pattern;
-import app.traderslave.model.domain.CandleBackTest;
-import app.traderslave.utility.PatternUtils;
+import app.traderslave.domain.model.CandleBackTest;
+import app.traderslave.utils.PatternUtils;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
 import java.time.LocalDateTime;
@@ -17,28 +16,26 @@ public class PatternDetectionAssembler {
 
     public PatternDetectionResDto toModelBackTest(List<CandleBackTest> candles, PatternDetectionReqDto dto) {
         if (!CollectionUtils.isEmpty(candles)) {
-            CandlesResDto candlesDto = adapt(candles);
-            return toModel(candlesDto, dto);
+            return toModel(adapt(candles), dto);
         }
         return new PatternDetectionResDto();
     }
 
-
-    public PatternDetectionResDto toModel(CandlesResDto candles, PatternDetectionReqDto dto) {
+    public PatternDetectionResDto toModel(List<Candle> candles, PatternDetectionReqDto dto) {
         PatternDetectionResDto result = new PatternDetectionResDto();
 
-        if (!CollectionUtils.isEmpty(candles.getList())) {
-            List<Pattern> patterns = PatternUtils.detectPatterns(candles.getList(), dto);
-            CandleResDto lastCandle = candles.getList().get(candles.getSize() - 1);
+        if (!CollectionUtils.isEmpty(candles)) {
+            List<Pattern> patterns = PatternUtils.detectPatterns(candles, dto);
+            Candle lastCandle = candles.get(candles.size() - 1);
 
-            result.setPatterns(toModel(patterns, dto));
+            result.setPatterns(toModelPatterns(patterns, dto));
             result.setCloseTime(lastCandle.getCloseTime());
             result.setClose(lastCandle.getClose());
         }
         return result;
     }
 
-    private List<PatternDetectionResDto.Pattern> toModel(List<Pattern> patterns, PatternDetectionReqDto dto) {
+    private List<PatternDetectionResDto.Pattern> toModelPatterns(List<Pattern> patterns, PatternDetectionReqDto dto) {
         return patterns.stream()
                 .filter(pattern -> filter(pattern, dto))
                 .map(pattern -> toModel(pattern, dto))
@@ -63,13 +60,13 @@ public class PatternDetectionAssembler {
         return result;
     }
 
-    private List<PatternDetectionResDto.Candle> toModel(List<CandleResDto> candles) {
+    private List<PatternDetectionResDto.Candle> toModel(List<Candle> candles) {
         return candles.stream()
                 .map(PatternDetectionAssembler::toModel)
                 .toList();
     }
 
-    private PatternDetectionResDto.Candle toModel(CandleResDto candle) {
+    private PatternDetectionResDto.Candle toModel(Candle candle) {
         PatternDetectionResDto.Candle dto = new PatternDetectionResDto.Candle();
         dto.setCloseTime(candle.getCloseTime());
         dto.setClose(candle.getClose());
@@ -95,18 +92,14 @@ public class PatternDetectionAssembler {
         return dt2.compareTo(dt1);
     }
 
-    public CandlesResDto adapt(List<CandleBackTest> tests) {
-        List<CandleResDto> candles = tests.stream()
+    public List<Candle> adapt(List<CandleBackTest> tests) {
+        return tests.stream()
                 .map(PatternDetectionAssembler::adapt)
                 .toList();
-        return CandlesResDto.builder()
-                .list(candles)
-                .size(candles.size())
-                .build();
     }
 
-    public CandleResDto adapt(CandleBackTest test) {
-        CandleResDto resDto = new CandleResDto();
+    public Candle adapt(CandleBackTest test) {
+        Candle resDto = new Candle();
         resDto.setOpenTime(test.getOpenTime());
         resDto.setCloseTime(test.getCloseTime());
         resDto.setOpen(test.getOpen());

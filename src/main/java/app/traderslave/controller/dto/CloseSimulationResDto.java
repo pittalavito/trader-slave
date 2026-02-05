@@ -1,6 +1,6 @@
 package app.traderslave.controller.dto;
 
-import app.traderslave.model.domain.SimulationEvent;
+import app.traderslave.domain.model.SimulationEvent;
 import app.traderslave.model.enums.OrderType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
