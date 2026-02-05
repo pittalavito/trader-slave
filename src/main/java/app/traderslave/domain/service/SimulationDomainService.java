@@ -1,7 +1,7 @@
 package app.traderslave.domain.service;
 
-import app.traderslave.controller.dto.CreateSimulationReqDto;
-import app.traderslave.controller.dto.TimeReqDto;
+import app.traderslave.model.dto.req.CreateSimulationReqDto;
+import app.traderslave.model.dto.req.TimeReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.domain.factory.SimulationFactory;

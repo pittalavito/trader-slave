@@ -1,7 +1,7 @@
 package app.traderslave.checker;
 
-import app.traderslave.controller.dto.CandleReqDto;
-import app.traderslave.controller.dto.CandlesReqDto;
+import app.traderslave.model.dto.req.CandleReqDto;
+import app.traderslave.model.dto.req.CandlesReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.model.enums.TimeFrame;

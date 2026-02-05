@@ -1,7 +1,7 @@
 package app.traderslave.factory;
 
-import app.traderslave.model.Candle;
-import app.traderslave.model.OrderReport;
+import app.traderslave.model.dto.CandleDto;
+import app.traderslave.model.dto.OrderReportDto;
 import app.traderslave.domain.model.SimulationOrder;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.utils.ReportUtils;
@@ -13,13 +13,13 @@ import java.util.List;
 @UtilityClass
 public class OrderReportFactory {
 
-    public OrderReport create(SimulationOrder order, List<Candle> candles) {
+    public OrderReportDto create(SimulationOrder order, List<CandleDto> candles) {
         boolean isLiquidated = false;
-        Candle lastUtilCandle = new Candle();
+        CandleDto lastUtilCandle = new CandleDto();
         BigDecimal maxPriceDuringTrade = order.getOpenPrice();
         BigDecimal minPriceDuringTrade = order.getOpenPrice();
 
-        for (Candle candle : candles) {
+        for (CandleDto candle : candles) {
             lastUtilCandle = candle;
             maxPriceDuringTrade = maxPriceDuringTrade.max(candle.getHigh());
             minPriceDuringTrade = minPriceDuringTrade.min(candle.getLow());
@@ -31,7 +31,7 @@ public class OrderReportFactory {
 
         BigDecimal profitLoss = ReportUtils.calculateProfitLoss(order, lastUtilCandle.getClose());
 
-        return OrderReport.builder()
+        return OrderReportDto.builder()
                 .liquidated(isLiquidated)
                 .closeTime(lastUtilCandle.getCloseTime())
                 .profitLoss(profitLoss)
@@ -46,8 +46,8 @@ public class OrderReportFactory {
                 .build();
     }
 
-    public OrderReport create(SimulationOrder order, List<Candle> candles, OrderReport rep1) {
-        OrderReport lastReport = create(order, candles);
+    public OrderReportDto create(SimulationOrder order, List<CandleDto> candles, OrderReportDto rep1) {
+        OrderReportDto lastReport = create(order, candles);
 
         BigDecimal maxUnrealizedProfitDuringTrade = rep1.getMaxUnrealizedProfitDuringTrade().max(lastReport.getMaxUnrealizedProfitDuringTrade());
         BigDecimal maxUnrealizedLossDuringTrade = rep1.getMaxUnrealizedLossDuringTrade().min(lastReport.getMaxUnrealizedLossDuringTrade());
@@ -61,8 +61,8 @@ public class OrderReportFactory {
         return lastReport;
     }
 
-    public OrderReport create(SimulationOrder order) {
-        return OrderReport.builder()
+    public OrderReportDto create(SimulationOrder order) {
+        return OrderReportDto.builder()
                 .closePrice(order.getClosePrice())
                 .closeTime(order.getCloseTime())
                 .profitLoss(order.getProfitLoss())

@@ -1,4 +1,4 @@
-package app.traderslave.controller.dto;
+package app.traderslave.model.dto.req;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,6 +1,12 @@
 package app.traderslave.controller;
 
-import app.traderslave.controller.dto.*;
+import app.traderslave.model.dto.req.CloseSimulationOrderReqDto;
+import app.traderslave.model.dto.req.CloseSimulationReqDto;
+import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
+import app.traderslave.model.dto.req.CreateSimulationReqDto;
+import app.traderslave.model.dto.res.CloseSimulationResDto;
+import app.traderslave.model.dto.res.CreateSimulationResDto;
+import app.traderslave.model.dto.res.SimulationOrderResDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.service.old.SimulationService;

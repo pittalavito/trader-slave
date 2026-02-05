@@ -1,8 +1,9 @@
 package app.traderslave.remote.service;
 
 import app.traderslave.checker.BinanceChecker;
-import app.traderslave.controller.dto.*;
-import app.traderslave.model.Candle;
+import app.traderslave.model.dto.req.CandleReqDto;
+import app.traderslave.model.dto.req.CandlesReqDto;
+import app.traderslave.model.dto.CandleDto;
 import app.traderslave.remote.adapter.BinanceClientRequestAdapter;
 import app.traderslave.remote.adapter.BinanceClientResponseAdapter;
 import app.traderslave.remote.client.BinanceClient;
@@ -23,7 +24,7 @@ public class BinanceRemoteService {
 
     private final BinanceClient binanceClient;
 
-    public Mono<Candle> findCandleAsync(CandleReqDto dto) {
+    public Mono<CandleDto> findCandleAsync(CandleReqDto dto) {
         BinanceChecker.checkDatesGetKline(dto);
         BinanceGetKlinesRequestDto clientReqDto = BinanceClientRequestAdapter.adapt(dto);
         return binanceClient.getKlines(clientReqDto)
@@ -32,7 +33,7 @@ public class BinanceRemoteService {
                 .map(CollectionUtils::firstElement);
     }
 
-    public Candle findCandleSync(CandleReqDto dto) {
+    public CandleDto findCandleSync(CandleReqDto dto) {
         var blockingMono = findCandleAsync(dto).block();
         if (blockingMono == null) {
             throw new RuntimeException("Candle not found");
@@ -40,14 +41,14 @@ public class BinanceRemoteService {
         return blockingMono;
     }
 
-    public Mono<List<Candle>> findCandlesAsync(CandlesReqDto dto) {
+    public Mono<List<CandleDto>> findCandlesAsync(CandlesReqDto dto) {
         BinanceChecker.checkDatesGetKline(dto);
         BinanceGetKlinesRequestDto clientReqDto = BinanceClientRequestAdapter.adapt(dto);
         return fetchCandleSticks(new HashSet<>(), clientReqDto)
                 .collectList();
     }
 
-    public List<Candle> findCandlesSync(CandlesReqDto dto) {
+    public List<CandleDto> findCandlesSync(CandlesReqDto dto) {
         var blockingMono = findCandlesAsync(dto).block();
         if (blockingMono == null) {
             throw new RuntimeException("Candles not found");
@@ -55,7 +56,7 @@ public class BinanceRemoteService {
         return blockingMono;
     }
 
-    private Flux<Candle> fetchCandleSticks(Set<Candle> accumulatedCandlesList, BinanceGetKlinesRequestDto clientReqDto) {
+    private Flux<CandleDto> fetchCandleSticks(Set<CandleDto> accumulatedCandlesList, BinanceGetKlinesRequestDto clientReqDto) {
         return binanceClient.getKlines(clientReqDto)
                 .flatMapMany(clientRes -> {
                     if (!CollectionUtils.isEmpty(clientRes)) {

@@ -1,9 +1,9 @@
 package app.traderslave.domain.service;
 
-import app.traderslave.controller.dto.CandleReqDto;
-import app.traderslave.controller.dto.CandlesReqDto;
+import app.traderslave.model.dto.req.CandleReqDto;
+import app.traderslave.model.dto.req.CandlesReqDto;
 import app.traderslave.domain.model.CandleBackTest;
-import app.traderslave.model.Candle;
+import app.traderslave.model.dto.CandleDto;
 import app.traderslave.model.enums.TimeFrame;
 import app.traderslave.domain.repository.CandleBackTestRepository;
 import jakarta.transaction.Transactional;
@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -46,7 +45,7 @@ public class CandleBackTestDomainService {
     }
 
     @Transactional
-    public void saveCandleBackTest(CandlesReqDto dto, List<Candle> candles) {
+    public void saveCandleBackTest(CandlesReqDto dto, List<CandleDto> candles) {
         var updated = candles.stream()
                 .map(candle -> build(dto, candle))
                 .toList();
@@ -60,7 +59,7 @@ public class CandleBackTestDomainService {
         log.info("Total new candle back tests saved: {}", updated.size());
     }
 
-    private CandleBackTest build(CandlesReqDto dto, Candle candle) {
+    private CandleBackTest build(CandlesReqDto dto, CandleDto candle) {
         return CandleBackTest.builder()
                 .uid(generateUid(dto, candle))
                 .currencyPair(dto.getCurrencyPair())
@@ -80,7 +79,7 @@ public class CandleBackTestDomainService {
                 .build();
     }
 
-    private String generateUid(CandlesReqDto candleDto, Candle candleRto) {
+    private String generateUid(CandlesReqDto candleDto, CandleDto candleRto) {
         return candleDto.getCurrencyPair().name()
                 + "_" + candleDto.getTimeFrame().getCode()
                 + "_" + candleRto.getOpenTime()

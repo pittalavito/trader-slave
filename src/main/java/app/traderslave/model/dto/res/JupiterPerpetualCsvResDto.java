@@ -1,5 +1,6 @@
-package app.traderslave.controller.dto;
+package app.traderslave.model.dto.res;
 
+import app.traderslave.model.dto.req.JupiterPerpetualCsvReqDto;
 import app.traderslave.model.enums.Currency;
 import lombok.Builder;
 import lombok.Data;

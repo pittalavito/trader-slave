@@ -1,4 +1,4 @@
-package app.traderslave.model;
+package app.traderslave.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Candle {
+public class CandleDto {
     private LocalDateTime openTime;
     private LocalDateTime closeTime;
     private BigDecimal open;

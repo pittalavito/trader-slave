@@ -1,5 +1,6 @@
-package app.traderslave.controller.dto;
+package app.traderslave.model.dto;
 
+import app.traderslave.model.dto.req.TimeReqDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
 import lombok.Data;

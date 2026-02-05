@@ -1,8 +1,8 @@
 package app.traderslave.domain.factory;
 
-import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
-import app.traderslave.model.Candle;
-import app.traderslave.model.OrderReport;
+import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
+import app.traderslave.model.dto.CandleDto;
+import app.traderslave.model.dto.OrderReportDto;
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.domain.model.SimulationOrder;
 import app.traderslave.utils.ReportUtils;
@@ -13,7 +13,7 @@ import java.util.UUID;
 @UtilityClass
 public class SimulationOrderFactory {
 
-    public SimulationOrder create(Simulation simulation, CreateSimulationOrderReqDto dto, Candle candle) {
+    public SimulationOrder create(Simulation simulation, CreateSimulationOrderReqDto dto, CandleDto candle) {
         return SimulationOrder.builder()
                 .simulationId(dto.getSimulationId())
                 .amountOfTrade(dto.getAmountOfTrade() == null ? simulation.getBalance() : dto.getAmountOfTrade())
@@ -28,7 +28,7 @@ public class SimulationOrderFactory {
                 .build();
     }
 
-    public SimulationOrder close(SimulationOrder order, OrderReport report, boolean endSimulation) {
+    public SimulationOrder close(SimulationOrder order, OrderReportDto report, boolean endSimulation) {
         if(!endSimulation) {
             order.setStatus(report.isLiquidated() ? SimulationOrder.Status.LIQUIDATED : SimulationOrder.Status.CLOSED);
         }

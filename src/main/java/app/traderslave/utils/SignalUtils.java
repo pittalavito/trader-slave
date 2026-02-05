@@ -1,6 +1,6 @@
 package app.traderslave.utils;
 
-import app.traderslave.controller.dto.PatternDetectionResDto;
+import app.traderslave.model.dto.res.PatternDetectionResDto;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.enums.PatternType;
 import app.traderslave.model.enums.Signal;

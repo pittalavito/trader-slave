@@ -1,9 +1,9 @@
 package app.traderslave.utils;
 
 import app.traderslave.domain.model.SimulationOrder;
-import app.traderslave.model.Candle;
+import app.traderslave.model.dto.CandleDto;
 import app.traderslave.model.enums.OrderType;
-import app.traderslave.model.OrderReport;
+import app.traderslave.model.dto.OrderReportDto;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.experimental.UtilityClass;
@@ -23,7 +23,7 @@ public class ReportUtils {
         return currentPrice.multiply(percentage);
     }
 
-    public boolean isLiquidated(SimulationOrder order, Candle candle) {
+    public boolean isLiquidated(SimulationOrder order, CandleDto candle) {
         if (OrderType.BUY == order.getType()) {
             return order.getLiquidationPrice().compareTo(candle.getLow()) >= 0;
         } else {
@@ -74,7 +74,7 @@ public class ReportUtils {
         return isProfit(order.getProfitLoss());
     }
 
-    public @Nullable Boolean isProfit(OrderReport report) {
+    public @Nullable Boolean isProfit(OrderReportDto report) {
         Assert.notNull(report.getProfitLoss(), "report get profit loss cannot be null");
         return isProfit(report.getProfitLoss());
     }

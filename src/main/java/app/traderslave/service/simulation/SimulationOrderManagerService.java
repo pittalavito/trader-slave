@@ -2,7 +2,9 @@ package app.traderslave.service.simulation;
 
 import app.traderslave.command.simulation.CloseSimulationOrderCommand;
 import app.traderslave.command.simulation.CreateSimulationOrderCommand;
-import app.traderslave.controller.dto.*;
+import app.traderslave.model.dto.req.CloseSimulationOrderReqDto;
+import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
+import app.traderslave.model.dto.res.SimulationOrderResDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

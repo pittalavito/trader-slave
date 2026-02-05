@@ -1,7 +1,7 @@
 package app.traderslave.checker;
 
-import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
-import app.traderslave.controller.dto.TimeReqDto;
+import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
+import app.traderslave.model.dto.req.TimeReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.domain.model.Simulation;

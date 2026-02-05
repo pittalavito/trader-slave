@@ -1,6 +1,9 @@
 package app.traderslave.assembler;
 
-import app.traderslave.controller.dto.*;
+import app.traderslave.model.dto.res.CloseSimulationResDto;
+import app.traderslave.model.dto.res.CreateSimulationResDto;
+import app.traderslave.model.dto.res.SimulationOrderResDto;
+import app.traderslave.model.dto.req.TimeReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.domain.model.Simulation;

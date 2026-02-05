@@ -2,14 +2,16 @@ package app.traderslave.command.simulation;
 
 import app.traderslave.checker.SimulationChecker;
 import app.traderslave.command.base.BaseCommand;
-import app.traderslave.controller.dto.*;
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.domain.model.SimulationEvent;
 import app.traderslave.domain.model.SimulationOrder;
 import app.traderslave.domain.service.SimulationDomainEventService;
 import app.traderslave.domain.service.SimulationDomainService;
 import app.traderslave.domain.service.SimulationOrderDomainService;
-import app.traderslave.model.Candle;
+import app.traderslave.model.dto.req.CandleReqDto;
+import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
+import app.traderslave.model.dto.res.SimulationOrderResDto;
+import app.traderslave.model.dto.CandleDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.remote.service.BinanceRemoteService;
 import app.traderslave.assembler.SimulationServiceAssembler;
@@ -35,7 +37,7 @@ public class CreateSimulationOrderCommand extends BaseCommand<CreateSimulationOr
         SimulationEvent latestEvent = simulationDomainEventService.findLatestEventBySimulationId(simulation.getId());
         SimulationChecker.checkRequestTime(simulation, latestEvent, commandRequest);
         CandleReqDto candleRequest = adapt(simulation.getCurrencyPair(), commandRequest);
-        Candle candleResponse = binanceRemoteService.findCandleSync(candleRequest);
+        CandleDto candleResponse = binanceRemoteService.findCandleSync(candleRequest);
         SimulationOrder newOrder = simulationOrderDomainService.create(simulation, commandRequest, candleResponse);
         simulationDomainService.subtractBalance(simulation, newOrder);
         simulationDomainEventService.create(newOrder, false);

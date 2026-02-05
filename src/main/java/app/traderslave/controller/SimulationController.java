@@ -1,7 +1,14 @@
 package app.traderslave.controller;
 
 import app.traderslave.command.SimulationPatternStrategyCommand;
-import app.traderslave.controller.dto.*;
+import app.traderslave.model.dto.SimulationPatterStrategyDto;
+import app.traderslave.model.dto.req.CloseSimulationOrderReqDto;
+import app.traderslave.model.dto.req.CloseSimulationReqDto;
+import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
+import app.traderslave.model.dto.req.CreateSimulationReqDto;
+import app.traderslave.model.dto.res.CloseSimulationResDto;
+import app.traderslave.model.dto.res.CreateSimulationResDto;
+import app.traderslave.model.dto.res.SimulationOrderResDto;
 import app.traderslave.service.simulation.SimulationManagerService;
 import app.traderslave.service.simulation.SimulationOrderManagerService;
 import app.traderslave.utils.ControllerPath;

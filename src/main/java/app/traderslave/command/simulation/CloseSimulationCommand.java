@@ -2,14 +2,16 @@ package app.traderslave.command.simulation;
 
 import app.traderslave.checker.SimulationChecker;
 import app.traderslave.command.base.BaseCommand;
-import app.traderslave.controller.dto.*;
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.domain.model.SimulationEvent;
 import app.traderslave.domain.model.SimulationOrder;
 import app.traderslave.domain.service.SimulationDomainEventService;
 import app.traderslave.domain.service.SimulationDomainService;
 import app.traderslave.domain.service.SimulationOrderDomainService;
-import app.traderslave.model.OrderReport;
+import app.traderslave.model.dto.req.CloseSimulationReqDto;
+import app.traderslave.model.dto.res.CloseSimulationResDto;
+import app.traderslave.model.dto.res.SimulationOrderResDto;
+import app.traderslave.model.dto.OrderReportDto;
 import app.traderslave.assembler.SimulationServiceAssembler;
 import app.traderslave.service.simulation.SimulationOrderReportManagerService;
 import jakarta.transaction.Transactional;
@@ -45,7 +47,7 @@ public class CloseSimulationCommand extends BaseCommand<CloseSimulationReqDto, C
             orders.forEach(order -> {
                 SimulationOrderResDto resDto;
                 if (order.isOpen()) {
-                    OrderReport report = simulationOrderReportManagerService.createBackTestShortTermReport(simulation, order, commandRequest);
+                    OrderReportDto report = simulationOrderReportManagerService.createBackTestShortTermReport(simulation, order, commandRequest);
                     SimulationOrder closedOrder = simulationOrderDomainService.close(order, report, true);
                     simulationDomainService.subtractBalance(simulation, closedOrder);
                     simulationDomainEventService.create(closedOrder, true);

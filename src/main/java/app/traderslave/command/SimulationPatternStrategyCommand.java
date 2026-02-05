@@ -2,7 +2,12 @@ package app.traderslave.command;
 
 import app.traderslave.command.base.BaseCommand;
 import app.traderslave.assembler.PatternDetectionAssembler;
-import app.traderslave.controller.dto.*;
+import app.traderslave.model.dto.SimulationPatterStrategyDto;
+import app.traderslave.model.dto.req.*;
+import app.traderslave.model.dto.res.CloseSimulationResDto;
+import app.traderslave.model.dto.res.CreateSimulationResDto;
+import app.traderslave.model.dto.res.PatternDetectionResDto;
+import app.traderslave.model.dto.res.SimulationOrderResDto;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.enums.TimeFrame;
 import app.traderslave.domain.service.CandleBackTestDomainService;
@@ -66,22 +71,10 @@ public class SimulationPatternStrategyCommand extends BaseCommand<SimulationPatt
             return;
         }
 
-        request.setTimeFrame(TimeFrame.ONE_MINUTE);
-        binanceRemoteService.findCandlesAsync(request)
-                .doOnNext(response -> candleBackTestDomainService.saveCandleBackTest(request, response))
-                .block();
-
         request.setTimeFrame(TimeFrame.FIVE_MINUTES);
         binanceRemoteService.findCandlesAsync(request)
                 .doOnNext(response -> candleBackTestDomainService.saveCandleBackTest(request, response))
                 .block();
-
-        if (TimeFrame.ONE_MINUTE != commandRequest.getPatternDetectionTimeFrame() && TimeFrame.FIVE_MINUTES != commandRequest.getPatternDetectionTimeFrame()) {
-            request.setTimeFrame(commandRequest.getPatternDetectionTimeFrame());
-            binanceRemoteService.findCandlesAsync(request)
-                    .doOnNext(response -> candleBackTestDomainService.saveCandleBackTest(request, response))
-                    .block();
-        }
     }
 
     private CreateSimulationResDto initiateSimulation() {

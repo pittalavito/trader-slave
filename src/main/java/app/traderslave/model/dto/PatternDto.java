@@ -1,4 +1,4 @@
-package app.traderslave.model;
+package app.traderslave.model.dto;
 
 import app.traderslave.model.enums.PatternType;
 import lombok.AllArgsConstructor;
@@ -9,10 +9,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Pattern {
+public class PatternDto {
 
     private PatternType patternType;
-    private List<Candle> candles;
+    private List<CandleDto> candles;
     private boolean breakoutConfirmed;
 
     public PatternType.Direction getDirection() {

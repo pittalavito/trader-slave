@@ -1,8 +1,13 @@
 package app.traderslave.controller;
 
-import app.traderslave.controller.dto.*;
 import app.traderslave.domain.service.CandleBackTestDomainService;
-import app.traderslave.model.Candle;
+import app.traderslave.model.dto.req.CandleReqDto;
+import app.traderslave.model.dto.req.CandlesReqDto;
+import app.traderslave.model.dto.req.JupiterPerpetualCsvReqDto;
+import app.traderslave.model.dto.req.PatternDetectionReqDto;
+import app.traderslave.model.dto.res.JupiterPerpetualCsvResDto;
+import app.traderslave.model.dto.res.PatternDetectionResDto;
+import app.traderslave.model.dto.CandleDto;
 import app.traderslave.remote.service.BinanceRemoteService;
 import app.traderslave.assembler.JupiterPerpetualCsvAssembler;
 import app.traderslave.assembler.PatternDetectionAssembler;
@@ -34,13 +39,13 @@ public class DataAnalysesController {
     private final CandleBackTestDomainService candleBackTestDomainService;
 
     @GetMapping(path = URL_CANDLE)
-    public Mono<ResponseEntity<Candle>> getCandle(@ModelAttribute @Validated CandleReqDto requestDto) {
+    public Mono<ResponseEntity<CandleDto>> getCandle(@ModelAttribute @Validated CandleReqDto requestDto) {
         return binanceRemoteService.findCandleAsync(requestDto)
                 .map(ResponseEntity::ok);
     }
 
     @GetMapping(path = URL_CANDLES)
-    public Mono<ResponseEntity<List<Candle>>> getCandles(@ModelAttribute @Validated CandlesReqDto requestDto) {
+    public Mono<ResponseEntity<List<CandleDto>>> getCandles(@ModelAttribute @Validated CandlesReqDto requestDto) {
         return binanceRemoteService.findCandlesAsync(requestDto)
                 .map(ResponseEntity::ok);
     }

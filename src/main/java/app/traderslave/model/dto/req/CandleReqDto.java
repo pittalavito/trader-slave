@@ -1,4 +1,4 @@
-package app.traderslave.controller.dto;
+package app.traderslave.model.dto.req;
 
 import app.traderslave.model.enums.CurrencyPair;
 import jakarta.validation.constraints.NotNull;

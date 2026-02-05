@@ -1,6 +1,6 @@
 package app.traderslave.remote.adapter;
 
-import app.traderslave.model.Candle;
+import app.traderslave.model.dto.CandleDto;
 import app.traderslave.utils.TimeUtils;
 import lombok.experimental.UtilityClass;
 import java.math.BigDecimal;
@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class BinanceClientResponseAdapter {
 
-    public List<Candle> adapt(List<Object[]> response) {
+    public List<CandleDto> adapt(List<Object[]> response) {
         return response.stream()
                 .map(BinanceClientResponseAdapter::adapt)
                 .collect(Collectors.toList());
     }
 
-    private Candle adapt(Object[] candles) {
-        return Candle.builder()
+    private CandleDto adapt(Object[] candles) {
+        return CandleDto.builder()
                 .openTime(TimeUtils.convertToLocalDateTime((Long) candles[0]))
                 .open(new BigDecimal(candles[1].toString()))
                 .high(new BigDecimal(candles[2].toString()))

@@ -1,4 +1,4 @@
-package app.traderslave.model;
+package app.traderslave.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderReport {
+public class OrderReportDto {
     private BigDecimal closePrice;
     private LocalDateTime closeTime;
     private BigDecimal profitLoss;

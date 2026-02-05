@@ -1,11 +1,11 @@
 package app.traderslave.domain.service;
 
-import app.traderslave.controller.dto.CreateSimulationOrderReqDto;
+import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
 import app.traderslave.domain.factory.SimulationOrderFactory;
-import app.traderslave.model.Candle;
-import app.traderslave.model.OrderReport;
+import app.traderslave.model.dto.CandleDto;
+import app.traderslave.model.dto.OrderReportDto;
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.domain.model.SimulationOrder;
 import app.traderslave.domain.repository.SimulationOrderRepository;
@@ -23,11 +23,11 @@ public class SimulationOrderDomainService {
 
     private final SimulationOrderRepository repository;
 
-    public SimulationOrder create(Simulation simulation, CreateSimulationOrderReqDto dto, Candle candle) {
+    public SimulationOrder create(Simulation simulation, CreateSimulationOrderReqDto dto, CandleDto candle) {
         return repository.save(SimulationOrderFactory.create(simulation, dto, candle));
     }
 
-    public SimulationOrder close(SimulationOrder order, OrderReport report, boolean endSimulation) {
+    public SimulationOrder close(SimulationOrder order, OrderReportDto report, boolean endSimulation) {
         return repository.save(SimulationOrderFactory.close(order, report, endSimulation));
     }
 

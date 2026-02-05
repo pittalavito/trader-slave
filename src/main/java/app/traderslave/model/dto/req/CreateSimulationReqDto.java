@@ -1,4 +1,4 @@
-package app.traderslave.controller.dto;
+package app.traderslave.model.dto.req;
 
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.model.enums.Currency;

@@ -1,4 +1,4 @@
-package app.traderslave.controller.dto;
+package app.traderslave.model.dto.res;
 
 import app.traderslave.domain.model.SimulationEvent;
 import app.traderslave.model.enums.OrderType;

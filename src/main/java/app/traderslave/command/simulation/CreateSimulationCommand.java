@@ -2,8 +2,8 @@ package app.traderslave.command.simulation;
 
 import app.traderslave.checker.TimeChecker;
 import app.traderslave.command.base.BaseCommand;
-import app.traderslave.controller.dto.CreateSimulationReqDto;
-import app.traderslave.controller.dto.CreateSimulationResDto;
+import app.traderslave.model.dto.req.CreateSimulationReqDto;
+import app.traderslave.model.dto.res.CreateSimulationResDto;
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.domain.service.SimulationDomainService;
 import lombok.RequiredArgsConstructor;

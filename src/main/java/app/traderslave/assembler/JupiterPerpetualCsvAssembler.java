@@ -1,7 +1,7 @@
 package app.traderslave.assembler;
 
-import app.traderslave.controller.dto.JupiterPerpetualCsvReqDto;
-import app.traderslave.controller.dto.JupiterPerpetualCsvResDto;
+import app.traderslave.model.dto.req.JupiterPerpetualCsvReqDto;
+import app.traderslave.model.dto.res.JupiterPerpetualCsvResDto;
 import app.traderslave.model.enums.Currency;
 import lombok.experimental.UtilityClass;
 

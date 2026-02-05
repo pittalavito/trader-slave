@@ -1,8 +1,8 @@
 package app.traderslave.utils;
 
-import app.traderslave.controller.dto.PatternDetectionReqDto;
-import app.traderslave.model.Candle;
-import app.traderslave.model.Pattern;
+import app.traderslave.model.dto.PatternDto;
+import app.traderslave.model.dto.req.PatternDetectionReqDto;
+import app.traderslave.model.dto.CandleDto;
 import app.traderslave.model.enums.PatternType;
 import lombok.experimental.UtilityClass;
 
@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 public class PatternUtils {
 
 
-    public List<Pattern> detectPatterns(List<Candle> candles, PatternDetectionReqDto dto) {
+    public List<PatternDto> detectPatterns(List<CandleDto> candles, PatternDetectionReqDto dto) {
         return detectPatterns(candles, dto.getLookBack(), dto.getTolerancePercent(), dto.getMinDistance());
     }
 
@@ -28,38 +28,38 @@ public class PatternUtils {
      * @param minDistance Minimum number of candles between two maxima/minima to consider the pattern valid
      * @return List of detected patterns
      */
-    public List<Pattern> detectPatterns(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Pattern> detectedPatterns = new ArrayList<>();
+    public List<PatternDto> detectPatterns(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<PatternDto> detectedPatternDtos = new ArrayList<>();
 
-        detectedPatterns.addAll(detectDoubleTop(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectDoubleBottom(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectHeadAndShoulders(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectInverseHeadAndShoulders(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectTripleTop(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectTripleBottom(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectRoundingTop(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectRoundingBottom(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectAscendingTriangle(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectDescendingTriangle(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectSymmetricalTriangle(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectFlag(candles, lookBack));
-        detectedPatterns.addAll(detectPennant(candles, lookBack, tolerancePercent, minDistance));
-        detectedPatterns.addAll(detectRisingWedge(candles, lookBack, minDistance));
-        detectedPatterns.addAll(detectFallingWedge(candles, lookBack, minDistance));
-        detectedPatterns.addAll(detectRectangle(candles, lookBack, tolerancePercent));
+        detectedPatternDtos.addAll(detectDoubleTop(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectDoubleBottom(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectHeadAndShoulders(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectInverseHeadAndShoulders(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectTripleTop(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectTripleBottom(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectRoundingTop(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectRoundingBottom(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectAscendingTriangle(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectDescendingTriangle(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectSymmetricalTriangle(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectFlag(candles, lookBack));
+        detectedPatternDtos.addAll(detectPennant(candles, lookBack, tolerancePercent, minDistance));
+        detectedPatternDtos.addAll(detectRisingWedge(candles, lookBack, minDistance));
+        detectedPatternDtos.addAll(detectFallingWedge(candles, lookBack, minDistance));
+        detectedPatternDtos.addAll(detectRectangle(candles, lookBack, tolerancePercent));
 
-        detectedPatterns.forEach(pattern -> pattern.setBreakoutConfirmed(isBreakoutConfirmed(pattern, candles)));
+        detectedPatternDtos.forEach(patternDto -> patternDto.setBreakoutConfirmed(isBreakoutConfirmed(patternDto, candles)));
 
-        return detectedPatterns;
+        return detectedPatternDtos;
     }
 
-    public List<Pattern> detectDoubleTop(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> maxima = findLocalMaxima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectDoubleTop(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> maxima = findLocalMaxima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < maxima.size() - 1; i++) {
-            Candle first = maxima.get(i);
-            Candle second = maxima.get(i + 1);
+            CandleDto first = maxima.get(i);
+            CandleDto second = maxima.get(i + 1);
             int firstIndex = candles.indexOf(first);
             int secondIndex = candles.indexOf(second);
 
@@ -72,20 +72,20 @@ public class PatternUtils {
                         .stream()
                         .min(Comparator.comparingDouble(c -> c.getLow().doubleValue()))
                         .filter(minBetween -> minBetween.getLow().doubleValue() < first.getHigh().doubleValue())
-                        .ifPresent(minBetween -> patternsFound.add(new Pattern(PatternType.DOUBLE_TOP, List.of(first, minBetween, second), false)));
+                        .ifPresent(minBetween -> patternsFound.add(new PatternDto(PatternType.DOUBLE_TOP, List.of(first, minBetween, second), false)));
             }
         }
 
         return patternsFound;
     }
 
-    public List<Pattern> detectDoubleBottom(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> minima = findLocalMinima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectDoubleBottom(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> minima = findLocalMinima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < minima.size() - 1; i++) {
-            Candle first = minima.get(i);
-            Candle second = minima.get(i + 1);
+            CandleDto first = minima.get(i);
+            CandleDto second = minima.get(i + 1);
             int firstIndex = candles.indexOf(first);
             int secondIndex = candles.indexOf(second);
 
@@ -98,21 +98,21 @@ public class PatternUtils {
                         .stream()
                         .min(Comparator.comparingDouble(c -> c.getLow().doubleValue()))
                         .filter(maxBetween -> maxBetween.getHigh().doubleValue() > first.getLow().doubleValue())
-                        .ifPresent(maxBetween -> patternsFound.add(new Pattern(PatternType.DOUBLE_BOTTOM, List.of(first, maxBetween, second), false)));
+                        .ifPresent(maxBetween -> patternsFound.add(new PatternDto(PatternType.DOUBLE_BOTTOM, List.of(first, maxBetween, second), false)));
             }
         }
 
         return patternsFound;
     }
 
-    public List<Pattern> detectHeadAndShoulders(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> maxima = findLocalMaxima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectHeadAndShoulders(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> maxima = findLocalMaxima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < maxima.size() - 2; i++) {
-            Candle leftShoulder = maxima.get(i);
-            Candle head = maxima.get(i + 1);
-            Candle rightShoulder = maxima.get(i + 2);
+            CandleDto leftShoulder = maxima.get(i);
+            CandleDto head = maxima.get(i + 1);
+            CandleDto rightShoulder = maxima.get(i + 2);
 
             int idxLeft = candles.indexOf(leftShoulder);
             int idxHead = candles.indexOf(head);
@@ -127,18 +127,18 @@ public class PatternUtils {
 
             if (diffShoulders <= tolerancePercent) {
 
-                Candle minLeftHead = candles.subList(idxLeft, idxHead + 1)
+                CandleDto minLeftHead = candles.subList(idxLeft, idxHead + 1)
                         .stream()
                         .min(Comparator.comparingDouble(c -> c.getLow().doubleValue()))
                         .orElse(null);
 
-                Candle minHeadRight = candles.subList(idxHead, idxRight + 1)
+                CandleDto minHeadRight = candles.subList(idxHead, idxRight + 1)
                         .stream()
                         .min(Comparator.comparingDouble(c -> c.getLow().doubleValue()))
                         .orElse(null);
 
                 if (minLeftHead != null && minHeadRight != null) {
-                    patternsFound.add(new Pattern(PatternType.HEAD_SHOULDERS, List.of(leftShoulder, minLeftHead, head, minHeadRight, rightShoulder), false));
+                    patternsFound.add(new PatternDto(PatternType.HEAD_SHOULDERS, List.of(leftShoulder, minLeftHead, head, minHeadRight, rightShoulder), false));
                 }
             }
         }
@@ -146,14 +146,14 @@ public class PatternUtils {
         return patternsFound;
     }
 
-    public List<Pattern> detectInverseHeadAndShoulders(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> minima = findLocalMinima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectInverseHeadAndShoulders(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> minima = findLocalMinima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < minima.size() - 2; i++) {
-            Candle leftShoulder = minima.get(i);
-            Candle head = minima.get(i + 1);
-            Candle rightShoulder = minima.get(i + 2);
+            CandleDto leftShoulder = minima.get(i);
+            CandleDto head = minima.get(i + 1);
+            CandleDto rightShoulder = minima.get(i + 2);
 
             int idxLeft = candles.indexOf(leftShoulder);
             int idxHead = candles.indexOf(head);
@@ -168,18 +168,18 @@ public class PatternUtils {
 
             if (diffShoulders <= tolerancePercent) {
 
-                Candle maxLeftHead = candles.subList(idxLeft, idxHead + 1)
+                CandleDto maxLeftHead = candles.subList(idxLeft, idxHead + 1)
                         .stream()
                         .max(Comparator.comparingDouble(c -> c.getHigh().doubleValue()))
                         .orElse(null);
 
-                Candle maxHeadRight = candles.subList(idxHead, idxRight + 1)
+                CandleDto maxHeadRight = candles.subList(idxHead, idxRight + 1)
                         .stream()
                         .max(Comparator.comparingDouble(c -> c.getHigh().doubleValue()))
                         .orElse(null);
 
                 if (maxLeftHead != null && maxHeadRight != null) {
-                    patternsFound.add(new Pattern(PatternType.INVERSE_HEAD_SHOULDERS, List.of(leftShoulder, maxLeftHead, head, maxHeadRight, rightShoulder), false));
+                    patternsFound.add(new PatternDto(PatternType.INVERSE_HEAD_SHOULDERS, List.of(leftShoulder, maxLeftHead, head, maxHeadRight, rightShoulder), false));
                 }
             }
         }
@@ -187,14 +187,14 @@ public class PatternUtils {
         return patternsFound;
     }
 
-    public List<Pattern> detectTripleTop(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> maxima = findLocalMaxima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectTripleTop(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> maxima = findLocalMaxima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < maxima.size() - 2; i++) {
-            Candle first = maxima.get(i);
-            Candle second = maxima.get(i + 1);
-            Candle third = maxima.get(i + 2);
+            CandleDto first = maxima.get(i);
+            CandleDto second = maxima.get(i + 1);
+            CandleDto third = maxima.get(i + 2);
 
             int firstIndex = candles.indexOf(first);
             int secondIndex = candles.indexOf(second);
@@ -210,21 +210,21 @@ public class PatternUtils {
                         .stream()
                         .min(Comparator.comparingDouble(c -> c.getLow().doubleValue()))
                         .filter(minBetween -> minBetween.getLow().doubleValue() < first.getHigh().doubleValue())
-                        .ifPresent(minBetween -> patternsFound.add(new Pattern(PatternType.TRIPLE_TOP, List.of(first, second, third, minBetween), false)));
+                        .ifPresent(minBetween -> patternsFound.add(new PatternDto(PatternType.TRIPLE_TOP, List.of(first, second, third, minBetween), false)));
             }
         }
 
         return patternsFound;
     }
 
-    public List<Pattern> detectTripleBottom(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> minima = findLocalMinima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectTripleBottom(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> minima = findLocalMinima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < minima.size() - 2; i++) {
-            Candle first = minima.get(i);
-            Candle second = minima.get(i + 1);
-            Candle third = minima.get(i + 2);
+            CandleDto first = minima.get(i);
+            CandleDto second = minima.get(i + 1);
+            CandleDto third = minima.get(i + 2);
 
             int firstIndex = candles.indexOf(first);
             int secondIndex = candles.indexOf(second);
@@ -240,21 +240,21 @@ public class PatternUtils {
                         .stream()
                         .max(Comparator.comparingDouble(c -> c.getHigh().doubleValue()))
                         .filter(maxBetween -> maxBetween.getHigh().doubleValue() > first.getLow().doubleValue())
-                        .ifPresent(maxBetween -> patternsFound.add(new Pattern(PatternType.TRIPLE_BOTTOM, List.of(first, second, third, maxBetween), false)));
+                        .ifPresent(maxBetween -> patternsFound.add(new PatternDto(PatternType.TRIPLE_BOTTOM, List.of(first, second, third, maxBetween), false)));
             }
         }
 
         return patternsFound;
     }
 
-    public List<Pattern> detectRoundingTop(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> maxima = findLocalMaxima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectRoundingTop(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> maxima = findLocalMaxima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < maxima.size() - 2; i++) {
-            Candle first = maxima.get(i);
-            Candle middle = maxima.get(i + 1);
-            Candle last = maxima.get(i + 2);
+            CandleDto first = maxima.get(i);
+            CandleDto middle = maxima.get(i + 1);
+            CandleDto last = maxima.get(i + 2);
 
             int firstIndex = candles.indexOf(first);
             int middleIndex = candles.indexOf(middle);
@@ -268,21 +268,21 @@ public class PatternUtils {
             double diffFirstLast = calculateDifferencePercent(first.getHigh().doubleValue(), last.getHigh().doubleValue());
 
             if (isRoundingTop && diffFirstLast <= tolerancePercent) {
-                patternsFound.add(new Pattern(PatternType.ROUNDING_TOP, List.of(first, middle, last), false));
+                patternsFound.add(new PatternDto(PatternType.ROUNDING_TOP, List.of(first, middle, last), false));
             }
         }
 
         return patternsFound;
     }
 
-    public List<Pattern> detectRoundingBottom(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> minima = findLocalMinima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectRoundingBottom(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> minima = findLocalMinima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < minima.size() - 2; i++) {
-            Candle first = minima.get(i);
-            Candle middle = minima.get(i + 1);
-            Candle last = minima.get(i + 2);
+            CandleDto first = minima.get(i);
+            CandleDto middle = minima.get(i + 1);
+            CandleDto last = minima.get(i + 2);
 
             int firstIndex = candles.indexOf(first);
             int middleIndex = candles.indexOf(middle);
@@ -296,20 +296,20 @@ public class PatternUtils {
             double diffFirstLast = calculateDifferencePercent(first.getLow().doubleValue(), last.getLow().doubleValue());
 
             if (isRoundingBottom && diffFirstLast <= tolerancePercent) {
-                patternsFound.add(new Pattern(PatternType.ROUNDING_BOTTOM, List.of(first, middle, last), false));
+                patternsFound.add(new PatternDto(PatternType.ROUNDING_BOTTOM, List.of(first, middle, last), false));
             }
         }
 
         return patternsFound;
     }
 
-    public List<Pattern> detectAscendingTriangle(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> minima = findLocalMinima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectAscendingTriangle(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> minima = findLocalMinima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < minima.size() - 1; i++) {
-            Candle first = minima.get(i);
-            Candle second = minima.get(i + 1);
+            CandleDto first = minima.get(i);
+            CandleDto second = minima.get(i + 1);
             int firstIndex = candles.indexOf(first);
             int secondIndex = candles.indexOf(second);
 
@@ -322,7 +322,7 @@ public class PatternUtils {
                         .allMatch(j -> candles.get(j).getHigh().doubleValue() <= candles.get(j + 1).getHigh().doubleValue());
 
                 if (isAscending) {
-                    patternsFound.add(new Pattern(PatternType.ASCENDING_TRIANGLE, candles.subList(firstIndex, secondIndex + 1), false));
+                    patternsFound.add(new PatternDto(PatternType.ASCENDING_TRIANGLE, candles.subList(firstIndex, secondIndex + 1), false));
                 }
             }
         }
@@ -330,13 +330,13 @@ public class PatternUtils {
         return patternsFound;
     }
 
-    public List<Pattern> detectDescendingTriangle(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> maxima = findLocalMaxima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectDescendingTriangle(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> maxima = findLocalMaxima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < maxima.size() - 1; i++) {
-            Candle first = maxima.get(i);
-            Candle second = maxima.get(i + 1);
+            CandleDto first = maxima.get(i);
+            CandleDto second = maxima.get(i + 1);
             int firstIndex = candles.indexOf(first);
             int secondIndex = candles.indexOf(second);
 
@@ -349,7 +349,7 @@ public class PatternUtils {
                         .allMatch(j -> candles.get(j).getLow().doubleValue() >= candles.get(j + 1).getLow().doubleValue());
 
                 if (isDescending) {
-                    patternsFound.add(new Pattern(PatternType.DESCENDING_TRIANGLE, candles.subList(firstIndex, secondIndex + 1), false));
+                    patternsFound.add(new PatternDto(PatternType.DESCENDING_TRIANGLE, candles.subList(firstIndex, secondIndex + 1), false));
                 }
             }
         }
@@ -357,16 +357,16 @@ public class PatternUtils {
         return patternsFound;
     }
 
-    public List<Pattern> detectSymmetricalTriangle(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> maxima = findLocalMaxima(candles, lookBack);
-        List<Candle> minima = findLocalMinima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectSymmetricalTriangle(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> maxima = findLocalMaxima(candles, lookBack);
+        List<CandleDto> minima = findLocalMinima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < Math.min(maxima.size(), minima.size()) - 1; i++) {
-            Candle high1 = maxima.get(i);
-            Candle high2 = maxima.get(i + 1);
-            Candle low1 = minima.get(i);
-            Candle low2 = minima.get(i + 1);
+            CandleDto high1 = maxima.get(i);
+            CandleDto high2 = maxima.get(i + 1);
+            CandleDto low1 = minima.get(i);
+            CandleDto low2 = minima.get(i + 1);
 
             int highIndex1 = candles.indexOf(high1);
             int highIndex2 = candles.indexOf(high2);
@@ -378,7 +378,7 @@ public class PatternUtils {
                 double lowDiff = calculateDifferencePercent(low1.getLow().doubleValue(), low2.getLow().doubleValue());
 
                 if (highDiff <= tolerancePercent && lowDiff <= tolerancePercent) {
-                    patternsFound.add(new Pattern(PatternType.SYMMETRICAL_TRIANGLE, candles.subList(Math.min(highIndex1, lowIndex1), Math.max(highIndex2, lowIndex2) + 1), false));
+                    patternsFound.add(new PatternDto(PatternType.SYMMETRICAL_TRIANGLE, candles.subList(Math.min(highIndex1, lowIndex1), Math.max(highIndex2, lowIndex2) + 1), false));
                 }
             }
         }
@@ -386,34 +386,34 @@ public class PatternUtils {
         return patternsFound;
     }
 
-    public List<Pattern> detectFlag(List<Candle> candles, int lookBack) {
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectFlag(List<CandleDto> candles, int lookBack) {
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < candles.size() - lookBack; i++) {
-            List<Candle> subList = candles.subList(i, i + lookBack);
+            List<CandleDto> subList = candles.subList(i, i + lookBack);
 
             boolean isFlag = IntStream.range(1, subList.size() - 1)
                     .allMatch(j -> subList.get(j).getHigh().doubleValue() < subList.get(j - 1).getHigh().doubleValue()
                             && subList.get(j).getLow().doubleValue() > subList.get(j - 1).getLow().doubleValue());
 
             if (isFlag) {
-                patternsFound.add(new Pattern(PatternType.FLAG, new ArrayList<>(subList), false));
+                patternsFound.add(new PatternDto(PatternType.FLAG, new ArrayList<>(subList), false));
             }
         }
 
         return patternsFound;
     }
 
-    public List<Pattern> detectPennant(List<Candle> candles, int lookBack, double tolerancePercent, int minDistance) {
-        List<Candle> maxima = findLocalMaxima(candles, lookBack);
-        List<Candle> minima = findLocalMinima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectPennant(List<CandleDto> candles, int lookBack, double tolerancePercent, int minDistance) {
+        List<CandleDto> maxima = findLocalMaxima(candles, lookBack);
+        List<CandleDto> minima = findLocalMinima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < Math.min(maxima.size(), minima.size()) - 1; i++) {
-            Candle high1 = maxima.get(i);
-            Candle high2 = maxima.get(i + 1);
-            Candle low1 = minima.get(i);
-            Candle low2 = minima.get(i + 1);
+            CandleDto high1 = maxima.get(i);
+            CandleDto high2 = maxima.get(i + 1);
+            CandleDto low1 = minima.get(i);
+            CandleDto low2 = minima.get(i + 1);
 
             int highIndex1 = candles.indexOf(high1);
             int highIndex2 = candles.indexOf(high2);
@@ -425,7 +425,7 @@ public class PatternUtils {
                 double lowDiff = calculateDifferencePercent(low1.getLow().doubleValue(), low2.getLow().doubleValue());
 
                 if (highDiff <= tolerancePercent && lowDiff <= tolerancePercent) {
-                    patternsFound.add(new Pattern(PatternType.PENNANT, candles.subList(Math.min(highIndex1, lowIndex1), Math.max(highIndex2, lowIndex2) + 1), false));
+                    patternsFound.add(new PatternDto(PatternType.PENNANT, candles.subList(Math.min(highIndex1, lowIndex1), Math.max(highIndex2, lowIndex2) + 1), false));
                 }
             }
         }
@@ -433,16 +433,16 @@ public class PatternUtils {
         return patternsFound;
     }
 
-    public List<Pattern> detectRisingWedge(List<Candle> candles, int lookBack, int minDistance) {
-        List<Candle> maxima = findLocalMaxima(candles, lookBack);
-        List<Candle> minima = findLocalMinima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectRisingWedge(List<CandleDto> candles, int lookBack, int minDistance) {
+        List<CandleDto> maxima = findLocalMaxima(candles, lookBack);
+        List<CandleDto> minima = findLocalMinima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < Math.min(maxima.size(), minima.size()) - 1; i++) {
-            Candle high1 = maxima.get(i);
-            Candle high2 = maxima.get(i + 1);
-            Candle low1 = minima.get(i);
-            Candle low2 = minima.get(i + 1);
+            CandleDto high1 = maxima.get(i);
+            CandleDto high2 = maxima.get(i + 1);
+            CandleDto low1 = minima.get(i);
+            CandleDto low2 = minima.get(i + 1);
 
             int highIndex1 = candles.indexOf(high1);
             int highIndex2 = candles.indexOf(high2);
@@ -454,7 +454,7 @@ public class PatternUtils {
                         && low2.getLow().doubleValue() > low1.getLow().doubleValue();
 
                 if (isConverging) {
-                    patternsFound.add(new Pattern(PatternType.RISING_WEDGE, candles.subList(Math.min(highIndex1, lowIndex1), Math.max(highIndex2, lowIndex2) + 1), false));
+                    patternsFound.add(new PatternDto(PatternType.RISING_WEDGE, candles.subList(Math.min(highIndex1, lowIndex1), Math.max(highIndex2, lowIndex2) + 1), false));
                 }
             }
         }
@@ -462,16 +462,16 @@ public class PatternUtils {
         return patternsFound;
     }
 
-    public List<Pattern> detectFallingWedge(List<Candle> candles, int lookBack, int minDistance) {
-        List<Candle> maxima = findLocalMaxima(candles, lookBack);
-        List<Candle> minima = findLocalMinima(candles, lookBack);
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectFallingWedge(List<CandleDto> candles, int lookBack, int minDistance) {
+        List<CandleDto> maxima = findLocalMaxima(candles, lookBack);
+        List<CandleDto> minima = findLocalMinima(candles, lookBack);
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < Math.min(maxima.size(), minima.size()) - 1; i++) {
-            Candle high1 = maxima.get(i);
-            Candle high2 = maxima.get(i + 1);
-            Candle low1 = minima.get(i);
-            Candle low2 = minima.get(i + 1);
+            CandleDto high1 = maxima.get(i);
+            CandleDto high2 = maxima.get(i + 1);
+            CandleDto low1 = minima.get(i);
+            CandleDto low2 = minima.get(i + 1);
 
             int highIndex1 = candles.indexOf(high1);
             int highIndex2 = candles.indexOf(high2);
@@ -483,7 +483,7 @@ public class PatternUtils {
                         && low2.getLow().doubleValue() > low1.getLow().doubleValue();
 
                 if (isConverging) {
-                    patternsFound.add(new Pattern(PatternType.FALLING_WEDGE, candles.subList(Math.min(highIndex1, lowIndex1), Math.max(highIndex2, lowIndex2) + 1), false));
+                    patternsFound.add(new PatternDto(PatternType.FALLING_WEDGE, candles.subList(Math.min(highIndex1, lowIndex1), Math.max(highIndex2, lowIndex2) + 1), false));
                 }
             }
         }
@@ -491,11 +491,11 @@ public class PatternUtils {
         return patternsFound;
     }
 
-    public List<Pattern> detectRectangle(List<Candle> candles, int lookBack, double tolerancePercent) {
-        List<Pattern> patternsFound = new ArrayList<>();
+    public List<PatternDto> detectRectangle(List<CandleDto> candles, int lookBack, double tolerancePercent) {
+        List<PatternDto> patternsFound = new ArrayList<>();
 
         for (int i = 0; i < candles.size() - lookBack; i++) {
-            List<Candle> subList = candles.subList(i, i + lookBack);
+            List<CandleDto> subList = candles.subList(i, i + lookBack);
 
             double maxHigh = subList.stream().mapToDouble(c -> c.getHigh().doubleValue()).max().orElse(Double.MAX_VALUE);
             double minLow = subList.stream().mapToDouble(c -> c.getLow().doubleValue()).min().orElse(Double.MIN_VALUE);
@@ -507,7 +507,7 @@ public class PatternUtils {
             );
 
             if (isRectangle) {
-                patternsFound.add(new Pattern(PatternType.RECTANGLE, new ArrayList<>(subList), false));
+                patternsFound.add(new PatternDto(PatternType.RECTANGLE, new ArrayList<>(subList), false));
             }
         }
 
@@ -515,20 +515,20 @@ public class PatternUtils {
     }
 
 
-    public boolean isBreakoutConfirmed(Pattern pattern, List<Candle> candles) {
-        if (pattern == null || candles == null || candles.isEmpty()) {
+    public boolean isBreakoutConfirmed(PatternDto patternDto, List<CandleDto> candles) {
+        if (patternDto == null || candles == null || candles.isEmpty()) {
             throw new IllegalArgumentException("Pattern or candles cannot be null or empty.");
         }
 
-        List<Candle> patternCandles = pattern.getCandles();
+        List<CandleDto> patternCandles = patternDto.getCandles();
         if (patternCandles == null || patternCandles.isEmpty()) {
             return false;
         }
 
-        Candle lastCandle = candles.get(candles.size() - 1);
+        CandleDto lastCandle = candles.get(candles.size() - 1);
         double breakoutLevel;
 
-        switch (pattern.getDirection()) {
+        switch (patternDto.getDirection()) {
             case BULLISH -> {
                 breakoutLevel = patternCandles.stream()
                         .mapToDouble(c -> c.getHigh().doubleValue())
@@ -556,7 +556,7 @@ public class PatternUtils {
 
                 return lastCandle.getClose().doubleValue() > highLevel || lastCandle.getClose().doubleValue() < lowLevel;
             }
-            default -> throw new IllegalStateException("Unexpected pattern direction: " + pattern.getDirection());
+            default -> throw new IllegalStateException("Unexpected pattern direction: " + patternDto.getDirection());
         }
     }
 
@@ -568,7 +568,7 @@ public class PatternUtils {
      * @return List of candles that are local maxima
      * @throws IllegalArgumentException if the input list is null, empty, or lookBack is invalid
      */
-    public List<Candle> findLocalMaxima(List<Candle> candles, int lookBack) {
+    public List<CandleDto> findLocalMaxima(List<CandleDto> candles, int lookBack) {
         validateInput(candles, lookBack);
         return IntStream.range(lookBack, candles.size() - lookBack)
                 .filter(i -> isLocalMaximum(candles, i, lookBack))
@@ -584,7 +584,7 @@ public class PatternUtils {
      * @return List of candles that are local minima
      * @throws IllegalArgumentException if the input list is null, empty, or lookBack is invalid
      */
-    public List<Candle> findLocalMinima(List<Candle> candles, int lookBack) {
+    public List<CandleDto> findLocalMinima(List<CandleDto> candles, int lookBack) {
         validateInput(candles, lookBack);
         return IntStream.range(lookBack, candles.size() - lookBack)
                 .filter(i -> isLocalMinimum(candles, i, lookBack))
@@ -594,7 +594,7 @@ public class PatternUtils {
 
     // --- Private Helper Methods ---
 
-    private void validateInput(List<Candle> candles, int lookBack) {
+    private void validateInput(List<CandleDto> candles, int lookBack) {
         if (candles == null || candles.isEmpty()) {
             throw new IllegalArgumentException("The candle list cannot be null or empty.");
         }
@@ -606,13 +606,13 @@ public class PatternUtils {
         }
     }
 
-    private boolean isLocalMaximum(List<Candle> candles, int index, int lookBack) {
+    private boolean isLocalMaximum(List<CandleDto> candles, int index, int lookBack) {
         return IntStream.rangeClosed(index - lookBack, index + lookBack)
                 .filter(j -> j != index)
                 .allMatch(j -> candles.get(index).getHigh().doubleValue() > candles.get(j).getHigh().doubleValue());
     }
 
-    private boolean isLocalMinimum(List<Candle> candles, int index, int lookBack) {
+    private boolean isLocalMinimum(List<CandleDto> candles, int index, int lookBack) {
         return IntStream.rangeClosed(index - lookBack, index + lookBack)
                 .filter(j -> j != index)
                 .allMatch(j -> candles.get(index).getLow().doubleValue() < candles.get(j).getLow().doubleValue());

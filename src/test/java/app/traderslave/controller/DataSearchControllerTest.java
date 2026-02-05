@@ -1,6 +1,9 @@
 package app.traderslave.controller;
 
-import app.traderslave.controller.dto.*;
+import app.traderslave.model.dto.req.CandleReqDto;
+import app.traderslave.model.dto.CandleDto;
+import app.traderslave.model.dto.req.CandlesReqDto;
+import app.traderslave.model.dto.req.TimeReqDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
 import app.traderslave.remote.service.BinanceRemoteService;
@@ -50,9 +53,9 @@ class DataSearchControllerTest {
 
     @Test
     void testGetCandleOk() {
-        CandleResDto candleResDto = CandleResDto.builder().build();
+        CandleDto candleDto = CandleDto.builder().build();
 
-        Mockito.when(binanceRemoteService.findCandleAsync(any(CandleReqDto.class))).thenReturn(Mono.just(candleResDto));
+        Mockito.when(binanceRemoteService.findCandleAsync(any(CandleReqDto.class))).thenReturn(Mono.just(candleDto));
 
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -63,7 +66,7 @@ class DataSearchControllerTest {
                 )
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(CandleResDto.class)
-                .isEqualTo(candleResDto);
+                .expectBody(CandleDto.class)
+                .isEqualTo(candleDto);
     }
 }

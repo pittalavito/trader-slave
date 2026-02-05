@@ -1,7 +1,7 @@
 package app.traderslave.domain.factory;
 
-import app.traderslave.controller.dto.CreateSimulationReqDto;
-import app.traderslave.controller.dto.TimeReqDto;
+import app.traderslave.model.dto.req.CreateSimulationReqDto;
+import app.traderslave.model.dto.req.TimeReqDto;
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.domain.model.SimulationOrder;
 import app.traderslave.utils.TimeUtils;

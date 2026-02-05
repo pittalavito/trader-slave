@@ -1,7 +1,7 @@
 package app.traderslave.remote.adapter;
 
-import app.traderslave.controller.dto.CandleReqDto;
-import app.traderslave.controller.dto.CandlesReqDto;
+import app.traderslave.model.dto.req.CandleReqDto;
+import app.traderslave.model.dto.req.CandlesReqDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
 import app.traderslave.remote.dto.BinanceGetKlinesRequestDto;
