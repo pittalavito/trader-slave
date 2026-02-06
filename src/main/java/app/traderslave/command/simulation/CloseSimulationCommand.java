@@ -9,8 +9,8 @@ import app.traderslave.domain.service.SimulationDomainEventService;
 import app.traderslave.domain.service.SimulationDomainService;
 import app.traderslave.domain.service.SimulationOrderDomainService;
 import app.traderslave.model.dto.req.CloseSimulationReqDto;
-import app.traderslave.model.dto.res.CloseSimulationResDto;
-import app.traderslave.model.dto.res.SimulationOrderResDto;
+import app.traderslave.model.dto.CloseSimulationDto;
+import app.traderslave.model.dto.SimulationOrderDto;
 import app.traderslave.model.dto.OrderReportDto;
 import app.traderslave.assembler.SimulationServiceAssembler;
 import app.traderslave.service.simulation.SimulationOrderReportManagerService;
@@ -23,7 +23,7 @@ import java.util.*;
 
 @Component
 @RequiredArgsConstructor
-public class CloseSimulationCommand extends BaseCommand<CloseSimulationReqDto, CloseSimulationResDto> {
+public class CloseSimulationCommand extends BaseCommand<CloseSimulationReqDto, CloseSimulationDto> {
 
     private final SimulationDomainService simulationDomainService;
     private final SimulationOrderDomainService simulationOrderDomainService;
@@ -32,20 +32,20 @@ public class CloseSimulationCommand extends BaseCommand<CloseSimulationReqDto, C
 
     @Override
     @Transactional
-    public CloseSimulationResDto execute() {
+    public CloseSimulationDto execute() {
         Simulation simulation = simulationDomainService.findByIdOrError(commandRequest.getSimulationId());
         SimulationChecker.checkSimulationStatusOpen(simulation);
         SimulationEvent latestEvent = simulationDomainEventService.findLatestEventBySimulationId(simulation.getId());
         SimulationChecker.checkRequestTime(simulation, latestEvent, commandRequest);
 
-        Map<Long, SimulationOrderResDto> ordersIdsMap = new HashMap<>();
-        Map<SimulationOrderResDto.Status, List<Long>> ordersIdsStatusMap = new EnumMap<>(SimulationOrderResDto.Status.class);
-        Arrays.stream(SimulationOrderResDto.Status.values()).forEach(status -> ordersIdsStatusMap.put(status, new ArrayList<>()));
+        Map<Long, SimulationOrderDto> ordersIdsMap = new HashMap<>();
+        Map<SimulationOrderDto.Status, List<Long>> ordersIdsStatusMap = new EnumMap<>(SimulationOrderDto.Status.class);
+        Arrays.stream(SimulationOrderDto.Status.values()).forEach(status -> ordersIdsStatusMap.put(status, new ArrayList<>()));
 
         List<SimulationOrder> orders = simulationOrderDomainService.findAllBySimulationId(simulation.getId());
         if (!CollectionUtils.isEmpty(orders)) {
             orders.forEach(order -> {
-                SimulationOrderResDto resDto;
+                SimulationOrderDto resDto;
                 if (order.isOpen()) {
                     OrderReportDto report = simulationOrderReportManagerService.createBackTestShortTermReport(simulation, order, commandRequest);
                     SimulationOrder closedOrder = simulationOrderDomainService.close(order, report, true);

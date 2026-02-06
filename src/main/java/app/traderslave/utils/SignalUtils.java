@@ -1,6 +1,6 @@
 package app.traderslave.utils;
 
-import app.traderslave.model.dto.res.PatternDetectionResDto;
+import app.traderslave.model.dto.PatternDetectionDto;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.enums.PatternType;
 import app.traderslave.model.enums.Signal;
@@ -10,22 +10,22 @@ import org.springframework.util.CollectionUtils;
 @UtilityClass
 public class SignalUtils {
 
-    public Signal generate(PatternDetectionResDto dto) {
+    public Signal generate(PatternDetectionDto dto) {
         Signal signal;
         if (CollectionUtils.isEmpty(dto.getPatterns())) {
             signal = Signal.NONE;
         } else {
-            PatternDetectionResDto.Pattern latestPattern = dto.getPatterns().get(dto.getPatterns().size() - 1);
+            PatternDetectionDto.Pattern latestPattern = dto.getPatterns().get(dto.getPatterns().size() - 1);
             signal = generate(latestPattern);
         }
         return signal;
     }
 
-    public boolean confirmOrderSignal(OrderType orderType, PatternDetectionResDto dto) {
+    public boolean confirmOrderSignal(OrderType orderType, PatternDetectionDto dto) {
         if (CollectionUtils.isEmpty(dto.getPatterns())) {
             return false;
         }
-        PatternDetectionResDto.Pattern latestPattern = dto.getPatterns().get(dto.getPatterns().size() - 1);
+        PatternDetectionDto.Pattern latestPattern = dto.getPatterns().get(dto.getPatterns().size() - 1);
         Signal signal = generate(latestPattern);
         return switch (signal) {
             case BUY -> orderType == OrderType.BUY;
@@ -34,7 +34,7 @@ public class SignalUtils {
         };
     }
 
-    private Signal generate(PatternDetectionResDto.Pattern pattern) {
+    private Signal generate(PatternDetectionDto.Pattern pattern) {
         return switch (pattern.getPatternType().getDirection()) {
             case BULLISH -> Signal.BUY;
             case BEARISH -> Signal.SELL;

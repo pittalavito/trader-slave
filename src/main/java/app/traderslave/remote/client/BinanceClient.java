@@ -1,7 +1,7 @@
 package app.traderslave.remote.client;
 
 import app.traderslave.exception.custom.BinanceRemoteException;
-import app.traderslave.remote.dto.BinanceGetKlinesRequestDto;
+import app.traderslave.remote.dto.BinanceGetKlinesReqDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -24,7 +24,7 @@ public class BinanceClient {
         this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
     }
 
-    public Mono<List<Object[]>> getKlines(BinanceGetKlinesRequestDto requestDto) {
+    public Mono<List<Object[]>> getKlines(BinanceGetKlinesReqDto requestDto) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(KLINES_URL)
                         .queryParam("symbol", requestDto.getSymbol())

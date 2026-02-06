@@ -1,7 +1,7 @@
 package app.traderslave.assembler;
 
 import app.traderslave.model.dto.req.JupiterPerpetualCsvReqDto;
-import app.traderslave.model.dto.res.JupiterPerpetualCsvResDto;
+import app.traderslave.model.dto.JupiterPerpetualCsvDto;
 import app.traderslave.model.enums.Currency;
 import lombok.experimental.UtilityClass;
 
@@ -10,16 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 @UtilityClass
-public class JupiterPerpetualCsvAssembler {
+public class JupiterPerpetualCsvDtoAssembler {
 
-    public JupiterPerpetualCsvResDto toModel(List<JupiterPerpetualCsvReqDto> listTrades) {
-        return JupiterPerpetualCsvResDto.builder()
+    public JupiterPerpetualCsvDto toModel(List<JupiterPerpetualCsvReqDto> listTrades) {
+        return JupiterPerpetualCsvDto.builder()
                 .reports(buildReports(listTrades))
                 .build();
     }
 
-    private static Map<Currency, JupiterPerpetualCsvResDto.Report> buildReports(List<JupiterPerpetualCsvReqDto> listTrades) {
-        Map<Currency, JupiterPerpetualCsvResDto.Report> reports = new EnumMap<>(Currency.class);
+    private static Map<Currency, JupiterPerpetualCsvDto.Report> buildReports(List<JupiterPerpetualCsvReqDto> listTrades) {
+        Map<Currency, JupiterPerpetualCsvDto.Report> reports = new EnumMap<>(Currency.class);
 
         listTrades.forEach(trade -> {
             var assetKey = trade.getAsset();
@@ -30,9 +30,9 @@ public class JupiterPerpetualCsvAssembler {
         return reports;
     }
 
-    private static JupiterPerpetualCsvResDto.Report buildReport(JupiterPerpetualCsvReqDto trade, JupiterPerpetualCsvResDto.Report report) {
+    private static JupiterPerpetualCsvDto.Report buildReport(JupiterPerpetualCsvReqDto trade, JupiterPerpetualCsvDto.Report report) {
         if (report == null) {
-            report = new JupiterPerpetualCsvResDto.Report();
+            report = new JupiterPerpetualCsvDto.Report();
         }
 
         report.increaseNumberOfOpenTrades(trade);

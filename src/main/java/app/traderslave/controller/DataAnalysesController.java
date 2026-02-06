@@ -1,16 +1,16 @@
 package app.traderslave.controller;
 
-import app.traderslave.domain.service.CandleBackTestDomainService;
+import app.traderslave.command.SaveCandleBackTestCommand;
 import app.traderslave.model.dto.req.CandleReqDto;
 import app.traderslave.model.dto.req.CandlesReqDto;
 import app.traderslave.model.dto.req.JupiterPerpetualCsvReqDto;
 import app.traderslave.model.dto.req.PatternDetectionReqDto;
-import app.traderslave.model.dto.res.JupiterPerpetualCsvResDto;
-import app.traderslave.model.dto.res.PatternDetectionResDto;
+import app.traderslave.model.dto.JupiterPerpetualCsvDto;
+import app.traderslave.model.dto.PatternDetectionDto;
 import app.traderslave.model.dto.CandleDto;
 import app.traderslave.remote.service.BinanceRemoteService;
-import app.traderslave.assembler.JupiterPerpetualCsvAssembler;
-import app.traderslave.assembler.PatternDetectionAssembler;
+import app.traderslave.assembler.JupiterPerpetualCsvDtoAssembler;
+import app.traderslave.assembler.PatternDetectionDtoAssembler;
 import app.traderslave.utils.ControllerPath;
 import app.traderslave.utils.CsvUtils;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,8 @@ public class DataAnalysesController {
     private static final String URL_CANDLE_BACK_TEST = "/candles-back-test";
 
     private final BinanceRemoteService binanceRemoteService;
-    private final CandleBackTestDomainService candleBackTestDomainService;
+    private final SaveCandleBackTestCommand saveCandleBackTestCommand;
+
 
     @GetMapping(path = URL_CANDLE)
     public Mono<ResponseEntity<CandleDto>> getCandle(@ModelAttribute @Validated CandleReqDto requestDto) {
@@ -52,22 +53,21 @@ public class DataAnalysesController {
 
     @PostMapping(path = URL_CANDLE_BACK_TEST)
     public ResponseEntity<Void> saveCandleBackTest(@ModelAttribute @Validated CandlesReqDto requestDto) {
-        binanceRemoteService.findCandlesAsync(requestDto).doOnNext(response ->
-                candleBackTestDomainService.saveCandleBackTest(requestDto, response)
-        );
+        saveCandleBackTestCommand.setCommandRequest(requestDto);
+        saveCandleBackTestCommand.execute();
         return ResponseEntity.ok().build();
     }
 
     @PostMapping(path = URI_JUPITER_CSV)
-    public ResponseEntity<JupiterPerpetualCsvResDto> createFromJupiterPerpetualCsv(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<JupiterPerpetualCsvDto> createFromJupiterPerpetualCsv(@RequestParam("file") MultipartFile file) {
         List<JupiterPerpetualCsvReqDto> listTrades = CsvUtils.readCsvFile(file, JupiterPerpetualCsvReqDto.class);
-        return ResponseEntity.ok(JupiterPerpetualCsvAssembler.toModel(listTrades));
+        return ResponseEntity.ok(JupiterPerpetualCsvDtoAssembler.toModel(listTrades));
     }
 
     @PostMapping(path = URI_PATTERN_DETECTION)
-    public ResponseEntity<Mono<PatternDetectionResDto>> detectPatterns(@RequestBody PatternDetectionReqDto dto) {
+    public ResponseEntity<Mono<PatternDetectionDto>> detectPatterns(@RequestBody PatternDetectionReqDto dto) {
         return ResponseEntity.ok(binanceRemoteService.findCandlesAsync(dto)
-                .map(candles -> PatternDetectionAssembler.toModel(candles, dto))
+                .map(candles -> PatternDetectionDtoAssembler.toModel(candles, dto))
         );
     }
 }

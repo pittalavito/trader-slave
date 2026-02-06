@@ -1,4 +1,4 @@
-package app.traderslave.model.dto.res;
+package app.traderslave.model.dto;
 
 import app.traderslave.model.enums.OrderType;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SimulationOrderResDto {
+public class SimulationOrderDto {
     private String requestInfo;
     private Long simulationId;
     private Long orderId;

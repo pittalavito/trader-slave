@@ -1,4 +1,4 @@
-package app.traderslave.remote.adapter;
+package app.traderslave.remote.assembler;
 
 import app.traderslave.model.dto.CandleDto;
 import app.traderslave.utils.TimeUtils;
@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @UtilityClass
-public class BinanceClientResponseAdapter {
+public class BinanceClientAssembler {
 
-    public List<CandleDto> adapt(List<Object[]> response) {
+    public List<CandleDto> toModel(List<Object[]> response) {
         return response.stream()
-                .map(BinanceClientResponseAdapter::adapt)
+                .map(BinanceClientAssembler::toModel)
                 .collect(Collectors.toList());
     }
 
-    private CandleDto adapt(Object[] candles) {
+    private CandleDto toModel(Object[] candles) {
         return CandleDto.builder()
                 .openTime(TimeUtils.convertToLocalDateTime((Long) candles[0]))
                 .open(new BigDecimal(candles[1].toString()))

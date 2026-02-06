@@ -4,9 +4,9 @@ import app.traderslave.model.dto.req.CloseSimulationOrderReqDto;
 import app.traderslave.model.dto.req.CloseSimulationReqDto;
 import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
 import app.traderslave.model.dto.req.CreateSimulationReqDto;
-import app.traderslave.model.dto.res.CloseSimulationResDto;
-import app.traderslave.model.dto.res.CreateSimulationResDto;
-import app.traderslave.model.dto.res.SimulationOrderResDto;
+import app.traderslave.model.dto.CloseSimulationDto;
+import app.traderslave.model.dto.CreateSimulationDto;
+import app.traderslave.model.dto.SimulationOrderDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.service.old.SimulationService;
@@ -37,17 +37,17 @@ class SimulationControllerTest {
         createSimulationReqDto.setStartTime(LocalDateTime.now());
         createSimulationReqDto.setDescription("Description");
 
-        CreateSimulationResDto createSimulationResDto = CreateSimulationResDto.builder().build();
+        CreateSimulationDto createSimulationDto = CreateSimulationDto.builder().build();
 
-        Mockito.when(simulationService.create(any(CreateSimulationReqDto.class))).thenReturn(Mono.just(createSimulationResDto));
+        Mockito.when(simulationService.create(any(CreateSimulationReqDto.class))).thenReturn(Mono.just(createSimulationDto));
 
         webTestClient.post()
                 .uri("/simulation")
                 .bodyValue(createSimulationReqDto)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(CreateSimulationResDto.class)
-                .isEqualTo(createSimulationResDto);
+                .expectBody(CreateSimulationDto.class)
+                .isEqualTo(createSimulationDto);
     }
 
     @Test
@@ -56,17 +56,17 @@ class SimulationControllerTest {
         closeSimulationReqDto.setSimulationId(1L);
         closeSimulationReqDto.setStartTime(LocalDateTime.now());
 
-        CloseSimulationResDto closeSimulationResDto = CloseSimulationResDto.builder().build();
+        CloseSimulationDto closeSimulationDto = CloseSimulationDto.builder().build();
 
-        Mockito.when(simulationService.close(any(CloseSimulationReqDto.class))).thenReturn(Mono.just(closeSimulationResDto));
+        Mockito.when(simulationService.close(any(CloseSimulationReqDto.class))).thenReturn(Mono.just(closeSimulationDto));
 
         webTestClient.put()
                 .uri("/simulation")
                 .bodyValue(closeSimulationReqDto)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(CloseSimulationResDto.class)
-                .isEqualTo(closeSimulationResDto);
+                .expectBody(CloseSimulationDto.class)
+                .isEqualTo(closeSimulationDto);
     }
 
     @Test
@@ -85,17 +85,17 @@ class SimulationControllerTest {
         createSimulationOrderReqDto.setOrderType(OrderType.BUY);
         createSimulationOrderReqDto.setSimulationId(1L);
 
-        SimulationOrderResDto simulationOrderResDto = SimulationOrderResDto.builder().build();
+        SimulationOrderDto simulationOrderDto = SimulationOrderDto.builder().build();
 
-        Mockito.when(simulationService.createOrder(any(CreateSimulationOrderReqDto.class))).thenReturn(Mono.just(simulationOrderResDto));
+        Mockito.when(simulationService.createOrder(any(CreateSimulationOrderReqDto.class))).thenReturn(Mono.just(simulationOrderDto));
 
         webTestClient.post()
                 .uri("/simulation/order")
                 .bodyValue(createSimulationOrderReqDto)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(SimulationOrderResDto.class)
-                .isEqualTo(simulationOrderResDto);
+                .expectBody(SimulationOrderDto.class)
+                .isEqualTo(simulationOrderDto);
     }
 
     @Test
@@ -105,16 +105,16 @@ class SimulationControllerTest {
         closeSimulationOrderReqDto.setOrderId(1L);
         closeSimulationOrderReqDto.setStartTime(LocalDateTime.now());
 
-        SimulationOrderResDto simulationOrderResDto = SimulationOrderResDto.builder().build();
+        SimulationOrderDto simulationOrderDto = SimulationOrderDto.builder().build();
 
-        Mockito.when(simulationService.closeOrder(any(CloseSimulationOrderReqDto.class))).thenReturn(Mono.just(simulationOrderResDto));
+        Mockito.when(simulationService.closeOrder(any(CloseSimulationOrderReqDto.class))).thenReturn(Mono.just(simulationOrderDto));
 
         webTestClient.put()
                 .uri("/simulation/order")
                 .bodyValue(closeSimulationOrderReqDto)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(SimulationOrderResDto.class)
-                .isEqualTo(simulationOrderResDto);
+                .expectBody(SimulationOrderDto.class)
+                .isEqualTo(simulationOrderDto);
     }
 }

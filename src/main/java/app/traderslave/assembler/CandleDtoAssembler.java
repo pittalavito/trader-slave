@@ -7,12 +7,12 @@ import java.util.Comparator;
 import java.util.List;
 
 @UtilityClass
-public class CandleAssembler {
+public class CandleDtoAssembler {
 
     public List<CandleDto> toModel(List<CandleBackTest> responseList) {
         responseList.sort(Comparator.comparing(CandleBackTest::getCloseTime));
         return responseList.stream()
-                .map(CandleAssembler::toModel)
+                .map(CandleDtoAssembler::toModel)
                 .toList();
     }
 

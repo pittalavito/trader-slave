@@ -1,4 +1,4 @@
-package app.traderslave.model.dto.res;
+package app.traderslave.model.dto;
 
 import app.traderslave.model.enums.PatternType;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class PatternDetectionResDto {
+public class PatternDetectionDto {
 
     private List<Pattern> patterns;
     private LocalDateTime closeTime;

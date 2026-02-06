@@ -3,7 +3,7 @@ package app.traderslave.command.simulation;
 import app.traderslave.checker.TimeChecker;
 import app.traderslave.command.base.BaseCommand;
 import app.traderslave.model.dto.req.CreateSimulationReqDto;
-import app.traderslave.model.dto.res.CreateSimulationResDto;
+import app.traderslave.model.dto.CreateSimulationDto;
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.domain.service.SimulationDomainService;
 import lombok.RequiredArgsConstructor;
@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CreateSimulationCommand extends BaseCommand<CreateSimulationReqDto, CreateSimulationResDto> {
+public class CreateSimulationCommand extends BaseCommand<CreateSimulationReqDto, CreateSimulationDto> {
 
     private final SimulationDomainService simulationDomainService;
 
     @Override
-    public CreateSimulationResDto execute() {
+    public CreateSimulationDto execute() {
         TimeChecker.checkStartDate(commandRequest.getStartTime());
         Simulation simulation = simulationDomainService.create(commandRequest);
         return toModel(simulation);
     }
 
-    public CreateSimulationResDto toModel(Simulation simulation) {
-        return CreateSimulationResDto.builder()
+    public CreateSimulationDto toModel(Simulation simulation) {
+        return CreateSimulationDto.builder()
                 .id(simulation.getId())
                 .currencyPair(simulation.getCurrencyPair())
                 .description(simulation.getDescription())

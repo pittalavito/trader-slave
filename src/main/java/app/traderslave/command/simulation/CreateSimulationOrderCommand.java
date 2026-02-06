@@ -10,7 +10,7 @@ import app.traderslave.domain.service.SimulationDomainService;
 import app.traderslave.domain.service.SimulationOrderDomainService;
 import app.traderslave.model.dto.req.CandleReqDto;
 import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
-import app.traderslave.model.dto.res.SimulationOrderResDto;
+import app.traderslave.model.dto.SimulationOrderDto;
 import app.traderslave.model.dto.CandleDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.remote.service.BinanceRemoteService;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CreateSimulationOrderCommand extends BaseCommand<CreateSimulationOrderReqDto, SimulationOrderResDto> {
+public class CreateSimulationOrderCommand extends BaseCommand<CreateSimulationOrderReqDto, SimulationOrderDto> {
 
     private final SimulationDomainService simulationDomainService;
     private final SimulationOrderDomainService simulationOrderDomainService;
@@ -28,7 +28,7 @@ public class CreateSimulationOrderCommand extends BaseCommand<CreateSimulationOr
     private final BinanceRemoteService binanceRemoteService;
 
     @Override
-    public SimulationOrderResDto execute() {
+    public SimulationOrderDto execute() {
         SimulationChecker.checkLeverage(commandRequest);
         SimulationChecker.checkAmountOfTrade(commandRequest);
         Simulation simulation = simulationDomainService.findByIdOrError(commandRequest.getSimulationId());

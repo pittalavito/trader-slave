@@ -1,7 +1,7 @@
 package app.traderslave.assembler;
 
 import app.traderslave.model.dto.req.PatternDetectionReqDto;
-import app.traderslave.model.dto.res.PatternDetectionResDto;
+import app.traderslave.model.dto.PatternDetectionDto;
 import app.traderslave.model.dto.CandleDto;
 import app.traderslave.model.dto.PatternDto;
 import app.traderslave.domain.model.CandleBackTest;
@@ -12,17 +12,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @UtilityClass
-public class PatternDetectionAssembler {
+public class PatternDetectionDtoAssembler {
 
-    public PatternDetectionResDto toModelBackTest(List<CandleBackTest> candles, PatternDetectionReqDto dto) {
+    public PatternDetectionDto toModelBackTest(List<CandleBackTest> candles, PatternDetectionReqDto dto) {
         if (!CollectionUtils.isEmpty(candles)) {
             return toModel(adapt(candles), dto);
         }
-        return new PatternDetectionResDto();
+        return new PatternDetectionDto();
     }
 
-    public PatternDetectionResDto toModel(List<CandleDto> candles, PatternDetectionReqDto dto) {
-        PatternDetectionResDto result = new PatternDetectionResDto();
+    public PatternDetectionDto toModel(List<CandleDto> candles, PatternDetectionReqDto dto) {
+        PatternDetectionDto result = new PatternDetectionDto();
 
         if (!CollectionUtils.isEmpty(candles)) {
             List<PatternDto> patternDtos = PatternUtils.detectPatterns(candles, dto);
@@ -35,16 +35,16 @@ public class PatternDetectionAssembler {
         return result;
     }
 
-    private List<PatternDetectionResDto.Pattern> toModelPatterns(List<PatternDto> patternDtos, PatternDetectionReqDto dto) {
+    private List<PatternDetectionDto.Pattern> toModelPatterns(List<PatternDto> patternDtos, PatternDetectionReqDto dto) {
         return patternDtos.stream()
                 .filter(patternDto -> filter(patternDto, dto))
                 .map(patternDto -> toModel(patternDto, dto))
-                .sorted(PatternDetectionAssembler::sortByCloseTimeDesc)
+                .sorted(PatternDetectionDtoAssembler::sortByCloseTimeDesc)
                 .toList();
     }
 
-    private PatternDetectionResDto.Pattern toModel(PatternDto patternDto, PatternDetectionReqDto dto) {
-        PatternDetectionResDto.Pattern result = new PatternDetectionResDto.Pattern();
+    private PatternDetectionDto.Pattern toModel(PatternDto patternDto, PatternDetectionReqDto dto) {
+        PatternDetectionDto.Pattern result = new PatternDetectionDto.Pattern();
         result.setPatternType(patternDto.getPatternType());
         result.setDirection(patternDto.getDirection().name());
         result.setCategory(patternDto.getCategory().name());
@@ -60,14 +60,14 @@ public class PatternDetectionAssembler {
         return result;
     }
 
-    private List<PatternDetectionResDto.Candle> toModel(List<CandleDto> candles) {
+    private List<PatternDetectionDto.Candle> toModel(List<CandleDto> candles) {
         return candles.stream()
-                .map(PatternDetectionAssembler::toModel)
+                .map(PatternDetectionDtoAssembler::toModel)
                 .toList();
     }
 
-    private PatternDetectionResDto.Candle toModel(CandleDto candle) {
-        PatternDetectionResDto.Candle dto = new PatternDetectionResDto.Candle();
+    private PatternDetectionDto.Candle toModel(CandleDto candle) {
+        PatternDetectionDto.Candle dto = new PatternDetectionDto.Candle();
         dto.setCloseTime(candle.getCloseTime());
         dto.setClose(candle.getClose());
         return dto;
@@ -79,14 +79,14 @@ public class PatternDetectionAssembler {
     }
 
     /** Filters candles in the pattern based on request criteria */
-    private void filter(PatternDetectionResDto.Pattern patternRto, PatternDetectionReqDto reqDto) {
+    private void filter(PatternDetectionDto.Pattern patternRto, PatternDetectionReqDto reqDto) {
         if (Boolean.TRUE != reqDto.getShowAllCandles()) {
             patternRto.setCandles(null);
         }
     }
 
     /** Sorts patterns by the close time of their last candle in descending order */
-    private int sortByCloseTimeDesc(PatternDetectionResDto.Pattern p1, PatternDetectionResDto.Pattern p2) {
+    private int sortByCloseTimeDesc(PatternDetectionDto.Pattern p1, PatternDetectionDto.Pattern p2) {
         LocalDateTime dt1 = p1.getLastCandle().getCloseTime();
         LocalDateTime dt2 = p2.getLastCandle().getCloseTime();
         return dt2.compareTo(dt1);
@@ -94,7 +94,7 @@ public class PatternDetectionAssembler {
 
     public List<CandleDto> adapt(List<CandleBackTest> tests) {
         return tests.stream()
-                .map(PatternDetectionAssembler::adapt)
+                .map(PatternDetectionDtoAssembler::adapt)
                 .toList();
     }
 

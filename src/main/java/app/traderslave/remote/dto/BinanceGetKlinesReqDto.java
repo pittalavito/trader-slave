@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class BinanceGetKlinesRequestDto {
+public class BinanceGetKlinesReqDto {
     @NotNull(message = "Symbol is mandatory")
     @Size(min = 1, message = "Symbol must not be empty")
     private String symbol;

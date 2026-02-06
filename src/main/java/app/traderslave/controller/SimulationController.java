@@ -6,9 +6,9 @@ import app.traderslave.model.dto.req.CloseSimulationOrderReqDto;
 import app.traderslave.model.dto.req.CloseSimulationReqDto;
 import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
 import app.traderslave.model.dto.req.CreateSimulationReqDto;
-import app.traderslave.model.dto.res.CloseSimulationResDto;
-import app.traderslave.model.dto.res.CreateSimulationResDto;
-import app.traderslave.model.dto.res.SimulationOrderResDto;
+import app.traderslave.model.dto.CloseSimulationDto;
+import app.traderslave.model.dto.CreateSimulationDto;
+import app.traderslave.model.dto.SimulationOrderDto;
 import app.traderslave.service.simulation.SimulationManagerService;
 import app.traderslave.service.simulation.SimulationOrderManagerService;
 import app.traderslave.utils.ControllerPath;
@@ -34,12 +34,12 @@ public class SimulationController {
     private final SimulationPatternStrategyCommand simulationPatternStrategyCommand;
 
     @PostMapping
-    public ResponseEntity<CreateSimulationResDto> create(@RequestBody @Validated CreateSimulationReqDto dto) {
+    public ResponseEntity<CreateSimulationDto> create(@RequestBody @Validated CreateSimulationReqDto dto) {
         return ResponseEntity.ok(simulationManagerService.create(dto));
     }
 
     @PutMapping
-    public ResponseEntity<CloseSimulationResDto> close(@RequestBody @Validated CloseSimulationReqDto dto) {
+    public ResponseEntity<CloseSimulationDto> close(@RequestBody @Validated CloseSimulationReqDto dto) {
         return ResponseEntity.ok(simulationManagerService.close(dto));
     }
 
@@ -50,17 +50,17 @@ public class SimulationController {
     }
 
     @PostMapping(path = URI_ORDER)
-    public ResponseEntity<SimulationOrderResDto> createOrder(@RequestBody @Validated CreateSimulationOrderReqDto dto) {
+    public ResponseEntity<SimulationOrderDto> createOrder(@RequestBody @Validated CreateSimulationOrderReqDto dto) {
         return ResponseEntity.ok(orderManagerService.create(dto));
     }
 
     @PutMapping(path = URI_ORDER)
-    public ResponseEntity<SimulationOrderResDto> closeOrder(@RequestBody @Validated CloseSimulationOrderReqDto dto) {
+    public ResponseEntity<SimulationOrderDto> closeOrder(@RequestBody @Validated CloseSimulationOrderReqDto dto) {
         return ResponseEntity.ok(orderManagerService.close(dto));
     }
 
     @PostMapping(path = URI_PATTERN_STRATEGY)
-    public ResponseEntity<CloseSimulationResDto> simulationPatternStrategy(@RequestBody @Validated SimulationPatterStrategyDto dto) {
+    public ResponseEntity<CloseSimulationDto> simulationPatternStrategy(@RequestBody @Validated SimulationPatterStrategyDto dto) {
         simulationPatternStrategyCommand.setCommandRequest(dto);
         return ResponseEntity.ok(simulationPatternStrategyCommand.execute());
     }

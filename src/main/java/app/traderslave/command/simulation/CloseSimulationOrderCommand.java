@@ -5,7 +5,7 @@ import app.traderslave.command.base.BaseCommand;
 import app.traderslave.model.dto.req.CandleReqDto;
 import app.traderslave.model.dto.req.CloseSimulationOrderReqDto;
 import app.traderslave.model.dto.req.CreateSimulationOrderReqDto;
-import app.traderslave.model.dto.res.SimulationOrderResDto;
+import app.traderslave.model.dto.SimulationOrderDto;
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.domain.model.SimulationEvent;
 import app.traderslave.domain.model.SimulationOrder;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CloseSimulationOrderCommand extends BaseCommand<CloseSimulationOrderReqDto, SimulationOrderResDto> {
+public class CloseSimulationOrderCommand extends BaseCommand<CloseSimulationOrderReqDto, SimulationOrderDto> {
 
     private final SimulationDomainService simulationDomainService;
     private final SimulationOrderDomainService simulationOrderDomainService;
@@ -30,7 +30,7 @@ public class CloseSimulationOrderCommand extends BaseCommand<CloseSimulationOrde
 
 
     @Override
-    public SimulationOrderResDto execute() {
+    public SimulationOrderDto execute() {
         Simulation simulation = simulationDomainService.findByIdOrError(commandRequest.getSimulationId());
         SimulationChecker.checkSimulationStatusOpen(simulation);
         SimulationEvent latestEvent = simulationDomainEventService.findLatestEventBySimulationId(simulation.getId());

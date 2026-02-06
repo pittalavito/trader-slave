@@ -5,9 +5,9 @@ import app.traderslave.command.simulation.CreateSimulationCommand;
 import app.traderslave.command.simulation.DeleteAllSimulationCommand;
 import app.traderslave.domain.service.SimulationDomainService;
 import app.traderslave.model.dto.req.CloseSimulationReqDto;
-import app.traderslave.model.dto.res.CloseSimulationResDto;
+import app.traderslave.model.dto.CloseSimulationDto;
 import app.traderslave.model.dto.req.CreateSimulationReqDto;
-import app.traderslave.model.dto.res.CreateSimulationResDto;
+import app.traderslave.model.dto.CreateSimulationDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +30,13 @@ public class SimulationManagerService {
         return simulation.getBalance();
     }
 
-    public CreateSimulationResDto create(CreateSimulationReqDto dto) {
+    public CreateSimulationDto create(CreateSimulationReqDto dto) {
         createSimulationCommand.setCommandRequest(dto);
         return createSimulationCommand.execute();
     }
 
     @Transactional
-    public CloseSimulationResDto close(CloseSimulationReqDto dto) {
+    public CloseSimulationDto close(CloseSimulationReqDto dto) {
         closeSimulationCommand.setCommandRequest(dto);
         return closeSimulationCommand.execute();
     }

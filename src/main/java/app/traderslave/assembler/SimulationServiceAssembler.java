@@ -1,8 +1,8 @@
 package app.traderslave.assembler;
 
-import app.traderslave.model.dto.res.CloseSimulationResDto;
-import app.traderslave.model.dto.res.CreateSimulationResDto;
-import app.traderslave.model.dto.res.SimulationOrderResDto;
+import app.traderslave.model.dto.CloseSimulationDto;
+import app.traderslave.model.dto.CreateSimulationDto;
+import app.traderslave.model.dto.SimulationOrderDto;
 import app.traderslave.model.dto.req.TimeReqDto;
 import app.traderslave.exception.custom.CustomException;
 import app.traderslave.exception.model.ExceptionEnum;
@@ -15,11 +15,12 @@ import lombok.experimental.UtilityClass;
 import java.util.List;
 import java.util.Map;
 
+//todo da rifattorizzare dividendo in più assembeler
 @UtilityClass
 public class SimulationServiceAssembler {
 
-    public CreateSimulationResDto toModelCreate(Simulation simulation) {
-        return CreateSimulationResDto.builder()
+    public CreateSimulationDto toModelCreate(Simulation simulation) {
+        return CreateSimulationDto.builder()
                 .id(simulation.getId())
                 .currencyPair(simulation.getCurrencyPair())
                 .description(simulation.getDescription())
@@ -28,8 +29,8 @@ public class SimulationServiceAssembler {
                 .build();
     }
 
-    public SimulationOrderResDto toModelCreateOrder(SimulationOrder order, TimeReqDto dto) {
-        return SimulationOrderResDto.builder()
+    public SimulationOrderDto toModelCreateOrder(SimulationOrder order, TimeReqDto dto) {
+        return SimulationOrderDto.builder()
                 .requestInfo(buildRequestInfo(dto))
                 .orderId(order.getId())
                 .simulationId(order.getSimulationId())
@@ -39,12 +40,12 @@ public class SimulationServiceAssembler {
                 .openTime(order.getOpenTime())
                 .liquidationPrice(order.getLiquidationPrice())
                 .leverage(order.getLeverage())
-                .status(SimulationOrderResDto.Status.OPEN_NOW)
+                .status(SimulationOrderDto.Status.OPEN_NOW)
                 .build();
     }
 
-    public SimulationOrderResDto toModelCloseOrder(SimulationOrder order, TimeReqDto dto) {
-        return SimulationOrderResDto.builder()
+    public SimulationOrderDto toModelCloseOrder(SimulationOrder order, TimeReqDto dto) {
+        return SimulationOrderDto.builder()
                 .requestInfo(buildRequestInfo(dto))
                 .orderType(order.getType())
                 .amountOfTrade(order.getAmountOfTrade())
@@ -68,15 +69,15 @@ public class SimulationServiceAssembler {
                 .build();
     }
 
-    public CloseSimulationResDto toModelClose(Simulation simulation, Map<Long, SimulationOrderResDto> ordersIdsMap, Map<SimulationOrderResDto.Status, List<Long>> ordersIdsStatusMap, List<SimulationEvent> events) {
+    public CloseSimulationDto toModelClose(Simulation simulation, Map<Long, SimulationOrderDto> ordersIdsMap, Map<SimulationOrderDto.Status, List<Long>> ordersIdsStatusMap, List<SimulationEvent> events) {
         int numOrders = ordersIdsMap.size();
-        int numOrdersInProfit = ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_PROFIT).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.CLOSED_WITH_PROFIT).size();
-        int numOrdersInLoss = ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_LOSS).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.CLOSED_WITH_LOSS).size();
-        int numOrderLiquidated = ordersIdsStatusMap.get(SimulationOrderResDto.Status.LIQUIDATED).size();
-        int numOrderClosedBySimulation = ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_NEUTRAL).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_LOSS).size() + ordersIdsStatusMap.get(SimulationOrderResDto.Status.OPEN_WITH_PROFIT).size();
-        List<CloseSimulationResDto.Event> allEvents = buildEvents(events, ordersIdsMap);
+        int numOrdersInProfit = ordersIdsStatusMap.get(SimulationOrderDto.Status.OPEN_WITH_PROFIT).size() + ordersIdsStatusMap.get(SimulationOrderDto.Status.CLOSED_WITH_PROFIT).size();
+        int numOrdersInLoss = ordersIdsStatusMap.get(SimulationOrderDto.Status.OPEN_WITH_LOSS).size() + ordersIdsStatusMap.get(SimulationOrderDto.Status.CLOSED_WITH_LOSS).size();
+        int numOrderLiquidated = ordersIdsStatusMap.get(SimulationOrderDto.Status.LIQUIDATED).size();
+        int numOrderClosedBySimulation = ordersIdsStatusMap.get(SimulationOrderDto.Status.OPEN_NEUTRAL).size() + ordersIdsStatusMap.get(SimulationOrderDto.Status.OPEN_WITH_LOSS).size() + ordersIdsStatusMap.get(SimulationOrderDto.Status.OPEN_WITH_PROFIT).size();
+        List<CloseSimulationDto.Event> allEvents = buildEvents(events, ordersIdsMap);
 
-        return CloseSimulationResDto.builder()
+        return CloseSimulationDto.builder()
                 .simulationId(simulation.getId())
                 .ordersIdsMap(ordersIdsMap)
                 //.ordersIdsStatusMap(ordersIdsStatusMap)
@@ -105,21 +106,21 @@ public class SimulationServiceAssembler {
         return dto.isRealTimeRequest() ? "REAL-TIME-REQUEST" : "BACK-TIME-REQUEST " + dto.getStartTime();
     }
 
-    private SimulationOrderResDto.Status mappingStatus(SimulationOrder.Status orderStatus, Boolean isProfit) {
+    private SimulationOrderDto.Status mappingStatus(SimulationOrder.Status orderStatus, Boolean isProfit) {
         if (orderStatus == SimulationOrder.Status.LIQUIDATED) {
-            return SimulationOrderResDto.Status.LIQUIDATED;
+            return SimulationOrderDto.Status.LIQUIDATED;
         }
         return switch (orderStatus) {
             case OPEN ->
-                    mappingStatus(isProfit, SimulationOrderResDto.Status.OPEN_WITH_PROFIT, SimulationOrderResDto.Status.OPEN_WITH_LOSS, SimulationOrderResDto.Status.OPEN_NEUTRAL);
+                    mappingStatus(isProfit, SimulationOrderDto.Status.OPEN_WITH_PROFIT, SimulationOrderDto.Status.OPEN_WITH_LOSS, SimulationOrderDto.Status.OPEN_NEUTRAL);
             case CLOSED ->
-                    mappingStatus(isProfit, SimulationOrderResDto.Status.CLOSED_WITH_PROFIT, SimulationOrderResDto.Status.CLOSED_WITH_LOSS, SimulationOrderResDto.Status.CLOSED_NEUTRAL);
+                    mappingStatus(isProfit, SimulationOrderDto.Status.CLOSED_WITH_PROFIT, SimulationOrderDto.Status.CLOSED_WITH_LOSS, SimulationOrderDto.Status.CLOSED_NEUTRAL);
             default ->
                     throw new CustomException(ExceptionEnum.STATUS_NOT_ALLOWED_FOR_THIS_METHOD);
         };
     }
 
-    private SimulationOrderResDto.Status mappingStatus(Boolean isProfit, SimulationOrderResDto.Status profitStatus, SimulationOrderResDto.Status lossStatus, SimulationOrderResDto.Status neutralStatus) {
+    private SimulationOrderDto.Status mappingStatus(Boolean isProfit, SimulationOrderDto.Status profitStatus, SimulationOrderDto.Status lossStatus, SimulationOrderDto.Status neutralStatus) {
         if (Boolean.TRUE.equals(isProfit)) {
             return profitStatus;
         } else if (Boolean.FALSE.equals(isProfit)) {
@@ -129,16 +130,16 @@ public class SimulationServiceAssembler {
         }
     }
 
-    private List<CloseSimulationResDto.Event> buildEvents(List<SimulationEvent> events, Map<Long, SimulationOrderResDto> ordersIdsMap) {
+    private List<CloseSimulationDto.Event> buildEvents(List<SimulationEvent> events, Map<Long, SimulationOrderDto> ordersIdsMap) {
         return events.stream()
                 .map(event -> buildEvent(event, ordersIdsMap.get(event.getOrderId())))
                 .toList();
     }
 
-    private CloseSimulationResDto.Event buildEvent(SimulationEvent event, SimulationOrderResDto order) {
+    private CloseSimulationDto.Event buildEvent(SimulationEvent event, SimulationOrderDto order) {
         boolean isCreatedOrder =  SimulationEvent.EventType.CREATED_ORDER == event.getEventType();
 
-        return CloseSimulationResDto.Event.builder()
+        return CloseSimulationDto.Event.builder()
                 .time(event.getEventTime())
                 .orderId(event.getOrderId())
                 .eventType(event.getEventType())

@@ -4,10 +4,10 @@ import app.traderslave.checker.BinanceChecker;
 import app.traderslave.model.dto.req.CandleReqDto;
 import app.traderslave.model.dto.req.CandlesReqDto;
 import app.traderslave.model.dto.CandleDto;
-import app.traderslave.remote.adapter.BinanceClientRequestAdapter;
-import app.traderslave.remote.adapter.BinanceClientResponseAdapter;
+import app.traderslave.remote.adapter.BinanceClientAdapter;
+import app.traderslave.remote.assembler.BinanceClientAssembler;
 import app.traderslave.remote.client.BinanceClient;
-import app.traderslave.remote.dto.BinanceGetKlinesRequestDto;
+import app.traderslave.remote.dto.BinanceGetKlinesReqDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,9 +26,9 @@ public class BinanceRemoteService {
 
     public Mono<CandleDto> findCandleAsync(CandleReqDto dto) {
         BinanceChecker.checkDatesGetKline(dto);
-        BinanceGetKlinesRequestDto clientReqDto = BinanceClientRequestAdapter.adapt(dto);
+        BinanceGetKlinesReqDto clientReqDto = BinanceClientAdapter.adapt(dto);
         return binanceClient.getKlines(clientReqDto)
-                .map(BinanceClientResponseAdapter::adapt)
+                .map(BinanceClientAssembler::toModel)
                 .filter(CollectionUtils::hasUniqueObject)
                 .map(CollectionUtils::firstElement);
     }
@@ -43,7 +43,7 @@ public class BinanceRemoteService {
 
     public Mono<List<CandleDto>> findCandlesAsync(CandlesReqDto dto) {
         BinanceChecker.checkDatesGetKline(dto);
-        BinanceGetKlinesRequestDto clientReqDto = BinanceClientRequestAdapter.adapt(dto);
+        BinanceGetKlinesReqDto clientReqDto = BinanceClientAdapter.adapt(dto);
         return fetchCandleSticks(new HashSet<>(), clientReqDto)
                 .collectList();
     }
@@ -56,11 +56,11 @@ public class BinanceRemoteService {
         return blockingMono;
     }
 
-    private Flux<CandleDto> fetchCandleSticks(Set<CandleDto> accumulatedCandlesList, BinanceGetKlinesRequestDto clientReqDto) {
+    private Flux<CandleDto> fetchCandleSticks(Set<CandleDto> accumulatedCandlesList, BinanceGetKlinesReqDto clientReqDto) {
         return binanceClient.getKlines(clientReqDto)
                 .flatMapMany(clientRes -> {
                     if (!CollectionUtils.isEmpty(clientRes)) {
-                        accumulatedCandlesList.addAll(BinanceClientResponseAdapter.adapt(clientRes));
+                        accumulatedCandlesList.addAll(BinanceClientAssembler.toModel(clientRes));
                         clientReqDto.setStartTime(((Long) clientRes.get(clientRes.size() - 1)[6]) + 1);
                         return fetchCandleSticks(accumulatedCandlesList, clientReqDto);
                     }

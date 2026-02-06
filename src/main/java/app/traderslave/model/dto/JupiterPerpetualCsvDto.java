@@ -1,4 +1,4 @@
-package app.traderslave.model.dto.res;
+package app.traderslave.model.dto;
 
 import app.traderslave.model.dto.req.JupiterPerpetualCsvReqDto;
 import app.traderslave.model.enums.Currency;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Data
 @Builder
-public class JupiterPerpetualCsvResDto {
+public class JupiterPerpetualCsvDto {
 
     private Map<Currency, Report> reports;
 

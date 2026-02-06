@@ -1,10 +1,10 @@
 package app.traderslave.service.simulation;
 
-import app.traderslave.assembler.CandleAssembler;
+import app.traderslave.assembler.CandleDtoAssembler;
 import app.traderslave.checker.TimeChecker;
 import app.traderslave.model.dto.req.CandlesReqDto;
 import app.traderslave.model.dto.req.TimeReqDto;
-import app.traderslave.factory.OrderReportFactory;
+import app.traderslave.assembler.OrderReportDtoAssembler;
 import app.traderslave.domain.model.CandleBackTest;
 import app.traderslave.domain.model.Simulation;
 import app.traderslave.domain.model.SimulationOrder;
@@ -35,8 +35,8 @@ public class SimulationOrderReportManagerService {
         validateDates(order.getOpenTime(), endTime);
         CandlesReqDto candlesRequest = createCandlesRequest(order.getOpenTime(), simulation.getCurrencyPair(), endTime, TimeFrame.ONE_MINUTE);
         List<CandleBackTest> candlesBackTest = candleBackTestDomainService.getCandles(candlesRequest);
-        List<CandleDto> candlesResDto = CandleAssembler.toModel(candlesBackTest);
-        return OrderReportFactory.create(order, candlesResDto);
+        List<CandleDto> candlesResDto = CandleDtoAssembler.toModel(candlesBackTest);
+        return OrderReportDtoAssembler.create(order, candlesResDto);
     }
 
     public Mono<OrderReportDto> create(Simulation simulation, SimulationOrder order, TimeReqDto dto) {
@@ -50,7 +50,7 @@ public class SimulationOrderReportManagerService {
     private Mono<OrderReportDto> createShortTermReport(SimulationOrder order, CurrencyPair currencyPair, LocalDateTime endTime) {
         CandlesReqDto candlesReqDto = createCandlesRequest(order.getOpenTime(), currencyPair, endTime, TimeFrame.ONE_MINUTE);
         return binanceRemoteService.findCandlesAsync(candlesReqDto)
-                .map(candlesRes -> OrderReportFactory.create(order, candlesRes));
+                .map(candlesRes -> OrderReportDtoAssembler.create(order, candlesRes));
     }
 
     private Mono<OrderReportDto> createLongTermReport(SimulationOrder order, CurrencyPair currencyPair, LocalDateTime endTime) {
@@ -61,7 +61,7 @@ public class SimulationOrderReportManagerService {
     }
 
     private Mono<OrderReportDto> handleLongTermInitialReport(SimulationOrder order, CurrencyPair currencyPair, LocalDateTime midnightAfterOpening, LocalDateTime endTime, List<CandleDto> candlesRes) {
-        OrderReportDto report = OrderReportFactory.create(order, candlesRes);
+        OrderReportDto report = OrderReportDtoAssembler.create(order, candlesRes);
         if (report.isLiquidated()) {
             return Mono.just(report);
         }
@@ -76,7 +76,7 @@ public class SimulationOrderReportManagerService {
     }
 
     private Mono<OrderReportDto> handleLongTermStepTwo(SimulationOrder order, CurrencyPair currencyPair, LocalDateTime endTime, OrderReportDto rep1, List<CandleDto> candlesRes) {
-        OrderReportDto repTimeFrameOneDay = OrderReportFactory.create(order, candlesRes, rep1);
+        OrderReportDto repTimeFrameOneDay = OrderReportDtoAssembler.create(order, candlesRes, rep1);
         if (repTimeFrameOneDay.isLiquidated()) {
             return handleLiquidation(order, currencyPair, endTime, repTimeFrameOneDay);
         }
@@ -88,13 +88,13 @@ public class SimulationOrderReportManagerService {
         LocalDateTime closeTime = determineCloseTime(liquidationDay, endTime);
         CandlesReqDto candlesReqDto = createCandlesRequest(liquidationDay, currencyPair, closeTime, TimeFrame.ONE_MINUTE);
         return binanceRemoteService.findCandlesAsync(candlesReqDto)
-                .map(candlesRes2 -> OrderReportFactory.create(order, candlesRes2, repTimeFrameOneDay));
+                .map(candlesRes2 -> OrderReportDtoAssembler.create(order, candlesRes2, repTimeFrameOneDay));
     }
 
     private Mono<OrderReportDto> createLongTermReportStepThree(SimulationOrder order, CurrencyPair currencyPair, LocalDateTime midnightBeforeEndTime, LocalDateTime endTime, OrderReportDto rep1) {
         CandlesReqDto candlesReqDto = createCandlesRequest(midnightBeforeEndTime, currencyPair, endTime, TimeFrame.ONE_MINUTE);
         return binanceRemoteService.findCandlesAsync(candlesReqDto)
-                .map(candlesRes -> OrderReportFactory.create(order, candlesRes, rep1));
+                .map(candlesRes -> OrderReportDtoAssembler.create(order, candlesRes, rep1));
     }
 
     private void validateDates(LocalDateTime openTime, LocalDateTime endTime) {

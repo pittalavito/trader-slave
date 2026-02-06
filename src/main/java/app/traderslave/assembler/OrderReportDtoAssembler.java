@@ -1,4 +1,4 @@
-package app.traderslave.factory;
+package app.traderslave.assembler;
 
 import app.traderslave.model.dto.CandleDto;
 import app.traderslave.model.dto.OrderReportDto;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @UtilityClass
-public class OrderReportFactory {
+public class OrderReportDtoAssembler {
 
     public OrderReportDto create(SimulationOrder order, List<CandleDto> candles) {
         boolean isLiquidated = false;

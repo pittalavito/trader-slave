@@ -1,4 +1,4 @@
-package app.traderslave.model.dto.res;
+package app.traderslave.model.dto;
 
 import app.traderslave.model.enums.Currency;
 import app.traderslave.model.enums.CurrencyPair;
@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-public class CreateSimulationResDto {
+public class CreateSimulationDto {
     private Long id;
     private Currency currency;
     private BigDecimal balance;

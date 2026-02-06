@@ -1,4 +1,4 @@
-package app.traderslave.model.dto.res;
+package app.traderslave.model.dto;
 
 import app.traderslave.domain.model.SimulationEvent;
 import app.traderslave.model.enums.OrderType;
@@ -13,9 +13,9 @@ import java.util.Map;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CloseSimulationResDto {
+public class CloseSimulationDto {
     private Long simulationId;
-    private Map<Long, SimulationOrderResDto> ordersIdsMap;
+    private Map<Long, SimulationOrderDto> ordersIdsMap;
     private List<Event> events;
 
     private BigDecimal initialBalance;
