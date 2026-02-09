@@ -6,14 +6,14 @@ import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
 import app.traderslave.remote.dto.BinanceGetKlinesReqDto;
 import app.traderslave.utils.TimeUtils;
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 
-@UtilityClass
+@Component
 public class BinanceClientAdapter {
 
-    private final int LIMIT_GET_KLINE = 1000;
+    private final static int LIMIT_GET_KLINE = 1000;
 
     public BinanceGetKlinesReqDto adapt(CandlesReqDto dto) {
         LocalDateTime endTime = dto.isRealTimeRequest() ? TimeUtils.now().minusSeconds(2) : dto.getEndTime();

@@ -1,0 +1,17 @@
+package app.traderslave.model.dto;
+
+import app.traderslave.model.enums.Currency;
+import app.traderslave.model.enums.CurrencyPair;
+import lombok.Builder;
+import lombok.Data;
+import java.math.BigDecimal;
+
+@Data
+@Builder
+public class BackTestCreatePortfolioDto {
+    private Long id;
+    private Currency currency;
+    private BigDecimal balance;
+    private CurrencyPair currencyPair;
+    private String description;
+}

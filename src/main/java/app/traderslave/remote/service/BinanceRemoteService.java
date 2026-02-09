@@ -22,13 +22,15 @@ import java.util.Set;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BinanceRemoteService {
 
-    private final BinanceClient binanceClient;
+    private final BinanceClient client;
+    private final BinanceClientAdapter adapter;
+    private final BinanceClientAssembler assembler;
 
     public Mono<CandleDto> findCandleAsync(CandleReqDto dto) {
         BinanceChecker.checkDatesGetKline(dto);
-        BinanceGetKlinesReqDto clientReqDto = BinanceClientAdapter.adapt(dto);
-        return binanceClient.getKlines(clientReqDto)
-                .map(BinanceClientAssembler::toModel)
+        BinanceGetKlinesReqDto clientReqDto = adapter.adapt(dto);
+        return client.getKlines(clientReqDto)
+                .map(assembler::toModel)
                 .filter(CollectionUtils::hasUniqueObject)
                 .map(CollectionUtils::firstElement);
     }
@@ -43,7 +45,7 @@ public class BinanceRemoteService {
 
     public Mono<List<CandleDto>> findCandlesAsync(CandlesReqDto dto) {
         BinanceChecker.checkDatesGetKline(dto);
-        BinanceGetKlinesReqDto clientReqDto = BinanceClientAdapter.adapt(dto);
+        BinanceGetKlinesReqDto clientReqDto = adapter.adapt(dto);
         return fetchCandleSticks(new HashSet<>(), clientReqDto)
                 .collectList();
     }
@@ -57,10 +59,10 @@ public class BinanceRemoteService {
     }
 
     private Flux<CandleDto> fetchCandleSticks(Set<CandleDto> accumulatedCandlesList, BinanceGetKlinesReqDto clientReqDto) {
-        return binanceClient.getKlines(clientReqDto)
+        return client.getKlines(clientReqDto)
                 .flatMapMany(clientRes -> {
                     if (!CollectionUtils.isEmpty(clientRes)) {
-                        accumulatedCandlesList.addAll(BinanceClientAssembler.toModel(clientRes));
+                        accumulatedCandlesList.addAll(assembler.toModel(clientRes));
                         clientReqDto.setStartTime(((Long) clientRes.get(clientRes.size() - 1)[6]) + 1);
                         return fetchCandleSticks(accumulatedCandlesList, clientReqDto);
                     }

@@ -2,18 +2,17 @@ package app.traderslave.remote.assembler;
 
 import app.traderslave.model.dto.CandleDto;
 import app.traderslave.utils.TimeUtils;
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@UtilityClass
+@Component
 public class BinanceClientAssembler {
 
     public List<CandleDto> toModel(List<Object[]> response) {
         return response.stream()
-                .map(BinanceClientAssembler::toModel)
-                .collect(Collectors.toList());
+                .map(this::toModel)
+                .toList();
     }
 
     private CandleDto toModel(Object[] candles) {

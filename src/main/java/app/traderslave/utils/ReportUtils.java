@@ -1,6 +1,6 @@
 package app.traderslave.utils;
 
-import app.traderslave.domain.model.SimulationOrder;
+import app.traderslave.domain.model.BackTestOrder;
 import app.traderslave.model.dto.CandleDto;
 import app.traderslave.model.enums.OrderType;
 import app.traderslave.model.dto.OrderReportDto;
@@ -23,7 +23,7 @@ public class ReportUtils {
         return currentPrice.multiply(percentage);
     }
 
-    public boolean isLiquidated(SimulationOrder order, CandleDto candle) {
+    public boolean isLiquidated(BackTestOrder order, CandleDto candle) {
         if (OrderType.BUY == order.getType()) {
             return order.getLiquidationPrice().compareTo(candle.getLow()) >= 0;
         } else {
@@ -31,7 +31,7 @@ public class ReportUtils {
         }
     }
 
-    public BigDecimal calculateProfitLoss(SimulationOrder order, BigDecimal closePrice) {
+    public BigDecimal calculateProfitLoss(BackTestOrder order, BigDecimal closePrice) {
         BigDecimal initialAmountSize = BigDecimal.valueOf(order.getLeverage() * order.getAmountOfTrade().doubleValue());
         BigDecimal quantity = initialAmountSize.divide(order.getOpenPrice(), 8, java.math.RoundingMode.HALF_UP);
         BigDecimal actualAmountSize = quantity.multiply(closePrice);
@@ -42,7 +42,7 @@ public class ReportUtils {
         }
     }
 
-    public BigDecimal calculateProfitLossPercentage(SimulationOrder order, BigDecimal profitLoss) {
+    public BigDecimal calculateProfitLossPercentage(BackTestOrder order, BigDecimal profitLoss) {
         return profitLoss
                 .divide(order.getAmountOfTrade(), 2, java.math.RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100));
@@ -69,7 +69,7 @@ public class ReportUtils {
     }
 }
 
-    public @Nullable Boolean isProfit(SimulationOrder order) {
+    public @Nullable Boolean isProfit(BackTestOrder order) {
         Assert.notNull(order.getProfitLoss(), "report get profit loss cannot be null");
         return isProfit(order.getProfitLoss());
     }
