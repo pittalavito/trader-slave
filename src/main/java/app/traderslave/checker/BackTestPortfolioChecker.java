@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 
 @Slf4j
 @UtilityClass
-public class SimulationChecker {
+public class BackTestPortfolioChecker {
 
-    public void checkSimulationStatusOpen(BackTestPortfolio backTestPortfolio) {
+    public void checkPortfolioStatusOpen(BackTestPortfolio backTestPortfolio) {
         if (!backTestPortfolio.isOpen()) {
             throw new CustomException(ExceptionEnum.SIMULATION_STATUS_IS_NOT_OPEN);
         }

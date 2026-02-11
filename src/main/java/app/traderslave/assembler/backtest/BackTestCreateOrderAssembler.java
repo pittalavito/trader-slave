@@ -12,7 +12,7 @@ public class BackTestCreateOrderAssembler {
         return BackTestOrderDto.builder()
                 .requestInfo(buildRequestInfo(dto))
                 .orderId(order.getId())
-                .simulationId(order.getSimulationId())
+                .simulationId(order.getPortfolioId())
                 .orderType(order.getType())
                 .amountOfTrade(order.getAmountOfTrade())
                 .openPrice(order.getOpenPrice())

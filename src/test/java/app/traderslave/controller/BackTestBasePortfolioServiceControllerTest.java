@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import static org.mockito.ArgumentMatchers.any;
 
 @WebFluxTest(BackTestPortfolioController.class)
-class BackTestPortfolioControllerTest {
+class BackTestBasePortfolioServiceControllerTest {
 
     @Autowired
     private WebTestClient webTestClient;

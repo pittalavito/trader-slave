@@ -2,7 +2,7 @@ package app.traderslave.command.backtest;
 
 import app.traderslave.assembler.backtest.BackTestCloseOrderAssembler;
 import app.traderslave.assembler.backtest.BackTestClosePortfolioAssembler;
-import app.traderslave.checker.SimulationChecker;
+import app.traderslave.checker.BackTestPortfolioChecker;
 import app.traderslave.command.base.BaseCommand;
 import app.traderslave.domain.model.BackTestPortfolio;
 import app.traderslave.domain.model.BackTestPortfolioEvent;
@@ -38,15 +38,15 @@ public class BackTestClosePortfolioCommand extends BaseCommand<BackTestClosePort
     @Transactional
     public CloseBackTestPortfolioDto execute() {
         BackTestPortfolio backTestPortfolio = portfolioDomainService.findByIdOrError(commandRequest.getSimulationId());
-        SimulationChecker.checkSimulationStatusOpen(backTestPortfolio);
+        BackTestPortfolioChecker.checkPortfolioStatusOpen(backTestPortfolio);
         BackTestPortfolioEvent latestEvent = portfolioEventDomainService.findLatestEventBySimulationId(backTestPortfolio.getId());
-        SimulationChecker.checkRequestTime(backTestPortfolio, latestEvent, commandRequest);
+        BackTestPortfolioChecker.checkRequestTime(backTestPortfolio, latestEvent, commandRequest);
 
         Map<Long, BackTestOrderDto> ordersIdsMap = new HashMap<>();
         Map<BackTestOrderDto.Status, List<Long>> ordersIdsStatusMap = new EnumMap<>(BackTestOrderDto.Status.class);
         Arrays.stream(BackTestOrderDto.Status.values()).forEach(status -> ordersIdsStatusMap.put(status, new ArrayList<>()));
 
-        List<BackTestOrder> orders = orderDomainService.findAllBySimulationId(backTestPortfolio.getId());
+        List<BackTestOrder> orders = orderDomainService.findAllByPortfolioId(backTestPortfolio.getId());
         if (!CollectionUtils.isEmpty(orders)) {
             orders.forEach(order -> {
                 BackTestOrderDto resDto;

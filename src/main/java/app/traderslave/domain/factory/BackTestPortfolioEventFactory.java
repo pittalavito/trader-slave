@@ -13,7 +13,7 @@ public class BackTestPortfolioEventFactory {
 
         return BackTestPortfolioEvent.builder()
                 .orderId(order.getId())
-                .simulationId(order.getSimulationId())
+                .simulationId(order.getPortfolioId())
                 .balanceUpdates(BackTestPortfolioEvent.EventType.CREATED_ORDER == eventType ? order.getAmountOfTrade().negate() : order.getProfitLoss().abs())
                 .eventTime(BackTestPortfolioEvent.EventType.CREATED_ORDER == eventType ? order.getOpenTime() : order.getCloseTime())
                 .eventType(eventType)
@@ -25,7 +25,7 @@ public class BackTestPortfolioEventFactory {
     public BackTestPortfolioEvent close(BackTestOrder order) {
         return BackTestPortfolioEvent.builder()
                 .orderId(order.getId())
-                .simulationId(order.getSimulationId())
+                .simulationId(order.getPortfolioId())
                 .balanceUpdates(order.getProfitLoss().abs())
                 .eventTime(order.getCloseTime())
                 .eventType(BackTestPortfolioEvent.EventType.CLOSED_SIMULATION)

@@ -3,6 +3,7 @@ package app.traderslave.service;
 import app.traderslave.command.backtest.BackTestClosePortfolioCommand;
 import app.traderslave.command.backtest.BackTestCreatePortfolioCommand;
 import app.traderslave.command.backtest.BackTestPortfolioDeleteAllCommand;
+import app.traderslave.domain.model.BackTestPortfolio;
 import app.traderslave.domain.service.BackTestPortfolioDomainService;
 import app.traderslave.model.dto.req.BackTestClosePortfolioReqDto;
 import app.traderslave.model.dto.CloseBackTestPortfolioDto;
@@ -25,8 +26,12 @@ public class BackTestPortfolioService {
     private final BackTestClosePortfolioCommand closePortfolioCommand;
     private final BackTestPortfolioDeleteAllCommand portfolioDeleteAllCommand;
 
-    public BigDecimal getBalance(Long simulationId) {
-        var simulation = portfolioDomainService.findByIdOrError(simulationId);
+    public BackTestPortfolio get(Long id) {
+        return portfolioDomainService.findByIdOrError(id);
+    }
+
+    public BigDecimal getBalance(Long id) {
+        var simulation = portfolioDomainService.findByIdOrError(id);
         return simulation.getBalance();
     }
 

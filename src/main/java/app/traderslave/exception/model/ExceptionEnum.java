@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ExceptionEnum {
 
+    //todo rinominare eccezioni con portfolio, order + creare le nuove
     END_DATE_IS_AFTER_NOW(HttpStatus.BAD_REQUEST, "The end date is after now"),
     NUM_CANDLES_EXCEEDS_LIMIT(HttpStatus.BAD_REQUEST, "The number of candles exceeds the allowed limit"),
     LAST_NUM_CANDLE_INVALID(HttpStatus.BAD_REQUEST, "lastNumCandle value must be between 1 and" + BinanceChecker.LIMIT_NUM_CANDLES),

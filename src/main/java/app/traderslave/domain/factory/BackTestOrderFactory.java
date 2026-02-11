@@ -15,7 +15,7 @@ public class BackTestOrderFactory {
 
     public BackTestOrder create(BackTestPortfolio backTestPortfolio, BackTestCreateOrderReqDto dto, CandleDto candle) {
         return BackTestOrder.builder()
-                .simulationId(dto.getSimulationId())
+                .portfolioId(dto.getSimulationId())
                 .amountOfTrade(dto.getAmountOfTrade() == null ? backTestPortfolio.getBalance() : dto.getAmountOfTrade())
                 .openPrice(candle.getClose())
                 .openTime(candle.getCloseTime())

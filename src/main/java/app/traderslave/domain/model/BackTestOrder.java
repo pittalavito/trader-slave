@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class BackTestOrder extends BasePersistentModel {
 
     @Column(nullable = false)
-    private Long simulationId;
+    private Long portfolioId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = SqlColumnDefinition.VARCHAR_20)

@@ -16,7 +16,7 @@ public class BackTestCloseOrderAssembler {
                 .requestInfo(buildRequestInfo(dto))
                 .orderType(order.getType())
                 .amountOfTrade(order.getAmountOfTrade())
-                .simulationId(order.getSimulationId())
+                .simulationId(order.getPortfolioId())
                 .orderId(order.getId())
                 .status(mappingStatus(order.getStatus(), ReportUtils.isProfit(order)))
                 .openPrice(order.getOpenPrice())

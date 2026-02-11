@@ -1,7 +1,7 @@
 package app.traderslave.command.backtest;
 
 import app.traderslave.assembler.backtest.BackTestCloseOrderAssembler;
-import app.traderslave.checker.SimulationChecker;
+import app.traderslave.checker.BackTestPortfolioChecker;
 import app.traderslave.command.base.BaseCommand;
 import app.traderslave.model.dto.req.CandleReqDto;
 import app.traderslave.model.dto.req.BackTestCloseOrderReqDto;
@@ -33,11 +33,11 @@ public class BackTestCloseOrderCommand extends BaseCommand<BackTestCloseOrderReq
     @Override
     public BackTestOrderDto execute() {
         BackTestPortfolio backTestPortfolio = portfolioDomainService.findByIdOrError(commandRequest.getSimulationId());
-        SimulationChecker.checkSimulationStatusOpen(backTestPortfolio);
+        BackTestPortfolioChecker.checkPortfolioStatusOpen(backTestPortfolio);
         BackTestPortfolioEvent latestEvent = portfolioEventDomainService.findLatestEventBySimulationId(backTestPortfolio.getId());
-        SimulationChecker.checkRequestTime(backTestPortfolio, latestEvent, commandRequest);
+        BackTestPortfolioChecker.checkRequestTime(backTestPortfolio, latestEvent, commandRequest);
         BackTestOrder order = orderDomainService.findByIdAndSimulationIdOrError(commandRequest.getOrderId(), backTestPortfolio.getId());
-        SimulationChecker.checkOrderStatusOpen(order);
+        BackTestPortfolioChecker.checkOrderStatusOpen(order);
         OrderReportDto report = orderReportService.createShortTermReport(backTestPortfolio, order, commandRequest);
         BackTestOrder closedOrder = orderDomainService.close(order, report, false);
         portfolioDomainService.addBalance(backTestPortfolio, closedOrder);

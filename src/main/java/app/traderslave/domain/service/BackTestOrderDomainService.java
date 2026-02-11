@@ -31,8 +31,12 @@ public class BackTestOrderDomainService {
         return repository.save(BackTestOrderFactory.close(order, report, endSimulation));
     }
 
-    public List<BackTestOrder> findAllBySimulationId(Long simulationId) {
+    public List<BackTestOrder> findAllByPortfolioId(Long simulationId) {
         return repository.findAllBySimulationId(simulationId);
+    }
+
+    public List<BackTestOrder> findAllByPortfolioId(Long simulationId, BackTestOrder.Status status) {
+        return repository.findAllBySimulationIdAndStatus(simulationId, status);
     }
 
     public BackTestOrder findByIdAndSimulationIdOrError(Long id, Long simulationId) {
