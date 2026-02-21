@@ -23,4 +23,8 @@ public enum TimeFrame {
     @Getter
     private final String code;
     private final Long millisecond;
+
+    public Long getSecond() {
+        return millisecond / ONE_SECOND.millisecond;
+    }
 }

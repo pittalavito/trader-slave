@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Table(name = "SIMULATION_ORDER", indexes = {
-        @Index(name = "order_idx_simulation_id", columnList = "simulationId")
+        @Index(name = "order_idx_simulation_id", columnList = "portfolioId")
 })
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

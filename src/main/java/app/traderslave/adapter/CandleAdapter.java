@@ -5,7 +5,6 @@ import app.traderslave.model.dto.req.CandlesReqDto;
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.TimeFrame;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 
 @Component
