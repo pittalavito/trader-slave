@@ -1,6 +1,6 @@
 package app.traderslave.bot.agent.assembler;
 
-import app.traderslave.bot.agent.model.PortfolioModel;
+import app.traderslave.bot.agent.dto.PortfolioAgentDto;
 import app.traderslave.domain.model.BackTestOrder;
 import app.traderslave.domain.model.BackTestPortfolio;
 import org.springframework.stereotype.Component;
@@ -10,13 +10,13 @@ import java.util.List;
 @Component
 public class BackTestPortfolioAssembler {
 
-    public PortfolioModel toModel(BackTestPortfolio portfolio, List<BackTestOrder> openOrders) {
+    public PortfolioAgentDto toModel(BackTestPortfolio portfolio, List<BackTestOrder> openOrders) {
         var orderModels = toModel(openOrders, portfolio);
         var allocatedCapital = orderModels.stream()
-                .map(PortfolioModel.Order::getAllocatedCapital)
+                .map(PortfolioAgentDto.Order::getAllocatedCapital)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return PortfolioModel.builder()
+        return PortfolioAgentDto.builder()
                 .id(portfolio.getId())
                 .capital(portfolio.getBalance())
                 .allocatedCapital(allocatedCapital)
@@ -26,14 +26,14 @@ public class BackTestPortfolioAssembler {
     }
 
 
-    private List<PortfolioModel.Order> toModel(List<BackTestOrder> orders, BackTestPortfolio portfolio) {
+    private List<PortfolioAgentDto.Order> toModel(List<BackTestOrder> orders, BackTestPortfolio portfolio) {
         return orders.stream()
                 .map(order -> toModel(order, portfolio))
                 .toList();
     }
 
-    private PortfolioModel.Order toModel(BackTestOrder order, BackTestPortfolio portfolio) {
-        return PortfolioModel.Order.builder()
+    private PortfolioAgentDto.Order toModel(BackTestOrder order, BackTestPortfolio portfolio) {
+        return PortfolioAgentDto.Order.builder()
                 .currencyPair(portfolio.getCurrencyPair())
                 .orderType(order.getType())
                 .allocatedCapital(order.getAmountOfTrade())

@@ -2,7 +2,7 @@ package app.traderslave.bot.agent.impl.portfolio;
 
 import app.traderslave.bot.agent.assembler.BackTestPortfolioAssembler;
 import app.traderslave.bot.BotConfig;
-import app.traderslave.bot.agent.model.PortfolioModel;
+import app.traderslave.bot.agent.dto.PortfolioAgentDto;
 import app.traderslave.domain.model.BackTestOrder;
 import app.traderslave.service.BackTestOrderService;
 import app.traderslave.service.BackTestPortfolioService;
@@ -19,13 +19,13 @@ public class BackTestPortfolioAgent extends BasePortfolioAgent<Long> {
     private final BackTestPortfolioAssembler portfolioAssembler;
 
     @Override
-    public PortfolioModel initialize(BotConfig request) {
+    public PortfolioAgentDto create(BotConfig request) {
         //todo implement
         return null;
     }
 
     @Override
-    public PortfolioModel get(Long request) {
+    public PortfolioAgentDto get(Long request) {
         var entity = portfolioService.get(request);
         var orders = orderService.getAll(request, BackTestOrder.Status.OPEN);
         return portfolioAssembler.toModel(entity, orders);

@@ -1,4 +1,4 @@
-package app.traderslave.bot.agent.model;
+package app.traderslave.bot.agent.dto;
 
 import app.traderslave.model.dto.CandleDto;
 import lombok.Builder;
@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class MarketDataModel {
+public class MarketDataAgentDto {
 
     List<CandleDto> candles;
 

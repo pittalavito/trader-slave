@@ -1,6 +1,9 @@
 package app.traderslave.bot.agent.impl.risk;
 
-public abstract class BaseRiskAgent<T, R> {
+import app.traderslave.bot.agent.dto.RiskAgentDto;
+import app.traderslave.bot.agent.dto.RiskAgentReqDto;
 
-    public abstract T calculate(R request);
+public abstract class BaseRiskAgent {
+
+    public abstract RiskAgentDto calculate(RiskAgentReqDto request);
 }

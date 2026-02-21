@@ -3,7 +3,7 @@ package app.traderslave.bot.agent.impl.market_data;
 import app.traderslave.adapter.CandleAdapter;
 import app.traderslave.bot.agent.assembler.BackTestMarketDataAssembler;
 import app.traderslave.bot.BotConfig;
-import app.traderslave.bot.agent.model.MarketDataModel;
+import app.traderslave.bot.agent.dto.MarketDataAgentDto;
 import app.traderslave.model.dto.req.CandlesReqDto;
 import app.traderslave.remote.service.BinanceRemoteService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class BackTestMarketDataAgent extends BaseMarketDataAgent<CandlesReqDto> 
     private final CandleAdapter candleAdapter;
 
     @Override
-    public MarketDataModel get(CandlesReqDto request) {
+    public MarketDataAgentDto get(CandlesReqDto request) {
         var candles = binanceRemoteService.findCandlesSync(request);
         return marketDataService.toModel(candles);
     }

@@ -1,4 +1,4 @@
-package app.traderslave.bot.agent.model;
+package app.traderslave.bot.agent.dto;
 
 import app.traderslave.model.enums.CurrencyPair;
 import app.traderslave.model.enums.OrderType;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class PortfolioModel {
+public class PortfolioAgentDto {
 
     private Long id;
     private BigDecimal allTimeHigh;
